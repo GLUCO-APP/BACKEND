@@ -1,0 +1,22 @@
+{
+  "name": "repo-proyecto-grado",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GLUCO-APP/BACKEND.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GLUCO-APP/BACKEND/issues"
+  },
+  "homepage": "https://github.com/GLUCO-APP/BACKEND#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
