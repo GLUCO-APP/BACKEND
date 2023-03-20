@@ -6,6 +6,6 @@ const app = express();
 app.use(express.json());
 app.use(router);
 
-app.listen(3000, () => {
-  console.log('Servidor corriendo en el puerto 3000');
+app.listen(80, () => {
+  console.log('Servidor corriendo en el puerto 80');
 });
