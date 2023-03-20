@@ -1,0 +1,19 @@
+pool:
+  name: prueba
+variables:
+  CONTAINER_NAME: "prueba"
+  NAME_IMAGEN: "prueba"
+  APP_NAME: "gluko-app"
+  CONTAINER_TAG: "latest"
+  PORT: 3000
+  NAME_FINAL: "$(CONTAINER_NAME)$(CONTAINER_TAG)$(PORT)"
+steps:
+  - script: |
+      docker stop $(NAME_FINAL)
+      docker rm -vf $(NAME_FINAL)
+    displayName: 'deteniendo imagenes docker yu eliminando.'
+  
+  - script: |
+      docker build . -t $(NAME_IMAGEN):$(CONTAINER_TAG)
+      docker run -dtp $(PORT):(80) --name(NAME_FINAL) $(NAME_IAMGEN):$(CONTAINER_TAG)
+    displayName: 'contruccion contenedor docker para despleigue de aplicación. '
