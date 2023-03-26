@@ -8,6 +8,6 @@ const routes_1 = __importDefault(require("./interfaces/routes/routes"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(routes_1.default);
-app.listen(3000, () => {
-    console.log('Servidor corriendo en el puerto 3000');
+app.listen(8080, () => {
+    console.log('Servidor corriendo en el puerto 8080');
 });
