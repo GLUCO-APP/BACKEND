@@ -22,8 +22,8 @@ class UserController {
             try {
                 const { nombre, email, password, fechaNacimiento, fechaDiagnostico, telefono, edad, genero, peso, estatura, tipoDiabetes, tipoTerapia, unidades, rango, sensitivity, rate, precis, breakfast, lunch, dinner, glucometer, objective, physicalctivity, infoAdicional } = req.body;
                 const UserData = new User_1.Usuario(nombre, email, password, fechaNacimiento, fechaDiagnostico, telefono, edad, genero, peso, estatura, tipoDiabetes, tipoTerapia, unidades, rango, sensitivity, rate, precis, breakfast, lunch, dinner, glucometer, objective, physicalctivity, infoAdicional);
-                const User = yield this.userService.addUser(UserData);
-                res.status(201).json(User);
+                const token = yield this.userService.addUser(UserData);
+                res.status(201).json({ "Usertoken": token });
             }
             catch (err) {
                 console.error(err);

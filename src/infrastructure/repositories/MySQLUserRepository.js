@@ -14,42 +14,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MySQLUserRepository = void 0;
 const dbconfig_1 = __importDefault(require("../database/dbconfig"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class MySQLUserRepository {
     add(usuario) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
             try {
+                const salt = yield bcrypt_1.default.genSalt(10);
+                const hashedpass = yield bcrypt_1.default.hash(usuario.password, salt);
                 yield cnx.beginTransaction();
-                const [result] = yield cnx.query('INSERT INTO usuarios (nombre, email, password, fechaNacimiento, fechaDiagnostico, telefono, edad, genero, peso, estatura, tipoDiabetes, tipoTerapia, unidades, rango, sensitivity, rate, precis, breakfast, lunch, dinner, glucometer, objective, physicalctivity, infoAdicional) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);', [usuario.nombre, usuario.email, usuario.password, usuario.fechaNacimiento, usuario.fechaDiagnostico, usuario.telefono, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipoDiabetes, usuario.tipoTerapia, usuario.unidades, usuario.rango, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast, usuario.lunch, usuario.dinner, usuario.glucometer, usuario.objective, usuario.physicalctivity, usuario.infoAdicional]);
+                const [result] = yield cnx.query('INSERT INTO usuarios (nombre, email, password, fechaNacimiento, fechaDiagnostico, telefono, edad, genero, peso, estatura, tipoDiabetes, tipoTerapia, unidades, rango, sensitivity, rate, precis, breakfast, lunch, dinner, glucometer, objective, physicalctivity, infoAdicional) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);', [usuario.nombre, usuario.email, hashedpass, usuario.fechaNacimiento, usuario.fechaDiagnostico, usuario.telefono, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipoDiabetes, usuario.tipoTerapia, usuario.unidades, usuario.rango, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast, usuario.lunch, usuario.dinner, usuario.glucometer, usuario.objective, usuario.physicalctivity, usuario.infoAdicional]);
                 const id = result.insertId;
-                const newUser = {
-                    nombre: usuario.nombre,
-                    email: usuario.email,
-                    password: usuario.password,
-                    fechaNacimiento: usuario.fechaNacimiento,
-                    fechaDiagnostico: usuario.fechaDiagnostico,
-                    telefono: usuario.telefono,
-                    edad: usuario.edad,
-                    genero: usuario.genero,
-                    peso: usuario.peso,
-                    estatura: usuario.estatura,
-                    tipoDiabetes: usuario.tipoDiabetes,
-                    tipoTerapia: usuario.tipoTerapia,
-                    unidades: usuario.unidades,
-                    rango: usuario.rango,
-                    sensitivity: usuario.sensitivity,
-                    rate: usuario.rate,
-                    precis: usuario.precis,
-                    breakfast: usuario.breakfast,
-                    lunch: usuario.lunch,
-                    dinner: usuario.dinner,
-                    glucometer: usuario.glucometer,
-                    objective: usuario.objective,
-                    physicalctivity: usuario.physicalctivity,
-                    infoAdicional: usuario.infoAdicional
-                };
+                const token = jsonwebtoken_1.default.sign({ _id: id }, process.env.TOKEN_SECRET || 'tokentest');
                 yield cnx.query('COMMIT');
-                return newUser;
+                return token;
             }
             catch (err) {
                 yield cnx.query('ROLLBACK');
