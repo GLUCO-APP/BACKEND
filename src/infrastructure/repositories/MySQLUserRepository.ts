@@ -1,12 +1,24 @@
 import { Usuario } from "../../domain/entities/User";
 import { UserRepository } from "../../domain/repositories/UserRepository";
 import dbGluko from "../database/dbconfig";
-import mysql from 'mysql2/promise';
+import mysql, { RowDataPacket } from 'mysql2/promise';
 import * as bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
 
 
 export class MySQLUserRepository implements UserRepository{
+    async findEmail(email: string): Promise<Usuario | null> {
+        const cnx = await dbGluko.getConnection()
+        const [rows] = await cnx.execute(
+            "SELECT * FROM usuarios WHERE email = ?",
+            [email]
+        );
+        const user = rows as Usuario[];
+        if (user.length === 0) {
+            return null;
+         }
+        return user[0];
+    }
     async add(usuario: Usuario): Promise<string> {
         const cnx = await dbGluko.getConnection()
         try{
@@ -21,14 +33,9 @@ export class MySQLUserRepository implements UserRepository{
 
             const id = (result as mysql.OkPacket).insertId;
 
-            const token:string = jwt.sign({_id: id},process.env.TOKEN_SECRET || 'tokentest');
-              
-            const [updateResult] = await cnx.query(
-                'UPDATE usuarios SET token = ? WHERE id = ?',
-                [token, id]
-            );
+
             await cnx.query('COMMIT');
-            return token;
+            return "Usuario creado";
         }catch(err:any){
             await cnx.query('ROLLBACK');
             throw err;
