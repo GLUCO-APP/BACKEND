@@ -23,7 +23,7 @@ export class Usuario {
       public glucometer: string,
       public objective: number,
       public physicalctivity: number,
-      public infoAdicional: string
+      public infoAdicional: string,
     ) {}
   }
   

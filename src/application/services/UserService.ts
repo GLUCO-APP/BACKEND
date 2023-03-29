@@ -9,7 +9,7 @@ export class UserService {
         this.userRepository = userRepository;
     }
 
-    public async addUser(usuario:Usuario):Promise<Usuario>{
+    public async addUser(usuario:Usuario):Promise<string>{
         return this.userRepository.add(usuario);
     }
 }

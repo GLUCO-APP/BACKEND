@@ -36,11 +36,11 @@ export class UserController{
                 glucometer, 
                 objective, 
                 physicalctivity, 
-                infoAdicional 
+                infoAdicional,
               } = req.body;
               const UserData: Usuario = new Usuario(nombre,email, password,fechaNacimiento,fechaDiagnostico,telefono,edad,genero,peso,estatura,tipoDiabetes,tipoTerapia,unidades,rango,sensitivity,rate,precis,breakfast,lunch,dinner,glucometer,objective,physicalctivity,infoAdicional);
-              const User = await this.userService.addUser(UserData);
-              res.status(201).json(User);
+              const utoken = await this.userService.addUser(UserData);
+              res.status(201).json({ "Usertoken": utoken });
             }catch(err:any){
                 console.error(err);
                 res.status(400).send(err.message);
