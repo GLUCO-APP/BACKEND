@@ -7,8 +7,6 @@ phases:
     commands:
       - rm -rf node_modules
       - npm install
-      - cd node_modules/bcrypt
-      - make
   build:
     commands:
       - npm run build
