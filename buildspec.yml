@@ -7,9 +7,8 @@ phases:
     commands:
       - rm -rf node_modules
       - npm install
-      - npm run build
       - cd node_modules/bcrypt
-      - node-pre-gyp install --fallback-to-build
+      - make
   build:
     commands:
       - npm run build
