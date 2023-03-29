@@ -2,7 +2,7 @@ import { Usuario } from "../../domain/entities/User";
 import { UserRepository } from "../../domain/repositories/UserRepository";
 import dbGluko from "../database/dbconfig";
 import mysql from 'mysql2/promise';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
 
 
