@@ -39,6 +39,17 @@ exports.MySQLUserRepository = void 0;
 const dbconfig_1 = __importDefault(require("../database/dbconfig"));
 const bcrypt = __importStar(require("bcryptjs"));
 class MySQLUserRepository {
+    findEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE email = ?", [email]);
+            const user = rows;
+            if (user.length === 0) {
+                return null;
+            }
+            return user[0];
+        });
+    }
     add(usuario) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();

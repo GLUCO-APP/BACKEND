@@ -46,4 +46,17 @@ export class UserController{
                 res.status(400).send(err.message);
             }
     }
+
+    public async login(req:Request, res:Response):Promise<void>{
+        try{
+            const {
+                email,
+                password,
+            } = req.body;
+            const token = await this.userService.login(email,password);
+            res.status(200).json({"status":token})
+        }catch(err:any){
+            res.status(400).send(err.message);
+        }
+    }
 }
