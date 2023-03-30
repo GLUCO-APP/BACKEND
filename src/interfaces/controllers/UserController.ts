@@ -39,11 +39,24 @@ export class UserController{
                 infoAdicional,
               } = req.body;
               const UserData: Usuario = new Usuario(nombre,email, password,fechaNacimiento,fechaDiagnostico,telefono,edad,genero,peso,estatura,tipoDiabetes,tipoTerapia,unidades,rango,sensitivity,rate,precis,breakfast,lunch,dinner,glucometer,objective,physicalctivity,infoAdicional);
-              const utoken = await this.userService.addUser(UserData);
-              res.status(201).json({ "Usertoken": utoken });
+              const resp = await this.userService.addUser(UserData);
+              res.status(201).json({ "status": resp });
             }catch(err:any){
                 console.error(err);
                 res.status(400).send(err.message);
             }
+    }
+
+    public async login(req:Request, res:Response):Promise<void>{
+        try{
+            const {
+                email,
+                password,
+            } = req.body;
+            const token = await this.userService.login(email,password);
+            res.status(200).json({"status":token})
+        }catch(err:any){
+            res.status(400).send(err.message);
+        }
     }
 }

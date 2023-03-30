@@ -22,11 +22,23 @@ class UserController {
             try {
                 const { nombre, email, password, fechaNacimiento, fechaDiagnostico, telefono, edad, genero, peso, estatura, tipoDiabetes, tipoTerapia, unidades, rango, sensitivity, rate, precis, breakfast, lunch, dinner, glucometer, objective, physicalctivity, infoAdicional, } = req.body;
                 const UserData = new User_1.Usuario(nombre, email, password, fechaNacimiento, fechaDiagnostico, telefono, edad, genero, peso, estatura, tipoDiabetes, tipoTerapia, unidades, rango, sensitivity, rate, precis, breakfast, lunch, dinner, glucometer, objective, physicalctivity, infoAdicional);
-                const utoken = yield this.userService.addUser(UserData);
-                res.status(201).json({ "Usertoken": utoken });
+                const resp = yield this.userService.addUser(UserData);
+                res.status(201).json({ "status": resp });
             }
             catch (err) {
                 console.error(err);
+                res.status(400).send(err.message);
+            }
+        });
+    }
+    login(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { email, password, } = req.body;
+                const token = yield this.userService.login(email, password);
+                res.status(200).json({ "status": token });
+            }
+            catch (err) {
                 res.status(400).send(err.message);
             }
         });

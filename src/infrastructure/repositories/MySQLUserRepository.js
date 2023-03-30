@@ -38,8 +38,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MySQLUserRepository = void 0;
 const dbconfig_1 = __importDefault(require("../database/dbconfig"));
 const bcrypt = __importStar(require("bcryptjs"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class MySQLUserRepository {
+    findEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE email = ?", [email]);
+            const user = rows;
+            if (user.length === 0) {
+                return null;
+            }
+            return user[0];
+        });
+    }
     add(usuario) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
@@ -49,10 +59,8 @@ class MySQLUserRepository {
                 yield cnx.beginTransaction();
                 const [result] = yield cnx.query('INSERT INTO usuarios (nombre, email, password, fechaNacimiento, fechaDiagnostico, telefono, edad, genero, peso, estatura, tipoDiabetes, tipoTerapia, unidades, rango, sensitivity, rate, precis, breakfast, lunch, dinner, glucometer, objective, physicalctivity, infoAdicional, token) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);', [usuario.nombre, usuario.email, hashedpass, usuario.fechaNacimiento, usuario.fechaDiagnostico, usuario.telefono, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipoDiabetes, usuario.tipoTerapia, usuario.unidades, usuario.rango, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast, usuario.lunch, usuario.dinner, usuario.glucometer, usuario.objective, usuario.physicalctivity, usuario.infoAdicional, "sin token"]);
                 const id = result.insertId;
-                const token = jsonwebtoken_1.default.sign({ _id: id }, process.env.TOKEN_SECRET || 'tokentest');
-                const [updateResult] = yield cnx.query('UPDATE usuarios SET token = ? WHERE id = ?', [token, id]);
                 yield cnx.query('COMMIT');
-                return token;
+                return "Usuario creado";
             }
             catch (err) {
                 yield cnx.query('ROLLBACK');
