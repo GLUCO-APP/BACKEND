@@ -59,4 +59,15 @@ export class UserController{
             res.status(400).send(err.message);
         }
     }
+
+    public async getUser(req:Request, res:Response):Promise<void>{
+        const userId = req.params.id;
+        const user = await this.userService.getUser(userId);
+        if (user === null) {
+            res.status(404).json({ message: 'Usuario no encontrado' });
+          } else {
+            res.status(200).json(user);
+          }  
+    }
+
 }
