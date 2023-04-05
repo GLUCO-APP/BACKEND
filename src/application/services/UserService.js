@@ -65,6 +65,13 @@ class UserService {
             }
         });
     }
+    getUser(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const iduser = this.userRepository.getUser(id);
+            const foundUser = yield iduser;
+            return foundUser;
+        });
+    }
     tensorTest() {
         const model = tf.sequential();
         const inputShape = [3];

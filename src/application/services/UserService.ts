@@ -32,6 +32,14 @@ export class UserService {
         }
         
     }
+
+    public async getUser(id:string):Promise<Usuario>{
+        const iduser = this.userRepository.getUser(id);
+        const foundUser = await iduser;
+
+        return foundUser
+    }
+
     public tensorTest():Promise<string>{
 
         
@@ -50,7 +58,6 @@ export class UserService {
 
         return Promise.resolve(result);
         
-
-
     }
+
 }

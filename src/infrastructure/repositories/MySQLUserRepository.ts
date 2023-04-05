@@ -44,4 +44,17 @@ export class MySQLUserRepository implements UserRepository{
           }
     }
 
+    async getUser(idUser: string): Promise<Usuario > {
+        const cnx = await dbGluko.getConnection()
+        const [rows] = await cnx.execute(
+            "SELECT * FROM usuarios WHERE id = ?",
+            [idUser]
+        );
+        const user = rows as Usuario[];
+        if (user.length === 0) {
+             return user[0] ;
+         }
+        return user[0];
+    }
+
 }

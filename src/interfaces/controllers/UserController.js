@@ -43,6 +43,18 @@ class UserController {
             }
         });
     }
+    getUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userId = req.params.id;
+            const user = yield this.userService.getUser(userId);
+            if (user === null) {
+                res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+            else {
+                res.status(200).json(user);
+            }
+        });
+    }
     testPredict(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

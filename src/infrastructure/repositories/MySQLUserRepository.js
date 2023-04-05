@@ -71,5 +71,16 @@ class MySQLUserRepository {
             }
         });
     }
+    getUser(idUser) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE id = ?", [idUser]);
+            const user = rows;
+            if (user.length === 0) {
+                return user[0];
+            }
+            return user[0];
+        });
+    }
 }
 exports.MySQLUserRepository = MySQLUserRepository;

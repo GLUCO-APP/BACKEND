@@ -14,7 +14,7 @@ export class FoodController {
             try{
                 const foods = await this.foodService.getAll();
 
-                res.status(200).json({ success: true, data: foods });
+                res.status(200).json({ success: true, data: foods});
             }catch(err){
                 console.error(err); 
                 res.status(500).json({ error: 'Something went wrong' });
