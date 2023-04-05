@@ -21,7 +21,7 @@ class MySQLPlateRepository {
             try {
                 yield cnx.beginTransaction();
                 // Insertar el nuevo plato en la tabla Plate
-                const [result] = yield cnx.query('INSERT INTO Plate (sugarEstimate, latitude, longitude, address) VALUES (?,?,?,?);', [plate.sugarEstimate, plate.latitude, plate.longitude, plate.address]);
+                const [result] = yield cnx.query('INSERT INTO Plate (sugarEstimate, latitude, longitude, address, Carbohydrates, Proteins, Fats, descript, Title) VALUES (?,?,?,?,?,?,?,?,?);', [plate.sugarEstimate, plate.latitude, plate.longitude, plate.address, plate.Carbohydrates, plate.Proteins, plate.Fats, plate.Description, plate.Title]);
                 const id = result.insertId;
                 const newPlate = {
                     id: id,
@@ -30,6 +30,11 @@ class MySQLPlateRepository {
                     longitude: plate.longitude,
                     address: plate.address,
                     foods: plate.foods,
+                    Carbohydrates: plate.Carbohydrates,
+                    Proteins: plate.Proteins,
+                    Fats: plate.Fats,
+                    Description: plate.Description,
+                    Title: plate.Title
                 };
                 // Insertar los registros correspondientes en la tabla Plate_x_Food
                 for (const food of plate.foods) {

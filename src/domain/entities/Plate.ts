@@ -7,6 +7,11 @@ export class Plate{
             public latitude: number,
             public longitude: number,
             public address: string,
+            public Carbohydrates: number,
+            public Proteins: number,
+            public Fats: number,
+            public Description: string,
+            public Title: string,
             public id?: number
         ) {}
 }

@@ -20,8 +20,8 @@ class PlateController {
     addPlate(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { foods, sugarEstimate, latitude, longitude, address } = req.body;
-                const plateData = new Plate_1.Plate(foods, sugarEstimate, latitude, longitude, address);
+                const { foods, sugarEstimate, latitude, longitude, address, Carbohydrates, Proteins, Fats, Description, Title } = req.body;
+                const plateData = new Plate_1.Plate(foods, sugarEstimate, latitude, longitude, address, Carbohydrates, Proteins, Fats, Description, Title);
                 const plate = yield this.plateService.addPlate(plateData);
                 res.status(201).json(plate);
             }

@@ -59,4 +59,13 @@ export class UserController{
             res.status(400).send(err.message);
         }
     }
+
+    public async testPredict(req:Request, res:Response):Promise<void>{
+        try{
+            const pre = await this.userService.tensorTest();
+            res.status(200).json({"predict": pre})
+        }catch(err:any){
+            res.status(400).send(err.message);
+        }
+    }
 }
