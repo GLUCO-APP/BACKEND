@@ -13,4 +13,5 @@ router.get('/allFoods', foodController.getAll.bind(foodController));
 router.post('/user', usercontroller.addUser.bind(usercontroller));
 router.post('/login', usercontroller.login.bind(usercontroller));
 router.get('/user/:id', usercontroller.getUser.bind(usercontroller));
+router.get('/test', usercontroller.testPredict.bind(usercontroller));
 exports.default = router;

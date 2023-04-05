@@ -60,6 +60,7 @@ export class UserController{
         }
     }
 
+
     public async getUser(req:Request, res:Response):Promise<void>{
         const userId = req.params.id;
         const user = await this.userService.getUser(userId);
@@ -68,6 +69,16 @@ export class UserController{
           } else {
             res.status(200).json(user);
           }  
+    }
+
+
+    public async testPredict(req:Request, res:Response):Promise<void>{
+        try{
+            const pre = await this.userService.tensorTest();
+            res.status(200).json({"predict": pre})
+        }catch(err:any){
+            res.status(400).send(err.message);
+        }
     }
 
 }

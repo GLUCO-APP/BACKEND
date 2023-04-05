@@ -15,8 +15,8 @@ export class PlateController {
 
     public async addPlate(req: Request, res:Response):Promise<void>{
         try{
-            const {foods,sugarEstimate,latitude,longitude,address} = req.body;
-            const plateData: Plate = new Plate(foods,sugarEstimate,latitude,longitude,address);
+            const { foods, sugarEstimate, latitude, longitude, address, Carbohydrates, Proteins, Fats, Description, Title } = req.body;
+            const plateData: Plate = new Plate(foods, sugarEstimate, latitude, longitude, address, Carbohydrates, Proteins, Fats, Description, Title);
             const plate = await this.plateService.addPlate(plateData);
             res.status(201).json(plate)
         }catch (err:any){

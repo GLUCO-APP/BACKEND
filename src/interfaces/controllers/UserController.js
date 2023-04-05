@@ -55,5 +55,16 @@ class UserController {
             }
         });
     }
+    testPredict(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const pre = yield this.userService.tensorTest();
+                res.status(200).json({ "predict": pre });
+            }
+            catch (err) {
+                res.status(400).send(err.message);
+            }
+        });
+    }
 }
 exports.UserController = UserController;
