@@ -12,6 +12,8 @@ export class Plate{
             public Fats: number,
             public Description: string,
             public Title: string,
+            public date: Date,
+            public type: string,
             public id?: number
         ) {}
 }
