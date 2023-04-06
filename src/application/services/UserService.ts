@@ -40,6 +40,12 @@ export class UserService {
         return foundUser
     }
 
+
+    public async updateUser(usuario: Usuario , id:string):Promise<void>{
+        const iduser=this.userRepository.updateUser(usuario ,id);
+        const foundUser = await iduser;
+    }
+
     public tensorTest():Promise<string>{
 
         
