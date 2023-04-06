@@ -14,4 +14,5 @@ router.post('/user', usercontroller.addUser.bind(usercontroller));
 router.post('/login', usercontroller.login.bind(usercontroller));
 router.get('/user/:id', usercontroller.getUser.bind(usercontroller));
 router.get('/test', usercontroller.testPredict.bind(usercontroller));
+router.put('/update/:id', usercontroller.updateUser.bind(usercontroller));
 exports.default = router;
