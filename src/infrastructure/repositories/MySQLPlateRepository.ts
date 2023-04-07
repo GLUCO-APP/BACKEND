@@ -14,8 +14,8 @@ export class MySQLPlateRepository implements PlateRepository{
 
 
     const [result] = await cnx.query(
-      'INSERT INTO Plate (sugarEstimate, latitude, longitude, address, Carbohydrates, Proteins, Fats, descript, Title, date,type ) VALUES (?,?,?,?,?,?,?,?,?,?,?);',
-      [plate.sugarEstimate, plate.latitude, plate.longitude, plate.address, plate.Carbohydrates, plate.Proteins, plate.Fats, plate.Description, plate.Title,plate.date,plate.type]
+      'INSERT INTO Plate (sugarEstimate, latitude, longitude, address, Carbohydrates, Proteins, Fats, descript, Title, date,type,public_plate ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);',
+      [plate.sugarEstimate, plate.latitude, plate.longitude, plate.address, plate.Carbohydrates, plate.Proteins, plate.Fats, plate.Description, plate.Title,plate.date,plate.type,plate.public_plate]
      );
 
 
@@ -35,7 +35,8 @@ export class MySQLPlateRepository implements PlateRepository{
       Description: plate.Description,
       Title: plate.Title,
       date:plate.date,
-      type:plate.type
+      type:plate.type,
+      public_plate: plate.public_plate
       };
 
     // Insertar los registros correspondientes en la tabla Plate_x_Food
