@@ -71,6 +71,46 @@ export class UserController{
           }  
     }
 
+    public async updateUser(req:Request, res:Response):Promise<void>{
+        const id = req.params.id;
+        try{
+            const { 
+                nombre, 
+                email, 
+                password, 
+                fechaNacimiento, 
+                fechaDiagnostico, 
+                telefono, 
+                edad, 
+                genero, 
+                peso, 
+                estatura, 
+                tipoDiabetes, 
+                tipoTerapia, 
+                unidades, 
+                rango, 
+                sensitivity, 
+                rate, 
+                precis, 
+                breakfast, 
+                lunch, 
+                dinner, 
+                glucometer, 
+                objective, 
+                physicalctivity, 
+                infoAdicional,
+              } = req.body;
+              const UserData: Usuario = new Usuario(nombre,email, password,fechaNacimiento,fechaDiagnostico,telefono,edad,genero,peso,estatura,tipoDiabetes,tipoTerapia,unidades,rango,sensitivity,rate,precis,breakfast,lunch,dinner,glucometer,objective,physicalctivity,infoAdicional);
+              const resp = await this.userService.updateUser(UserData, id);
+              res.status(201).json({ "status": resp });
+            }catch(err:any){
+                console.error(err);
+                res.status(400).send(err.message);
+            }
+    }
+
+
+
 
     public async testPredict(req:Request, res:Response):Promise<void>{
         try{

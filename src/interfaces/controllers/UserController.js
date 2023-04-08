@@ -55,6 +55,21 @@ class UserController {
             }
         });
     }
+    updateUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            try {
+                const { nombre, email, password, fechaNacimiento, fechaDiagnostico, telefono, edad, genero, peso, estatura, tipoDiabetes, tipoTerapia, unidades, rango, sensitivity, rate, precis, breakfast, lunch, dinner, glucometer, objective, physicalctivity, infoAdicional, } = req.body;
+                const UserData = new User_1.Usuario(nombre, email, password, fechaNacimiento, fechaDiagnostico, telefono, edad, genero, peso, estatura, tipoDiabetes, tipoTerapia, unidades, rango, sensitivity, rate, precis, breakfast, lunch, dinner, glucometer, objective, physicalctivity, infoAdicional);
+                const resp = yield this.userService.updateUser(UserData, id);
+                res.status(201).json({ "status": resp });
+            }
+            catch (err) {
+                console.error(err);
+                res.status(400).send(err.message);
+            }
+        });
+    }
     testPredict(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
