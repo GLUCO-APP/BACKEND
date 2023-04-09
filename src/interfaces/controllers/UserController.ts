@@ -2,6 +2,7 @@ import { Request,Response } from "express";
 import { UserService } from "../../application/services/UserService";
 import { Usuario } from "../../domain/entities/User";
 import { MySQLUserRepository } from "../../infrastructure/repositories/MySQLUserRepository";
+import morgan from "morgan";
 
 export class UserController{
     private userService: UserService;
@@ -48,15 +49,21 @@ export class UserController{
     }
 
     public async login(req:Request, res:Response):Promise<void>{
+        morgan('dev')(req, res, () => {});
         try{
             const {
                 email,
                 password,
             } = req.body;
-            const token = await this.userService.login(email,password);
+            const token = await Promise.race([
+                this.userService.login(email, password),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+            ]);
             res.status(200).json({"status":token})
-        }catch(err:any){
+           
+        }catch(err:any){ 
             res.status(400).send(err.message);
+           
         }
     }
 
