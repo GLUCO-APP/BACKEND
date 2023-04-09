@@ -9,15 +9,20 @@ import jwt from 'jsonwebtoken'
 export class MySQLUserRepository implements UserRepository{
     async findEmail(email: string): Promise<Usuario | null> {
         const cnx = await dbGluko.getConnection()
-        const [rows] = await cnx.execute(
-            "SELECT * FROM usuarios WHERE email = ?",
+        try{
+          const [rows] = await cnx.execute(
+            "SELECT * FROM usuarios WHERE email = ? LIMIT 1",
             [email]
-        );
-        const user = rows as Usuario[];
-        if (user.length === 0) {
-            return null;
-         }
-        return user[0];
+          );
+          const user = rows as Usuario[];
+          if (user.length === 0) {
+              return null;
+          }
+          return user[0];
+        }finally {
+          cnx.release();
+        }
+        
     }
     async add(usuario: Usuario): Promise<string> {
         const cnx = await dbGluko.getConnection()

@@ -8,11 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const UserService_1 = require("../../application/services/UserService");
 const User_1 = require("../../domain/entities/User");
 const MySQLUserRepository_1 = require("../../infrastructure/repositories/MySQLUserRepository");
+const morgan_1 = __importDefault(require("morgan"));
 class UserController {
     constructor() {
         this.userService = new UserService_1.UserService(new MySQLUserRepository_1.MySQLUserRepository());
@@ -33,9 +37,13 @@ class UserController {
     }
     login(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            (0, morgan_1.default)('dev')(req, res, () => { });
             try {
                 const { email, password, } = req.body;
-                const token = yield this.userService.login(email, password);
+                const token = yield Promise.race([
+                    this.userService.login(email, password),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+                ]);
                 res.status(200).json({ "status": token });
             }
             catch (err) {

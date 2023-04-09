@@ -42,12 +42,17 @@ class MySQLUserRepository {
     findEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
-            const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE email = ?", [email]);
-            const user = rows;
-            if (user.length === 0) {
-                return null;
+            try {
+                const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE email = ? LIMIT 1", [email]);
+                const user = rows;
+                if (user.length === 0) {
+                    return null;
+                }
+                return user[0];
             }
-            return user[0];
+            finally {
+                cnx.release();
+            }
         });
     }
     add(usuario) {
