@@ -19,5 +19,10 @@ class FoodService {
             return this.foodRespository.getall();
         });
     }
+    addFood(food) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.foodRespository.add(food);
+        });
+    }
 }
 exports.FoodService = FoodService;

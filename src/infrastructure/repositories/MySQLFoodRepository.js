@@ -28,5 +28,66 @@ class MySqlFoodRepository {
             }
         });
     }
+    add(food) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                yield cnx.beginTransaction();
+                const [rows] = yield cnx.query('SELECT * FROM Food WHERE name = ?;', [food.name]);
+                if (rows.length > 0) {
+                    // Si el alimento ya existe, se devuelve el objeto Food sin guardar en la base de datos
+                    const existingFood = {
+                        name: rows[0].name,
+                        carbs: rows[0].carbs,
+                        protein: rows[0].protein,
+                        fats: rows[0].fats,
+                        image: rows[0].image,
+                        id: rows[0].id,
+                        getData() {
+                            return {
+                                name: this.name,
+                                carbs: this.carbs,
+                                protein: this.protein,
+                                fats: this.fats,
+                                image: this.image,
+                                id: this.id,
+                            };
+                        },
+                    };
+                    yield cnx.query('COMMIT');
+                    return existingFood;
+                }
+                const [result] = yield cnx.query('INSERT INTO Food (name, carbs, protein, fats, image) VALUES (?, ?, ?, ?, ?);', [food.name, food.carbs, food.protein, food.fats, food.image]);
+                const id = result.insertId;
+                const newFood = {
+                    name: food.name,
+                    carbs: food.carbs,
+                    protein: food.protein,
+                    fats: food.fats,
+                    image: food.image,
+                    id: id,
+                    getData() {
+                        return {
+                            name: this.name,
+                            carbs: this.carbs,
+                            protein: this.protein,
+                            fats: this.fats,
+                            image: this.image,
+                            id: this.id,
+                        };
+                    },
+                };
+                yield cnx.query('COMMIT');
+                return newFood;
+            }
+            catch (err) {
+                yield cnx.query('ROLLBACK');
+                throw err;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
 }
 exports.MySqlFoodRepository = MySqlFoodRepository;

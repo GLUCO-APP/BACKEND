@@ -12,4 +12,8 @@ export class FoodService {
     public async getAll():Promise<Food[]> {
         return this.foodRespository.getall();
     }
+
+    public async addFood(food:Food):Promise<Food> {
+        return this.foodRespository.add(food);
+    }
 }
