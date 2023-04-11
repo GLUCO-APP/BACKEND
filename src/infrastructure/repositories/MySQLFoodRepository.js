@@ -36,11 +36,30 @@ class MySqlFoodRepository {
                 const [rows] = yield cnx.query('SELECT * FROM Food WHERE name = ?;', [food.name]);
                 if (rows.length > 0) {
                     // Si el alimento ya existe, se devuelve el objeto Food sin guardar en la base de datos
-                    return food;
+                    const existingFood = {
+                        name: rows[0].name,
+                        carbs: rows[0].carbs,
+                        protein: rows[0].protein,
+                        fats: rows[0].fats,
+                        image: rows[0].image,
+                        id: rows[0].id,
+                        getData() {
+                            return {
+                                name: this.name,
+                                carbs: this.carbs,
+                                protein: this.protein,
+                                fats: this.fats,
+                                image: this.image,
+                                id: this.id,
+                            };
+                        },
+                    };
+                    yield cnx.query('COMMIT');
+                    return existingFood;
                 }
                 const [result] = yield cnx.query('INSERT INTO Food (name, carbs, protein, fats, image) VALUES (?, ?, ?, ?, ?);', [food.name, food.carbs, food.protein, food.fats, food.image]);
                 const id = result.insertId;
-                const newfood = {
+                const newFood = {
                     name: food.name,
                     carbs: food.carbs,
                     protein: food.protein,
@@ -59,7 +78,7 @@ class MySqlFoodRepository {
                     },
                 };
                 yield cnx.query('COMMIT');
-                return newfood;
+                return newFood;
             }
             catch (err) {
                 yield cnx.query('ROLLBACK');

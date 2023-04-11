@@ -33,7 +33,6 @@ export class FoodController {
                 const data = response.data;
                 const nutriments = data.product.nutriments;
                 const productName = data.product.product_name; 
-                
                 const image = "atun.png"
                 const protein = nutriments.proteins_value;
                 const carbohydrates = nutriments.carbohydrates_value;
