@@ -10,7 +10,7 @@ export class MySQLReportRepository implements ReportRepository{
             
             await cnx.beginTransaction();
             const [result] = await cnx.query(
-                'INSERT INTO Report (id_usuario, glucosa, fecha, unidades_insulina, id_plato) VALUES (?, ?, ?, ?, ?);'
+                'INSERT INTO Report (id_usuario, glucosa, fecha, unidades_insulina, id_plato) VALUES (?, ?, ?, ?, ?);',
                 [Report.id_usuario,Report.glucosa,Report.fecha,Report.unidades_insulina,Report.id_plato]
             );
             const id = (result as mysql.OkPacket).insertId;

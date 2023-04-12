@@ -9,6 +9,6 @@ export class ReportService{
     }
 
     public async addReport(report:Report){
-
+            return this.reportRepository.add(report);
     }
 }
