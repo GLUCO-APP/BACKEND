@@ -62,6 +62,20 @@ export class MySQLUserRepository implements UserRepository{
         return user[0];
     }
 
+    async getToken(tkUser: string): Promise<Usuario | null> {
+      const cnx = await dbGluko.getConnection()
+      const [rows] = await cnx.execute(
+          "SELECT * FROM usuarios WHERE token = ?",
+          [tkUser]
+      );
+      const user = rows as Usuario[];
+      if (user.length === 0) {
+           return null ;
+       }
+      return user[0];
+  }
+
+
 
     async updateUser(usuario: Usuario , idUser: string): Promise<Usuario> {
         const cnx = await dbGluko.getConnection();

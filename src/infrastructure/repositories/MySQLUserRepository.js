@@ -87,6 +87,17 @@ class MySQLUserRepository {
             return user[0];
         });
     }
+    getToken(tkUser) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE token = ?", [tkUser]);
+            const user = rows;
+            if (user.length === 0) {
+                return null;
+            }
+            return user[0];
+        });
+    }
     updateUser(usuario, idUser) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();

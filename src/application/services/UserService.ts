@@ -40,6 +40,13 @@ export class UserService {
         return foundUser
     }
 
+    public async getToken(token:string):Promise< Usuario | null >{
+        const tkUser = this.userRepository.getToken(token);
+        const foundUser = await tkUser;
+         
+        return foundUser
+    }
+
 
     public async updateUser(usuario: Usuario , id:string):Promise<void>{
         const iduser=this.userRepository.updateUser(usuario ,id);
