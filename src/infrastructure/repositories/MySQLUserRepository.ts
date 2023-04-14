@@ -32,12 +32,17 @@ export class MySQLUserRepository implements UserRepository{
             const hashedpass = await bcrypt.hash(usuario.password,salt);
             await cnx.beginTransaction();
             const [result] = await cnx.query(
-                'INSERT INTO usuarios (nombre, email, password, fechaNacimiento, fechaDiagnostico, telefono, edad, genero, peso, estatura, tipoDiabetes, tipoTerapia, unidades, rango, sensitivity, rate, precis, breakfast, lunch, dinner, glucometer, objective, physicalctivity, infoAdicional, token) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);',
-                [usuario.nombre, usuario.email, hashedpass, usuario.fechaNacimiento, usuario.fechaDiagnostico, usuario.telefono, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipoDiabetes, usuario.tipoTerapia, usuario.unidades, usuario.rango, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast, usuario.lunch, usuario.dinner, usuario.glucometer, usuario.objective, usuario.physicalctivity, usuario.infoAdicional, "sin token"]
+                'INSERT INTO usuarios (nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional, token) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
+                [usuario.nombre, usuario.email, hashedpass, usuario.fechaNacimiento, usuario.fechaDiagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipoDiabetes, usuario.tipoTerapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfastStart, usuario.breakfastEnd, usuario.lunchStart, usuario.lunchEnd, usuario.dinnerStart, usuario.dinnerEnd,usuario.objectiveCarbs,usuario.physicalctivity,usuario.infoAdicional, "sin token"]
             );
 
             const id = (result as mysql.OkPacket).insertId;
-
+            for (const insu of usuario.insulin) {
+              await cnx.execute(
+                'INSERT INTO user_x_insulin (user_id, insulin_id) VALUES (?, ?);',
+                [id, insu.id]
+              );
+            }
 
             await cnx.query('COMMIT');
             return "Usuario creado";
@@ -89,10 +94,10 @@ export class MySQLUserRepository implements UserRepository{
         if (!existingUser) {
           throw new Error(`No se encontró un usuario con el ID ${idUser}`);
         }
-        await cnx.execute(
+        /*await cnx.execute(
           "UPDATE usuarios SET nombre = ?, email = ?, password = ?, fechaNacimiento = ?, fechaDiagnostico = ?, telefono = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipoDiabetes = ? , tipoTerapia = ? , unidades = ? , rango = ? , sensitivity = ? , rate = ?, precis = ? , breakfast = ? , lunch = ? , dinner = ? , glucometer = ?, objective = ?, physicalctivity = ? , infoAdicional = ? WHERE id = ?",
           [usuario.nombre, usuario.email, hashedpass, usuario.fechaNacimiento, usuario.fechaDiagnostico, usuario.telefono, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipoDiabetes, usuario.tipoTerapia, usuario.unidades, usuario.rango, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast, usuario.lunch, usuario.dinner, usuario.glucometer, usuario.objective, usuario.physicalctivity, usuario.infoAdicional , idUser]
-        );
+        );*/
         return usuario;
       }
       
