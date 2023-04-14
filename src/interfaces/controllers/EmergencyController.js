@@ -24,10 +24,11 @@ class EmergencyContoller {
             const token = req.params.token;
             const ind = parseInt(req.params.ind);
             const user = yield this.userService.getToken(token);
+            console.log(user);
             if (user !== null) {
-                // se aplica la toma de variables de indice cuando ya se contemple en el modelo de BD 
-                const min = 80;
-                const max = 120;
+                const min = user.hipo;
+                const max = user.hyper;
+                const obje = user.objective_carbs;
                 if (ind < min) {
                     const food = yield this.foodService.getAll();
                     const filteredFood = food.filter((foodItem) => {
@@ -46,7 +47,7 @@ class EmergencyContoller {
                     });
                 }
                 else if (ind > max) {
-                    const correcion = Math.abs((max - ind) / user.sensitivity);
+                    const correcion = Math.abs((obje - ind) / user.sensitivity);
                     res.status(200).json({
                         state: 2,
                         message: 'Tienes hiperglucemia',

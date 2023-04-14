@@ -22,5 +22,4 @@ router.get('/test', usercontroller.testPredict.bind(usercontroller));
 router.put('/update/:id', usercontroller.updateUser.bind(usercontroller));
 router.post('/emergency/:token/:ind', emergencytcontroller.getFood.bind(emergencytcontroller));
 router.post('/report', reportController.addReport.bind(reportController));
-
 exports.default = router;

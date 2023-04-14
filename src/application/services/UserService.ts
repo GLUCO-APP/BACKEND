@@ -43,7 +43,7 @@ export class UserService {
     public async getToken(token:string):Promise< Usuario | null >{
         const tkUser = this.userRepository.getToken(token);
         const foundUser = await tkUser;
-         
+    
         return foundUser
     }
 
