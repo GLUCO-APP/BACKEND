@@ -33,7 +33,7 @@ export class MySQLUserRepository implements UserRepository{
             await cnx.beginTransaction();
             const [result] = await cnx.query(
                 'INSERT INTO usuarios (nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional, token) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
-                [usuario.nombre, usuario.email, hashedpass, usuario.fechaNacimiento, usuario.fechaDiagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipoDiabetes, usuario.tipoTerapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfastStart, usuario.breakfastEnd, usuario.lunchStart, usuario.lunchEnd, usuario.dinnerStart, usuario.dinnerEnd,usuario.objectiveCarbs,usuario.physicalctivity,usuario.infoAdicional, "sin token"]
+                [usuario.nombre, usuario.email, hashedpass, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional , "sin token"]
             );
 
             const id = (result as mysql.OkPacket).insertId;
@@ -67,6 +67,19 @@ export class MySQLUserRepository implements UserRepository{
         return user[0];
     }
 
+    async getToken(tkUser: string): Promise<Usuario | null> {
+      const cnx = await dbGluko.getConnection()
+      const [rows] = await cnx.execute(
+          "SELECT * FROM usuarios WHERE token = ?",
+          [tkUser]
+      );
+      const user = rows as Usuario[];
+      if (user.length === 0) {
+           return null ;
+       }
+      return user[0];
+      
+  }
 
     async updateUser(usuario: Usuario , idUser: string): Promise<Usuario> {
         const cnx = await dbGluko.getConnection();
@@ -80,10 +93,11 @@ export class MySQLUserRepository implements UserRepository{
         if (!existingUser) {
           throw new Error(`No se encontró un usuario con el ID ${idUser}`);
         }
-        /*await cnx.execute(
-          "UPDATE usuarios SET nombre = ?, email = ?, password = ?, fechaNacimiento = ?, fechaDiagnostico = ?, telefono = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipoDiabetes = ? , tipoTerapia = ? , unidades = ? , rango = ? , sensitivity = ? , rate = ?, precis = ? , breakfast = ? , lunch = ? , dinner = ? , glucometer = ?, objective = ?, physicalctivity = ? , infoAdicional = ? WHERE id = ?",
-          [usuario.nombre, usuario.email, hashedpass, usuario.fechaNacimiento, usuario.fechaDiagnostico, usuario.telefono, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipoDiabetes, usuario.tipoTerapia, usuario.unidades, usuario.rango, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast, usuario.lunch, usuario.dinner, usuario.glucometer, usuario.objective, usuario.physicalctivity, usuario.infoAdicional , idUser]
-        );*/
+        await cnx.execute(
+          "UPDATE usuarios SET nombre = ?, email = ?, password = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ?, precis = ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ? WHERE id = ?",
+          [usuario.nombre, usuario.email, hashedpass, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional , idUser]
+        );
+        
         return usuario;
       }
       
