@@ -29,7 +29,7 @@ export class EmergencyContoller {
 
             const min = user.hipo;
             const max = user.hyper;
-            const obje = user.objective_carbs;
+            const obje = user.estable;
             
 
 

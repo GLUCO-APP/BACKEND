@@ -28,7 +28,7 @@ class EmergencyContoller {
             if (user !== null) {
                 const min = user.hipo;
                 const max = user.hyper;
-                const obje = user.objective_carbs;
+                const obje = user.estable;
                 if (ind < min) {
                     const food = yield this.foodService.getAll();
                     const filteredFood = food.filter((foodItem) => {
