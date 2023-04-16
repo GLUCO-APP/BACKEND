@@ -21,8 +21,8 @@ class ReportController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const fechac = new Date();
-                const { id_plato, id_usuario, glucosa, unidades_insulina } = req.body;
-                const reportData = new Report_1.Report(id_plato, id_usuario, glucosa, fechac, unidades_insulina);
+                const { id_plato, token_usuario, glucosa, unidades_insulina } = req.body;
+                const reportData = new Report_1.Report(id_plato, token_usuario, glucosa, fechac, unidades_insulina);
                 const report = yield this.reportService.addReport(reportData);
                 res.status(201).json(report);
             }

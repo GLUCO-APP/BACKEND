@@ -20,11 +20,11 @@ class MySQLReportRepository {
             const cnx = yield dbconfig_1.default.getConnection();
             try {
                 yield cnx.beginTransaction();
-                const [result] = yield cnx.query('INSERT INTO Report (id_usuario, glucosa, fecha, unidades_insulina, id_plato) VALUES (?, ?, ?, ?, ?);', [Report.id_usuario, Report.glucosa, Report.fecha, Report.unidades_insulina, Report.id_plato]);
+                const [result] = yield cnx.query('INSERT INTO Report (glucosa, fecha, unidades_insulina, id_plato, token) VALUES (?, ?, ?, ?, ?);', [Report.glucosa, Report.fecha, Report.unidades_insulina, Report.id_plato, Report.token_usuario]);
                 const id = result.insertId;
                 const newReport = {
                     id: id,
-                    id_usuario: Report.id_usuario,
+                    token_usuario: Report.token_usuario,
                     glucosa: Report.glucosa,
                     fecha: Report.fecha,
                     unidades_insulina: Report.unidades_insulina,

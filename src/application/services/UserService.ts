@@ -25,8 +25,8 @@ export class UserService {
             if (!match){
                 return "contraseña incorrecta";
             }
-            const token = jwt.sign({email:foundUser.email},process.env.TOKEN_SECRET || 'tokentest')
-            this.userRepository.updateToken(email,token)
+            //const token = jwt.sign({email:foundUser.email},process.env.TOKEN_SECRET || 'tokentest')
+            const token = this.userRepository.findToken(email)
             return token;
         }else{
             return "usuario no encontrado";
