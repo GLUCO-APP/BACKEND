@@ -25,6 +25,19 @@ export class MySQLUserRepository implements UserRepository {
     }
 
   }
+  async findToken(email: string):Promise<string>{
+    const cnx = await dbGluko.getConnection()
+    try{
+      const [rows] = await cnx.execute(
+        "SELECT token FROM usuarios where email = ? LIMIT 1",
+        [email]
+      );
+      const token = (rows as RowDataPacket[]).length > 0 ? (rows as RowDataPacket[])[0].token.toString() : "";
+      return token;
+    }finally {
+      cnx.release();
+    }
+  }
   async updateToken(email: string, token:string):Promise<void>{
     const cnx = await dbGluko.getConnection()
     try{
@@ -41,13 +54,13 @@ export class MySQLUserRepository implements UserRepository {
   async add(usuario: Usuario): Promise<string> {
     const cnx = await dbGluko.getConnection()
     try {
-
+      const token = jwt.sign({email:usuario.email},process.env.TOKEN_SECRET || 'tokentest')
       const salt = await bcrypt.genSalt(10);
       const hashedpass = await bcrypt.hash(usuario.password, salt);
       await cnx.beginTransaction();
       const [result] = await cnx.query(
         'INSERT INTO usuarios (nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional, token) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
-        [usuario.nombre, usuario.email, hashedpass, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, "sin token"]
+        [usuario.nombre, usuario.email, hashedpass, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, token]
       );
 
       const id = (result as mysql.OkPacket).insertId;

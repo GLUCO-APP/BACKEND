@@ -31,13 +31,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const bcrypt = __importStar(require("bcryptjs"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const tf = __importStar(require("@tensorflow/tfjs"));
 class UserService {
     constructor(userRepository) {
@@ -57,8 +53,8 @@ class UserService {
                 if (!match) {
                     return "contraseña incorrecta";
                 }
-                const token = jsonwebtoken_1.default.sign({ email: foundUser.email }, process.env.TOKEN_SECRET || 'tokentest');
-                this.userRepository.updateToken(email, token);
+                //const token = jwt.sign({email:foundUser.email},process.env.TOKEN_SECRET || 'tokentest')
+                const token = this.userRepository.findToken(email);
                 return token;
             }
             else {
