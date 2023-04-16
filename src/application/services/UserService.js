@@ -58,6 +58,7 @@ class UserService {
                     return "contraseña incorrecta";
                 }
                 const token = jsonwebtoken_1.default.sign({ email: foundUser.email }, process.env.TOKEN_SECRET || 'tokentest');
+                this.userRepository.updateToken(email, token);
                 return token;
             }
             else {
