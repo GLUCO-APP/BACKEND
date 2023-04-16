@@ -55,6 +55,17 @@ class MySQLUserRepository {
             }
         });
     }
+    updateToken(email, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                const [result] = yield cnx.query('UPDATE usuarios SET token = ? WHERE email = ?;', [token, email]);
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
     add(usuario) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
