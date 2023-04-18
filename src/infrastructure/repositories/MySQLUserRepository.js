@@ -105,22 +105,6 @@ class MySQLUserRepository {
             }
         });
     }
-    getUser(idUser) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const cnx = yield dbconfig_1.default.getConnection();
-            try {
-                const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE id = ?", [idUser]);
-                const user = rows;
-                if (user.length === 0) {
-                    return user[0];
-                }
-                return user[0];
-            }
-            finally {
-                cnx.release();
-            }
-        });
-    }
     getToken(tkUser) {
         return __awaiter(this, void 0, void 0, function* () {
             let cnx;
@@ -144,19 +128,17 @@ class MySQLUserRepository {
             }
         });
     }
-    updateUser(usuario, idUser) {
+    updateUser(usuario, tokenUser) {
         return __awaiter(this, void 0, void 0, function* () {
             let cnx;
             try {
                 cnx = yield dbconfig_1.default.getConnection();
-                const salt = yield bcrypt.genSalt(10);
-                const hashedpass = yield bcrypt.hash(usuario.password, salt);
-                const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE id = ?", [idUser]);
+                const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE token = ?", [tokenUser]);
                 const existingUser = rows;
                 if (!existingUser) {
-                    throw new Error(`No se encontró un usuario con el ID ${idUser}`);
+                    throw new Error(`No se encontró un usuario con el ID ${tokenUser}`);
                 }
-                yield cnx.execute("UPDATE usuarios SET nombre = ?, email = ?, password = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ?, precis = ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ? WHERE id = ?", [usuario.nombre, usuario.email, hashedpass, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, idUser]);
+                yield cnx.execute("UPDATE usuarios SET nombre = ?, email = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ?, precis = ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ? WHERE token = ?", [usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, tokenUser]);
                 return usuario;
             }
             catch (error) {

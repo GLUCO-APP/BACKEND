@@ -7,56 +7,45 @@ import * as Papa from 'papaparse';
 
 
 export class UserService {
-    private userRepository:MySQLUserRepository;
+    private userRepository: MySQLUserRepository;
 
-    constructor(userRepository:MySQLUserRepository){
+    constructor(userRepository: MySQLUserRepository) {
         this.userRepository = userRepository;
     }
 
-    public async addUser(usuario:Usuario):Promise<string>{
+    public async addUser(usuario: Usuario): Promise<string> {
         return this.userRepository.add(usuario);
     }
 
-    public async login(email:string, password:string):Promise<string>{
+    public async login(email: string, password: string): Promise<string> {
         const user = this.userRepository.findEmail(email)
         const foundUser = await user;
-        if(foundUser){
-            const match = await bcrypt.compare(password,foundUser.password);
-            if (!match){
+        if (foundUser) {
+            const match = await bcrypt.compare(password, foundUser.password);
+            if (!match) {
                 return "contraseña incorrecta";
             }
             //const token = jwt.sign({email:foundUser.email},process.env.TOKEN_SECRET || 'tokentest')
             const token = this.userRepository.findToken(email)
             return token;
-        }else{
+        } else {
             return "usuario no encontrado";
         }
-        
     }
 
-    public async getUser(id:string):Promise<Usuario>{
-        const iduser = this.userRepository.getUser(id);
-        const foundUser = await iduser;
-
-        return foundUser
-    }
-
-    public async getToken(token:string):Promise< Usuario | null >{
+    public async getToken(token: string): Promise<Usuario | null> {
         const tkUser = this.userRepository.getToken(token);
         const foundUser = await tkUser;
-    
         return foundUser
     }
 
-
-    public async updateUser(usuario: Usuario , id:string):Promise<void>{
-        const iduser=this.userRepository.updateUser(usuario ,id);
-        const foundUser = await iduser;
+    public async updateUser(usuario: Usuario, token: string): Promise<void> {
+        const tkuser = this.userRepository.updateUser(usuario, token);
+        const foundUser = await tkuser;
     }
 
-    public tensorTest():Promise<string>{
+    public tensorTest(): Promise<string> {
 
-        
         const model = tf.sequential();
         const inputShape = [3];
         model.add(tf.layers.dense({ units: 1, inputShape }));
@@ -71,7 +60,6 @@ export class UserService {
         const result = prediction.dataSync()[0].toString();
 
         return Promise.resolve(result);
-        
-    }
 
+    }
 }

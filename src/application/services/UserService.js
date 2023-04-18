@@ -62,13 +62,6 @@ class UserService {
             }
         });
     }
-    getUser(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const iduser = this.userRepository.getUser(id);
-            const foundUser = yield iduser;
-            return foundUser;
-        });
-    }
     getToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const tkUser = this.userRepository.getToken(token);
@@ -76,10 +69,10 @@ class UserService {
             return foundUser;
         });
     }
-    updateUser(usuario, id) {
+    updateUser(usuario, token) {
         return __awaiter(this, void 0, void 0, function* () {
-            const iduser = this.userRepository.updateUser(usuario, id);
-            const foundUser = yield iduser;
+            const tkuser = this.userRepository.updateUser(usuario, token);
+            const foundUser = yield tkuser;
         });
     }
     tensorTest() {
