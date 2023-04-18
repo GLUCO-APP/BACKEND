@@ -32,5 +32,16 @@ export class MySQLReportRepository implements ReportRepository{
         }
         
     }
+    /*async dailyReports():Promise<Report[]>{
+        const cnx = await dbGluko.getConnection();
+        try{
+
+        }catch (err:any) {
+            await cnx.query('ROLLBACK');
+            throw err;
+        } finally {
+            cnx.release();
+        }
+    }*/
     
 }
