@@ -30,5 +30,8 @@ export class Usuario {
       public physical_activity: number,
       public info_adicional: string,
     ) {}
+    
+
+    
   }
   

@@ -15,24 +15,17 @@ export class EmergencyContoller {
         this.userService = new UserService(new MySQLUserRepository());
         this.foodService = new FoodService(new MySqlFoodRepository());
     }
-
     public async getFood(req: Request, res: Response): Promise<void> {
         const token = req.params.token;
         const ind = parseInt(req.params.ind);
-
         const user = await this.userService.getToken(token);
-        console.log(user)
-
-
+        
         if (user !== null) {
             
-
             const min = user.hipo;
             const max = user.hyper;
             const obje = user.estable;
             
-
-
             if (ind < min) {
                 const food = await this.foodService.getAll();
                 const filteredFood = food.filter((foodItem) => {

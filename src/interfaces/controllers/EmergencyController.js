@@ -24,7 +24,6 @@ class EmergencyContoller {
             const token = req.params.token;
             const ind = parseInt(req.params.ind);
             const user = yield this.userService.getToken(token);
-            console.log(user);
             if (user !== null) {
                 const min = user.hipo;
                 const max = user.hyper;

@@ -18,12 +18,11 @@ router.get('/allFoods',foodController.getAll.bind(foodController))
 router.post('/codebar/:code',foodController.addFoodCode.bind(foodController))
 router.post('/user',usercontroller.addUser.bind(usercontroller))
 router.post('/login',usercontroller.login.bind(usercontroller))
-router.get('/user/:id', usercontroller.getUser.bind(usercontroller))
+router.get('/user/:token', usercontroller.getUser.bind(usercontroller))
 router.get('/test',usercontroller.testPredict.bind(usercontroller))
-router.put('/update/:id',usercontroller.updateUser.bind(usercontroller))
+router.put('/update/:token',usercontroller.updateUser.bind(usercontroller))
 router.post('/emergency/:token/:ind', emergencytcontroller.getFood.bind(emergencytcontroller))
 router.post('/report',reportController.addReport.bind(reportController))
-
 
 
 
