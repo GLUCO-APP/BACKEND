@@ -25,4 +25,5 @@ router.post('/emergency/:token/:ind', emergencytcontroller.getFood.bind(emergenc
 router.post('/report',reportController.addReport.bind(reportController))
 
 
+
 export default router;
