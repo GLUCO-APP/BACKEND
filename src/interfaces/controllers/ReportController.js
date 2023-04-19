@@ -55,5 +55,17 @@ class ReportController {
             }
         });
     }
+    lastReportI(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const token = req.params.token;
+                const report = yield this.reportService.lastreportI(token);
+                res.status(200).json(report);
+            }
+            catch (err) {
+                res.status(400).send(err.message);
+            }
+        });
+    }
 }
 exports.ReportController = ReportController;

@@ -43,4 +43,13 @@ export class ReportController{
             res.status(400).send(err.message)
         }
     }
+    public async lastReportI(req: Request, res:Response):Promise<void>{
+        try{
+            const token = req.params.token;
+            const report = await this.reportService.lastreportI(token);
+            res.status(200).json(report);
+        }catch(err:any){
+            res.status(400).send(err.message)
+        }
+    }
 }

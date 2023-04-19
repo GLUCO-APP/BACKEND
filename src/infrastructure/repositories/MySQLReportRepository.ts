@@ -4,7 +4,7 @@ import dbGluko from "../database/dbconfig";
 import mysql, { RowDataPacket } from 'mysql2/promise';
 
 export class MySQLReportRepository implements ReportRepository{
-    
+
     async lastReport(token: string): Promise<Report | null> {
         const cnx = await dbGluko.getConnection();
         try{
@@ -25,8 +25,25 @@ export class MySQLReportRepository implements ReportRepository{
             cnx.release();
         }
     }
-    async lastReportI(token: string): Promise<Report> {
-        throw new Error("Method not implemented.");
+    async lastReportI(token: string): Promise<Report | null> {
+        const cnx = await dbGluko.getConnection();
+        try{
+            await cnx.beginTransaction();
+            const [rows, fields] = await cnx.execute(
+                "SELECT * FROM Report WHERE token = ? AND unidades_insulina IS NOT NULL ORDER BY fecha DESC LIMIT 1;",
+                [token]
+            );
+            const report = rows as Report[]
+            if (report.length === 0) {
+                return null;
+              }
+              return report[0];
+        }catch (err:any) {
+            await cnx.query('ROLLBACK');
+            throw err;
+        } finally {
+            cnx.release();
+        }
     }
     async add(Report: Report): Promise<Report> {
         const cnx = await dbGluko.getConnection();

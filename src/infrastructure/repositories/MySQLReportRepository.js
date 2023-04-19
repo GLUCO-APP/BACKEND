@@ -38,7 +38,23 @@ class MySQLReportRepository {
     }
     lastReportI(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            throw new Error("Method not implemented.");
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                yield cnx.beginTransaction();
+                const [rows, fields] = yield cnx.execute("SELECT * FROM Report WHERE token = ? AND unidades_insulina IS NOT NULL ORDER BY fecha DESC LIMIT 1;", [token]);
+                const report = rows;
+                if (report.length === 0) {
+                    return null;
+                }
+                return report[0];
+            }
+            catch (err) {
+                yield cnx.query('ROLLBACK');
+                throw err;
+            }
+            finally {
+                cnx.release();
+            }
         });
     }
     add(Report) {
