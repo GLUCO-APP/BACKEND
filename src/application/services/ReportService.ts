@@ -11,4 +11,7 @@ export class ReportService{
     public async addReport(report:Report){
             return this.reportRepository.add(report);
     }
+    public async dailyReports(token:string){
+            return this.reportRepository.dailyReports(token);
+    }
 }
