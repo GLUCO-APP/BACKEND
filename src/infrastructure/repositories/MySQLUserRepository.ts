@@ -81,14 +81,12 @@ export class MySQLUserRepository implements UserRepository {
     }
   }
 
-
-
   async getToken(tkUser: string): Promise<Usuario | null> {
     let cnx;
     try {
       cnx = await dbGluko.getConnection();
       const [rows] = await cnx.execute(
-        "SELECT * FROM usuarios WHERE token = ?",
+        "SELECT nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional FROM usuarios WHERE token = ?",
         [tkUser]
       );
       const user = rows as Usuario[];
@@ -106,16 +104,15 @@ export class MySQLUserRepository implements UserRepository {
     }
   }
 
-  async updateUser(usuario: Usuario, tokenUser: string): Promise<Usuario> {
+  async  updateUser(usuario: Usuario, tokenUser: string): Promise<Usuario> {
     let cnx;
     try {
       cnx = await dbGluko.getConnection();
-
       const [rows] = await cnx.execute(
         "SELECT * FROM usuarios WHERE token = ?",
         [tokenUser]
       );
-      const existingUser = rows as Usuario[];
+      const existingUser = Array.isArray(rows) ? rows[0] : null;
       if (!existingUser) {
         throw new Error(`No se encontró un usuario con el ID ${tokenUser}`);
       }
@@ -133,5 +130,6 @@ export class MySQLUserRepository implements UserRepository {
       }
     }
   }
+  
 
 }

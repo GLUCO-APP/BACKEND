@@ -110,7 +110,7 @@ class MySQLUserRepository {
             let cnx;
             try {
                 cnx = yield dbconfig_1.default.getConnection();
-                const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE token = ?", [tkUser]);
+                const [rows] = yield cnx.execute("SELECT nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional FROM usuarios WHERE token = ?", [tkUser]);
                 const user = rows;
                 if (user.length === 0) {
                     return null;
@@ -134,7 +134,7 @@ class MySQLUserRepository {
             try {
                 cnx = yield dbconfig_1.default.getConnection();
                 const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE token = ?", [tokenUser]);
-                const existingUser = rows;
+                const existingUser = Array.isArray(rows) ? rows[0] : null;
                 if (!existingUser) {
                     throw new Error(`No se encontró un usuario con el ID ${tokenUser}`);
                 }
