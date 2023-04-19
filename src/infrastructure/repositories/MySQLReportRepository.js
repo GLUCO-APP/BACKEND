@@ -20,6 +20,7 @@ class MySQLReportRepository {
             const cnx = yield dbconfig_1.default.getConnection();
             try {
                 yield cnx.beginTransaction();
+                console.log(Report.fecha);
                 const [result] = yield cnx.query('INSERT INTO Report (glucosa, fecha, unidades_insulina, id_plato, token) VALUES (?, ?, ?, ?, ?);', [Report.glucosa, Report.fecha, Report.unidades_insulina, Report.id_plato, Report.token_usuario]);
                 const id = result.insertId;
                 const newReport = {
@@ -32,6 +33,28 @@ class MySQLReportRepository {
                 };
                 yield cnx.query('COMMIT');
                 return newReport;
+            }
+            catch (err) {
+                yield cnx.query('ROLLBACK');
+                throw err;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
+    dailyReports(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                yield cnx.beginTransaction();
+                const [rows, fields] = yield cnx.execute(`SELECT SUM(pl.Carbohydrates) as sum_carbs 
+                FROM Report rp 
+                INNER JOIN Plate pl ON rp.id_plato = pl.id 
+                WHERE rp.token = ? 
+                AND DATE(rp.fecha) = CURDATE()`, [token]);
+                const suma = Number(rows.length > 0 ? rows[0].sum_carbs : 0);
+                return suma;
             }
             catch (err) {
                 yield cnx.query('ROLLBACK');

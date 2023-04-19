@@ -9,6 +9,7 @@ export class MySQLReportRepository implements ReportRepository{
         try{
             
             await cnx.beginTransaction();
+            console.log(Report.fecha)
             const [result] = await cnx.query(
                 'INSERT INTO Report (glucosa, fecha, unidades_insulina, id_plato, token) VALUES (?, ?, ?, ?, ?);',
                 [Report.glucosa,Report.fecha,Report.unidades_insulina,Report.id_plato,Report.token_usuario]
@@ -32,16 +33,29 @@ export class MySQLReportRepository implements ReportRepository{
         }
         
     }
-    /*async dailyReports():Promise<Report[]>{
+    async dailyReports(token:string):Promise<number | undefined>{
         const cnx = await dbGluko.getConnection();
         try{
+            await cnx.beginTransaction();
+            const [rows, fields] = await cnx.execute(
+                `SELECT SUM(pl.Carbohydrates) as sum_carbs 
+                FROM Report rp 
+                INNER JOIN Plate pl ON rp.id_plato = pl.id 
+                WHERE rp.token = ? 
+                AND DATE(rp.fecha) = CURDATE()`,
+                [token]
+              );
+                const suma = Number((rows as RowDataPacket[]).length > 0 ? (rows as RowDataPacket[])[0].sum_carbs : 0)
+                return suma
+           
 
+            
         }catch (err:any) {
             await cnx.query('ROLLBACK');
             throw err;
         } finally {
             cnx.release();
         }
-    }*/
+    }
     
 }
