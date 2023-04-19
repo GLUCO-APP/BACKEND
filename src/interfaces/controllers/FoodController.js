@@ -44,7 +44,7 @@ class FoodController {
                 const protein = nutriments.proteins_value;
                 const carbohydrates = nutriments.carbohydrates_value;
                 const fat = nutriments.fat_value;
-                const foodData = new Food_1.Food(productName, carbohydrates, protein, fat, image);
+                const foodData = new Food_1.Food(productName, carbohydrates, protein, fat, image, 0);
                 const food = yield this.foodService.addFood(foodData);
                 res.status(201).json(food);
             }

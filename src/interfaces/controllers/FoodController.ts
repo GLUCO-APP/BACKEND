@@ -37,8 +37,9 @@ export class FoodController {
             const protein = nutriments.proteins_value;
             const carbohydrates = nutriments.carbohydrates_value;
             const fat = nutriments.fat_value;
+            
 
-            const foodData: Food = new Food(productName, carbohydrates, protein, fat, image);
+            const foodData: Food = new Food(productName, carbohydrates, protein, fat, image, 0);
             const food = await this.foodService.addFood(foodData);
             res.status(201).json(food);
         } catch (error) {

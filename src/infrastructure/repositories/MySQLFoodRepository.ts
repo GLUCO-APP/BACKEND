@@ -41,6 +41,7 @@ export class MySqlFoodRepository implements FoodRepository{
                   fats: rows[0].fats,
                   image: rows[0].image,
                   id: rows[0].id,
+                  ind_glucemico : rows[0].ind_glucemico,
                   getData() {
                       return {
                           name: this.name,
@@ -49,6 +50,7 @@ export class MySqlFoodRepository implements FoodRepository{
                           fats: this.fats,
                           image: this.image,
                           id: this.id,
+                          ind_glucemico: this.ind_glucemico,
                       };
                   },
               };
@@ -57,8 +59,8 @@ export class MySqlFoodRepository implements FoodRepository{
           }
   
           const [result] = await cnx.query(
-              'INSERT INTO Food (name, carbs, protein, fats, image) VALUES (?, ?, ?, ?, ?);',
-              [food.name, food.carbs, food.protein, food.fats, food.image]
+              'INSERT INTO Food (name, carbs, protein, fats, image ,ind_glucemia) VALUES (?, ?, ?, ?, ? , ?);',
+              [food.name, food.carbs, food.protein, food.fats, food.image ,food.ind_glucemico]
           );
   
           const id = (result as mysql.OkPacket).insertId;
@@ -70,6 +72,8 @@ export class MySqlFoodRepository implements FoodRepository{
               fats: food.fats,
               image: food.image,
               id: id,
+              ind_glucemico : 0,
+              
               getData() {
                   return {
                       name: this.name,
@@ -78,6 +82,7 @@ export class MySqlFoodRepository implements FoodRepository{
                       fats: this.fats,
                       image: this.image,
                       id: this.id,
+                      ind_glucemico : this.ind_glucemico,
                   };
               },
           };
