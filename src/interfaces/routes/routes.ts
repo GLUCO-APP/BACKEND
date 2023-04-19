@@ -24,7 +24,8 @@ router.put('/update/:token',usercontroller.updateUser.bind(usercontroller))
 router.post('/emergency/:token/:ind', emergencytcontroller.getFood.bind(emergencytcontroller))
 router.post('/report',reportController.addReport.bind(reportController))
 router.get('/report/:token',reportController.dailyReports.bind(reportController))
-
+router.get('/report/last/:token',reportController.lastReport.bind(reportController))
+router.get('/report/lastI/:token',reportController.lastReportI.bind(reportController))
 
 
 export default router;
