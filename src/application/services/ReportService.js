@@ -24,5 +24,10 @@ class ReportService {
             return this.reportRepository.dailyReports(token);
         });
     }
+    lastreport(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.reportRepository.lastReport(token);
+        });
+    }
 }
 exports.ReportService = ReportService;
