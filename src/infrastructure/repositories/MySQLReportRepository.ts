@@ -1,4 +1,5 @@
 import { Report } from "../../domain/entities/Report";
+import { dailyRep } from "../../domain/entities/dailyRep";
 import { ReportRepository } from "../../domain/repositories/ReportRepository";
 import dbGluko from "../database/dbconfig";
 import mysql, { RowDataPacket } from 'mysql2/promise';
@@ -74,26 +75,38 @@ export class MySQLReportRepository implements ReportRepository{
         }
         
     }
-    async dailyReports(token:string):Promise<number | undefined>{
+    async dailyReports(token:string):Promise<dailyRep | null>{
         const cnx = await dbGluko.getConnection();
         try{
             await cnx.beginTransaction();
             const [rows, fields] = await cnx.execute(
-                `SELECT SUM(pl.Carbohydrates) as sum_carbs 
-                FROM Report rp 
-                INNER JOIN Plate pl ON rp.id_plato = pl.id 
-                WHERE rp.token = ? 
-                AND DATE(rp.fecha) = CURDATE()`,
-                [token]
+                `SELECT usuarios.objective_carbs, SUM(Plate.Carbohydrates) as sum_carbs, 
+                (SELECT glucosa FROM Report WHERE token = ? ORDER BY fecha DESC LIMIT 1) as glucosa, 
+                (SELECT fecha FROM Report WHERE token = ? ORDER BY fecha DESC LIMIT 1) as fecha,
+                (SELECT unidades_insulina FROM Report WHERE token = ? AND unidades_insulina IS NOT NULL ORDER BY fecha DESC LIMIT 1) as unidades_insulina 
+                
+                FROM usuarios 
+                    usuarios 
+                    JOIN Report ON usuarios.token = Report.token 
+                    JOIN Plate ON Report.id_plato = Plate.id 
+                   
+                WHERE 
+                    usuarios.token = ? 
+                    ORDER BY Report.fecha DESC `,
+                [token,token,token ,token]
               );
+            const daily = rows as dailyRep[]
 
-
-                const suma = Number((rows as RowDataPacket[]).length > 0 ? (rows as RowDataPacket[])[0].sum_carbs : 0)
-                return suma
+            if (daily.length === 0) {
+                return null;
+              }
+              return daily[0];
+               
            
 
             
         }catch (err:any) {
+            console.log('hola')
             await cnx.query('ROLLBACK');
             throw err;
         } finally {
