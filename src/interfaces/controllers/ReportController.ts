@@ -28,8 +28,8 @@ export class ReportController{
     public async dailyReports(req: Request, res:Response):Promise<void>{
         try{
             const token = req.params.token;
-            const sum = await this.reportService.dailyReports(token);
-            res.status(200).json({"suma":sum});
+            const daily = await this.reportService.dailyReports(token);
+            res.status(200).json(daily);
         }catch(err:any){
             res.status(400).send(err.message)
         }

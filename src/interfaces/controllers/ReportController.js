@@ -35,8 +35,8 @@ class ReportController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const token = req.params.token;
-                const sum = yield this.reportService.dailyReports(token);
-                res.status(200).json({ "suma": sum });
+                const daily = yield this.reportService.dailyReports(token);
+                res.status(200).json(daily);
             }
             catch (err) {
                 res.status(400).send(err.message);
