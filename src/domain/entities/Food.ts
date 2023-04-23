@@ -5,7 +5,9 @@ export class Food{
     public protein: number,
     public fats: number,
     public image: string,
+    public ind_glucemico : number,
     public id?: number
+    
    ){}
 
    getData() {
@@ -16,6 +18,7 @@ export class Food{
       fats: this.fats,
       image: this.image,
       id: this.id,
+      ind_glucemico : this.ind_glucemico,
     };
   }
 }

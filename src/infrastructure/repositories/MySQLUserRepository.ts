@@ -23,7 +23,6 @@ export class MySQLUserRepository implements UserRepository {
     } finally {
       cnx.release();
     }
-
   }
   async findToken(email: string):Promise<string>{
     const cnx = await dbGluko.getConnection()
