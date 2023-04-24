@@ -31,7 +31,7 @@ class EmergencyContoller {
                 if (ind < min) {
                     const food = yield this.foodService.getAll();
                     const filteredFood = food.filter((foodItem) => {
-                        return foodItem.ind_glucemico >= 70;
+                        return foodItem.carbs <= 30;
                     });
                     res.status(200).json({
                         state: 0,
