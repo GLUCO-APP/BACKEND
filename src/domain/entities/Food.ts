@@ -1,16 +1,16 @@
 export class Food{
-   constructor(
+  constructor(
     public name: string,
     public carbs: number,
     public protein: number,
     public fats: number,
     public image: string,
-    public ind_glucemico : number,
+    public cant_servicio : number,
     public id?: number
     
-   ){}
+  ){}
 
-   getData() {
+  getData() {
     return {
       name: this.name,
       carbs: this.carbs,
@@ -18,7 +18,7 @@ export class Food{
       fats: this.fats,
       image: this.image,
       id: this.id,
-      ind_glucemico : this.ind_glucemico,
+      cant_servicio : this.cant_servicio,
     };
   }
 }

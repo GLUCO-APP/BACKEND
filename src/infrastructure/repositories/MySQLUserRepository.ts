@@ -102,7 +102,6 @@ export class MySQLUserRepository implements UserRepository {
       }
     }
   }
-
   async  updateUser(usuario: Usuario, tokenUser: string): Promise<Usuario> {
     let cnx;
     try {

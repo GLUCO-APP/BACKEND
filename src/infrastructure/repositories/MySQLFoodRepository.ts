@@ -1,16 +1,16 @@
 import { Food } from "../../domain/entities/Food";
 import { FoodRepository } from "../../domain/repositories/FoodRepository";
-import dbGluko from "../database/dbconfig" 
+import dbGluko from "../database/dbconfig"
 import mysql from 'mysql2/promise';
 import { RowDataPacket } from 'mysql2';
 
 
 
 
-export class MySqlFoodRepository implements FoodRepository{
+export class MySqlFoodRepository implements FoodRepository {
     async getall(): Promise<Food[]> {
         const cnx = await dbGluko.getConnection();
-        try{
+        try {
             await cnx.beginTransaction();
 
             const [rows] = await cnx.query('SELECT * FROM Food');
@@ -20,83 +20,143 @@ export class MySqlFoodRepository implements FoodRepository{
         }
     }
 
-      
+    async updateFood(food: Food): Promise<Food> {
+        const cnx = await dbGluko.getConnection();
+        try {
+            await cnx.beginTransaction();
+            const value = (food.cant_servicio / 100);
+
+            food.carbs = value * food.carbs ;
+            food.protein = (value * food.protein);
+            food.fats = (value * food.fats);
+
+            const [result] = await cnx.query(
+                'UPDATE Food SET carbs=?, protein=?, fats=?, image=?, cant_servicio=? WHERE name=?;',
+                [food.carbs, food.protein, food.fats, food.image, food.cant_servicio, food.name]
+            );
+            const affectedRows = (result as mysql.OkPacket).affectedRows;
+
+            if (affectedRows === 0) {
+                // Si no se actualizó ningún alimento, lanzamos un error
+                throw new Error(`No se pudo encontrar el alimento ${food.name}`);
+            }
+
+            const updatedFood: Food = {
+                name: food.name,
+                carbs: food.carbs,
+                protein: food.protein,
+                fats: food.fats,
+                image: food.image,
+                id: food.id,
+                cant_servicio: food.cant_servicio,
+                getData() {
+                    return {
+                        name: this.name,
+                        carbs: this.carbs,
+                        protein: this.protein,
+                        fats: this.fats,
+                        image: this.image,
+                        id: this.id,
+                        cant_servicio: this.cant_servicio,
+                    };
+                },
+            };
+
+            await cnx.query('COMMIT');
+            return updatedFood;
+
+        } catch (err) {
+            await cnx.query('ROLLBACK');
+            throw err;
+        } finally {
+            cnx.release();
+        }
+    }
+
+
 
     async add(food: Food): Promise<Food> {
-      const cnx = await dbGluko.getConnection();
-      try {
-          await cnx.beginTransaction();
-          
-          const [rows] = await cnx.query(
-              'SELECT * FROM Food WHERE name = ?;',
-              [food.name]
-          ) as RowDataPacket[];
-  
-          if (rows.length > 0) {
-              // Si el alimento ya existe, se devuelve el objeto Food sin guardar en la base de datos
-              const existingFood: Food = {
-                  name: rows[0].name,
-                  carbs: rows[0].carbs,
-                  protein: rows[0].protein,
-                  fats: rows[0].fats,
-                  image: rows[0].image,
-                  id: rows[0].id,
-                  ind_glucemico : rows[0].ind_glucemico,
-                  getData() {
-                      return {
-                          name: this.name,
-                          carbs: this.carbs,
-                          protein: this.protein,
-                          fats: this.fats,
-                          image: this.image,
-                          id: this.id,
-                          ind_glucemico: this.ind_glucemico,
-                      };
-                  },
-              };
-              await cnx.query('COMMIT');
-              return existingFood;
-          }
-  
-          const [result] = await cnx.query(
-              'INSERT INTO Food (name, carbs, protein, fats, image ,ind_glucemia) VALUES (?, ?, ?, ?, ? , ?);',
-              [food.name, food.carbs, food.protein, food.fats, food.image ,food.ind_glucemico]
-          );
-  
-          const id = (result as mysql.OkPacket).insertId;
-  
-          const newFood: Food = {
-              name: food.name,
-              carbs: food.carbs,
-              protein: food.protein,
-              fats: food.fats,
-              image: food.image,
-              id: id,
-              ind_glucemico : 0,
-              
-              getData() {
-                  return {
-                      name: this.name,
-                      carbs: this.carbs,
-                      protein: this.protein,
-                      fats: this.fats,
-                      image: this.image,
-                      id: this.id,
-                      ind_glucemico : this.ind_glucemico,
-                  };
-              },
-          };
-  
-          await cnx.query('COMMIT');
-          return newFood;
-      } catch (err) {
-          await cnx.query('ROLLBACK');
-          throw err;
-      } finally {
-          cnx.release();
-      }
-  }
-  
-      
-    
+        const cnx = await dbGluko.getConnection();
+        try {
+            await cnx.beginTransaction();
+            const [rows] = await cnx.query(
+                'SELECT * FROM Food WHERE name = ?;',
+                [food.name]
+            ) as RowDataPacket[];
+
+            if (rows.length > 0) {
+                // Si el alimento ya existe, se devuelve el objeto Food sin guardar en la base de datos
+
+                let existingFood: Food = {
+                    name: rows[0].name,
+                    carbs: rows[0].carbs,
+                    protein: rows[0].protein,
+                    fats: rows[0].fats,
+                    image: rows[0].image,
+                    id: rows[0].id,
+                    cant_servicio: rows[0].cant_servicio,
+                    getData() {
+                        return {
+                            name: this.name,
+                            carbs: this.carbs,
+                            protein: this.protein,
+                            fats: this.fats,
+                            image: this.image,
+                            id: this.id,
+                            cant_servicio: this.cant_servicio,
+                        };
+                    },
+                };
+                await cnx.query('COMMIT');
+
+                if (existingFood.cant_servicio != 100 && food.carbs == existingFood.carbs) {
+                    try {
+                        existingFood = await this.updateFood(existingFood);
+                        return existingFood;
+                    } catch (error) {
+                        console.log(`No se encontró ningún alimento con el nombre ${food.name}`);
+                    }
+                }
+
+                return existingFood;
+            }
+
+            const [result] = await cnx.query(
+                'INSERT INTO Food (name, carbs, protein, fats, image , tag , cant_servicio) VALUES (?, ?, ?, ?, ? , "snack" , ?);',
+                [food.name, food.carbs, food.protein, food.fats, food.image, food.cant_servicio]
+            );
+            const id = (result as mysql.OkPacket).insertId;
+            const newFood: Food = {
+                name: food.name,
+                carbs: food.carbs,
+                protein: food.protein,
+                fats: food.fats,
+                image: food.image,
+                id: id,
+                cant_servicio: food.cant_servicio,
+                getData() {
+                    return {
+                        name: this.name,
+                        carbs: this.carbs,
+                        protein: this.protein,
+                        fats: this.fats,
+                        image: this.image,
+                        id: this.id,
+                        cant_servicio: this.cant_servicio,
+                    };
+                },
+            };
+
+            await cnx.query('COMMIT');
+            return newFood;
+        } catch (err) {
+            await cnx.query('ROLLBACK');
+            throw err;
+        } finally {
+            cnx.release();
+        }
+    }
+
+
+
 }

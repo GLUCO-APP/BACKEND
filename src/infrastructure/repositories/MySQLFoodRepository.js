@@ -28,47 +28,29 @@ class MySqlFoodRepository {
             }
         });
     }
-    add(food) {
+    updateFood(food) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
             try {
                 yield cnx.beginTransaction();
-                const [rows] = yield cnx.query('SELECT * FROM Food WHERE name = ?;', [food.name]);
-                if (rows.length > 0) {
-                    // Si el alimento ya existe, se devuelve el objeto Food sin guardar en la base de datos
-                    const existingFood = {
-                        name: rows[0].name,
-                        carbs: rows[0].carbs,
-                        protein: rows[0].protein,
-                        fats: rows[0].fats,
-                        image: rows[0].image,
-                        id: rows[0].id,
-                        ind_glucemico: rows[0].ind_glucemico,
-                        getData() {
-                            return {
-                                name: this.name,
-                                carbs: this.carbs,
-                                protein: this.protein,
-                                fats: this.fats,
-                                image: this.image,
-                                id: this.id,
-                                ind_glucemico: this.ind_glucemico,
-                            };
-                        },
-                    };
-                    yield cnx.query('COMMIT');
-                    return existingFood;
+                const value = (food.cant_servicio / 100);
+                food.carbs = value * food.carbs;
+                food.protein = (value * food.protein);
+                food.fats = (value * food.fats);
+                const [result] = yield cnx.query('UPDATE Food SET carbs=?, protein=?, fats=?, image=?, cant_servicio=? WHERE name=?;', [food.carbs, food.protein, food.fats, food.image, food.cant_servicio, food.name]);
+                const affectedRows = result.affectedRows;
+                if (affectedRows === 0) {
+                    // Si no se actualizó ningún alimento, lanzamos un error
+                    throw new Error(`No se pudo encontrar el alimento ${food.name}`);
                 }
-                const [result] = yield cnx.query('INSERT INTO Food (name, carbs, protein, fats, image ,ind_glucemia) VALUES (?, ?, ?, ?, ? , ?);', [food.name, food.carbs, food.protein, food.fats, food.image, food.ind_glucemico]);
-                const id = result.insertId;
-                const newFood = {
+                const updatedFood = {
                     name: food.name,
                     carbs: food.carbs,
                     protein: food.protein,
                     fats: food.fats,
                     image: food.image,
-                    id: id,
-                    ind_glucemico: 0,
+                    id: food.id,
+                    cant_servicio: food.cant_servicio,
                     getData() {
                         return {
                             name: this.name,
@@ -77,7 +59,82 @@ class MySqlFoodRepository {
                             fats: this.fats,
                             image: this.image,
                             id: this.id,
-                            ind_glucemico: this.ind_glucemico,
+                            cant_servicio: this.cant_servicio,
+                        };
+                    },
+                };
+                yield cnx.query('COMMIT');
+                return updatedFood;
+            }
+            catch (err) {
+                yield cnx.query('ROLLBACK');
+                throw err;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
+    add(food) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                yield cnx.beginTransaction();
+                const [rows] = yield cnx.query('SELECT * FROM Food WHERE name = ?;', [food.name]);
+                if (rows.length > 0) {
+                    // Si el alimento ya existe, se devuelve el objeto Food sin guardar en la base de datos
+                    let existingFood = {
+                        name: rows[0].name,
+                        carbs: rows[0].carbs,
+                        protein: rows[0].protein,
+                        fats: rows[0].fats,
+                        image: rows[0].image,
+                        id: rows[0].id,
+                        cant_servicio: rows[0].cant_servicio,
+                        getData() {
+                            return {
+                                name: this.name,
+                                carbs: this.carbs,
+                                protein: this.protein,
+                                fats: this.fats,
+                                image: this.image,
+                                id: this.id,
+                                cant_servicio: this.cant_servicio,
+                            };
+                        },
+                    };
+                    yield cnx.query('COMMIT');
+                    if (existingFood.cant_servicio != 100 && food.carbs == existingFood.carbs) {
+                        console.log("entre");
+                        try {
+                            existingFood = yield this.updateFood(existingFood);
+                            return existingFood;
+                        }
+                        catch (error) {
+                            console.log(`No se encontró ningún alimento con el nombre ${food.name}`);
+                        }
+                    }
+                    return existingFood;
+                }
+                const [result] = yield cnx.query('INSERT INTO Food (name, carbs, protein, fats, image , tag , cant_servicio) VALUES (?, ?, ?, ?, ? , "snack" , ?);', [food.name, food.carbs, food.protein, food.fats, food.image, food.cant_servicio]);
+                const id = result.insertId;
+                const newFood = {
+                    name: food.name,
+                    carbs: food.carbs,
+                    protein: food.protein,
+                    fats: food.fats,
+                    image: food.image,
+                    id: id,
+                    cant_servicio: food.cant_servicio,
+                    getData() {
+                        return {
+                            name: this.name,
+                            carbs: this.carbs,
+                            protein: this.protein,
+                            fats: this.fats,
+                            image: this.image,
+                            id: this.id,
+                            cant_servicio: this.cant_servicio,
                         };
                     },
                 };
