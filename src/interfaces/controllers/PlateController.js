@@ -31,5 +31,16 @@ class PlateController {
             }
         });
     }
+    trainTest(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const token = req.params.token;
+                this.plateService.trainModel(token);
+            }
+            catch (err) {
+                res.status(400).send(err.message);
+            }
+        });
+    }
 }
 exports.PlateController = PlateController;

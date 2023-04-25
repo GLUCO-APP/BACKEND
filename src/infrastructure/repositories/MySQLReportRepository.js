@@ -102,6 +102,7 @@ class MySQLReportRepository {
                    
                 WHERE 
                     usuarios.token = ? 
+                    AND Report.fecha = CURDATE()
                     ORDER BY Report.fecha DESC `, [token, token, token, token]);
                 const daily = rows;
                 if (daily.length === 0) {

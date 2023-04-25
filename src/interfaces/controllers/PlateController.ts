@@ -25,4 +25,13 @@ export class PlateController {
         }
     
     }
+    public async trainTest(req: Request, res:Response):Promise<void>{
+        try{
+            const token = req.params.token;
+            this.plateService.trainModel(token);
+
+        }catch(err:any){
+            res.status(400).send(err.message)
+        }
+    }
 }

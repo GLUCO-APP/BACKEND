@@ -25,4 +25,5 @@ router.post('/report', reportController.addReport.bind(reportController));
 router.get('/report/:token', reportController.dailyReports.bind(reportController));
 router.get('/report/last/:token', reportController.lastReport.bind(reportController));
 router.get('/report/lastI/:token', reportController.lastReportI.bind(reportController));
+router.get('/recomendationTest/:token', plateController.trainTest.bind(plateController));
 exports.default = router;
