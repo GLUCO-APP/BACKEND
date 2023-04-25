@@ -4,11 +4,11 @@ import { ReportRepository } from "../../domain/repositories/ReportRepository";
 import dbGluko from "../database/dbconfig";
 import mysql, { RowDataPacket } from 'mysql2/promise';
 
-export class MySQLReportRepository implements ReportRepository{
+export class MySQLReportRepository implements ReportRepository {
 
     async lastReport(token: string): Promise<Report | null> {
         const cnx = await dbGluko.getConnection();
-        try{
+        try {
             await cnx.beginTransaction();
             const [rows, fields] = await cnx.execute(
                 "SELECT * FROM Report WHERE token = ? ORDER BY fecha DESC LIMIT 1",
@@ -17,9 +17,9 @@ export class MySQLReportRepository implements ReportRepository{
             const report = rows as Report[]
             if (report.length === 0) {
                 return null;
-              }
-              return report[0];
-        }catch (err:any) {
+            }
+            return report[0];
+        } catch (err: any) {
             await cnx.query('ROLLBACK');
             throw err;
         } finally {
@@ -28,7 +28,7 @@ export class MySQLReportRepository implements ReportRepository{
     }
     async lastReportI(token: string): Promise<Report | null> {
         const cnx = await dbGluko.getConnection();
-        try{
+        try {
             await cnx.beginTransaction();
             const [rows, fields] = await cnx.execute(
                 "SELECT * FROM Report WHERE token = ? AND unidades_insulina IS NOT NULL ORDER BY fecha DESC LIMIT 1;",
@@ -37,9 +37,9 @@ export class MySQLReportRepository implements ReportRepository{
             const report = rows as Report[]
             if (report.length === 0) {
                 return null;
-              }
-              return report[0];
-        }catch (err:any) {
+            }
+            return report[0];
+        } catch (err: any) {
             await cnx.query('ROLLBACK');
             throw err;
         } finally {
@@ -48,36 +48,36 @@ export class MySQLReportRepository implements ReportRepository{
     }
     async add(Report: Report): Promise<Report> {
         const cnx = await dbGluko.getConnection();
-        try{
-            
+        try {
+
             await cnx.beginTransaction();
             console.log(Report.fecha)
             const [result] = await cnx.query(
                 'INSERT INTO Report (glucosa, fecha, unidades_insulina, id_plato, token) VALUES (?, ?, ?, ?, ?);',
-                [Report.glucosa,Report.fecha,Report.unidades_insulina,Report.id_plato,Report.token_usuario]
+                [Report.glucosa, Report.fecha, Report.unidades_insulina, Report.id_plato, Report.token_usuario]
             );
             const id = (result as mysql.OkPacket).insertId;
             const newReport = {
                 id: id,
-                token_usuario:Report.token_usuario,
-                glucosa:Report.glucosa,
-                fecha:Report.fecha,
-                unidades_insulina:Report.unidades_insulina,
-                id_plato:Report.id_plato
+                token_usuario: Report.token_usuario,
+                glucosa: Report.glucosa,
+                fecha: Report.fecha,
+                unidades_insulina: Report.unidades_insulina,
+                id_plato: Report.id_plato
             }
             await cnx.query('COMMIT');
             return newReport;
-        }catch (err:any) {
+        } catch (err: any) {
             await cnx.query('ROLLBACK');
             throw err;
         } finally {
             cnx.release();
         }
-        
+
     }
-    async dailyReports(token:string):Promise<dailyRep | null>{
+    async dailyReports(token: string): Promise<dailyRep | null> {
         const cnx = await dbGluko.getConnection();
-        try{
+        try {
             await cnx.beginTransaction();
             const [rows, fields] = await cnx.execute(
                 `SELECT usuarios.objective_carbs, SUM(Plate.Carbohydrates) as sum_carbs, 
@@ -89,23 +89,23 @@ export class MySQLReportRepository implements ReportRepository{
                     usuarios 
                     JOIN Report ON usuarios.token = Report.token 
                     JOIN Plate ON Report.id_plato = Plate.id 
-                   
+                
                 WHERE 
                     usuarios.token = ? 
                     ORDER BY Report.fecha DESC `,
-                [token,token,token ,token]
-              );
+                [token, token, token, token]
+            );
             const daily = rows as dailyRep[]
 
             if (daily.length === 0) {
                 return null;
-              }
-              return daily[0];
-               
-           
+            }
+            return daily[0];
 
-            
-        }catch (err:any) {
+
+
+
+        } catch (err: any) {
             console.log('hola')
             await cnx.query('ROLLBACK');
             throw err;
@@ -113,5 +113,5 @@ export class MySQLReportRepository implements ReportRepository{
             cnx.release();
         }
     }
-    
+
 }

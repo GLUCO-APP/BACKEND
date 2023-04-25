@@ -105,7 +105,6 @@ class MySqlFoodRepository {
                     };
                     yield cnx.query('COMMIT');
                     if (existingFood.cant_servicio != 100 && food.carbs == existingFood.carbs) {
-                        console.log("entre");
                         try {
                             existingFood = yield this.updateFood(existingFood);
                             return existingFood;
