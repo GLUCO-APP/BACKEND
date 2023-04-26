@@ -92,6 +92,7 @@ export class MySQLReportRepository implements ReportRepository {
                 
                 WHERE 
                     usuarios.token = ? 
+                    AND Report.fecha = CURDATE()
                     ORDER BY Report.fecha DESC `,
                 [token, token, token, token]
             );

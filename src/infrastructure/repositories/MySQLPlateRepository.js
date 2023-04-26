@@ -15,6 +15,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MySQLPlateRepository = void 0;
 const dbconfig_1 = __importDefault(require("../database/dbconfig"));
 class MySQLPlateRepository {
+    publicPlates() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                const [rows, fields] = yield cnx.execute('SELECT * FROM gluko.Plate where public_plate = 1;');
+                return rows;
+            }
+            catch (err) {
+                yield cnx.query('ROLLBACK');
+                throw err;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
+    training_data(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                const [rows, fields] = yield cnx.execute('SELECT p.Carbohydrates, p.Proteins, p.Fats, p.sugarEstimate as Sugar FROM Plate p JOIN Report r ON r.id_plato = p.id WHERE r.token = ?', [token]);
+                return rows;
+            }
+            catch (err) {
+                yield cnx.query('ROLLBACK');
+                throw err;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
     add(plate) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
