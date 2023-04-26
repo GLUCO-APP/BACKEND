@@ -35,7 +35,8 @@ class PlateController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const token = req.params.token;
-                this.plateService.trainModel(token);
+                const recPlates = yield this.plateService.trainModel(token);
+                res.status(200).json(recPlates);
             }
             catch (err) {
                 res.status(400).send(err.message);

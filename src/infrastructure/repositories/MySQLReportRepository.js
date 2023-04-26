@@ -99,7 +99,7 @@ class MySQLReportRepository {
                     usuarios 
                     JOIN Report ON usuarios.token = Report.token 
                     JOIN Plate ON Report.id_plato = Plate.id 
-                   
+                
                 WHERE 
                     usuarios.token = ? 
                     AND Report.fecha = CURDATE()

@@ -15,7 +15,7 @@ export class PlateService {
         return this.plateRepository.add(plate);
     }
 
-    public async trainModel(token: string){
+    public async trainModel(token: string):Promise<Plate[]>{
     
         const trainingData : trdata[] = await this.plateRepository.training_data(token);
         console.log(trainingData);
@@ -28,32 +28,42 @@ export class PlateService {
             Proteins: item.Proteins / maxProts,
             Fats: item.Fats / maxFats,
             Sugar: item.Sugar
-          }));
-          console.log('normalizar completo');
-           // Definir el modelo
-          const model = tf.sequential();
-          model.add(tf.layers.dense({inputShape: [3], units: 8, activation: 'relu'}));
-          model.add(tf.layers.dense({units: 4, activation: 'relu'}));
-          model.add(tf.layers.dense({units: 1, activation: 'linear'}));
-          model.compile({loss: 'meanSquaredError', optimizer: 'adam'});
-          console.log('Definicion completa');
-         // Entrenar el modelo
-          const tensorData = tf.tensor2d(normalizedData.map(item => [item.Carbohydrates, item.Proteins, item.Fats]));
-          const tensorLabels = tf.tensor2d(normalizedData.map(item => [Number(item.Sugar)]));
-          console.log('data y labels');
-          await model.fit(tensorData, tensorLabels, {
+        }));
+
+        // Definir el modelo
+        const model = tf.sequential();
+        model.add(tf.layers.dense({ inputShape: [1], units: 16, activation: 'relu' }));
+        model.add(tf.layers.dense({ units: 32, activation: 'relu' }));
+        model.add(tf.layers.dense({ units: 16, activation: 'relu' }));
+        model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
+        model.add(tf.layers.dense({ units: 1, activation: 'linear' }));
+        model.compile({ loss: 'meanSquaredError', optimizer: tf.train.adam(0.001) });
+
+        // Entrenar el modelo
+        const tensorData = tf.tensor2d(normalizedData.map(item => [item.Carbohydrates]));
+        const tensorLabels = tf.tensor2d(normalizedData.map(item => [Number(item.Carbohydrates)]));
+        await model.fit(tensorData, tensorLabels, {
             batchSize: 32,
-            epochs: 50,
+            epochs: 1000,
             shuffle: true,
             callbacks: {
-              onEpochEnd: (epoch, logs) => console.log(`Epoch ${epoch}: loss = ${logs?.loss}`),
+                onEpochEnd: (epoch, logs) => console.log(`Epoch ${epoch}: loss = ${logs?.loss}`),
             },
-          });
-          console.log('Entrenamiento completo');
-            const plate = { Carbohydrates: 30, Proteins: 20, Fats: 10 };
-            const inputTensor = tf.tensor2d([[plate.Carbohydrates, plate.Proteins, plate.Fats]]);
-            const prediction = model.predict(inputTensor);
-            const predictionValues = prediction instanceof Array ? prediction[0].arraySync() : prediction.arraySync();
-            console.log(predictionValues);
+        });
+
+        // Hacer una predicción
+        const plate = trainingData[trainingData.length - 1];
+        const inputTensor = tf.tensor2d([[plate.Carbohydrates / maxCarbs]]);
+        const prediction = model.predict(inputTensor);
+        const predictionValue = prediction instanceof Array ? prediction[0].arraySync() : prediction.arraySync();
+        console.log(Number(predictionValue) * maxCarbs);
+        const estimacion  =  Number(predictionValue) * maxCarbs
+         const recPlates : Plate[] = await this.plateRepository.publicPlates();
+         const tolerancia = 5;
+        const similarPlates = recPlates.filter((plate:Plate) => {
+            return Math.abs(plate.Carbohydrates-estimacion) <= tolerancia;
+        });
+        console.log(similarPlates);
+        return similarPlates;
     }
 }

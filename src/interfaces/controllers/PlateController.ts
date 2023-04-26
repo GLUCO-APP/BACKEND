@@ -28,8 +28,8 @@ export class PlateController {
     public async trainTest(req: Request, res:Response):Promise<void>{
         try{
             const token = req.params.token;
-            this.plateService.trainModel(token);
-
+            const recPlates = await this.plateService.trainModel(token);
+            res.status(200).json(recPlates)
         }catch(err:any){
             res.status(400).send(err.message)
         }

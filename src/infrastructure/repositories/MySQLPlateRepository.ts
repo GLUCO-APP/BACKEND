@@ -6,6 +6,20 @@ import dbGluko from "../database/dbconfig"
 import { trdata } from "../../domain/entities/trdata";
 
 export class MySQLPlateRepository implements PlateRepository{
+  async publicPlates(): Promise<Plate[]> {
+    const cnx = await dbGluko.getConnection();
+    try{
+      const [rows, fields] = await cnx.execute(
+        'SELECT * FROM gluko.Plate where public_plate = 1;'
+      );
+      return rows as Plate[]
+    }catch (err:any) {
+      await cnx.query('ROLLBACK');
+      throw err;
+    } finally {
+      cnx.release();
+    }
+  }
 
   async training_data(token: string): Promise<trdata[]> {
     const cnx = await dbGluko.getConnection();
