@@ -24,5 +24,15 @@ class FoodService {
             return this.foodRespository.add(food);
         });
     }
+    getbyid(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.foodRespository.getbyid(id);
+        });
+    }
+    getbyplate(ids) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.foodRespository.getbyplate(ids);
+        });
+    }
 }
 exports.FoodService = FoodService;

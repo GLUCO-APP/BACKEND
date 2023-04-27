@@ -3,11 +3,38 @@ import { FoodRepository } from "../../domain/repositories/FoodRepository";
 import dbGluko from "../database/dbconfig"
 import mysql from 'mysql2/promise';
 import { RowDataPacket } from 'mysql2';
+import { Plate_x_Food } from "../../domain/entities/pl_x_food";
 
 
 
 
 export class MySqlFoodRepository implements FoodRepository {
+    async getbyplate(ids: Number[]): Promise<Food[]> {
+        const cnx = await dbGluko.getConnection();
+        try{
+            const placeholders = ids.map(() => '?').join(',');
+            const query = `SELECT * FROM Food WHERE id IN (${placeholders})`;
+            const result = await cnx.query(query, ids);
+
+            return result[0] as Food[]
+        }finally {
+            cnx.release();
+        }
+        
+    }
+    async getbyid(id:number): Promise<Plate_x_Food[]> {
+        const cnx = await dbGluko.getConnection();
+        try {
+            const [rows, fields] = await cnx.execute(
+                'SELECT * FROM gluko.Plate_x_Food where plate_id = ?;',
+                [id]
+              );
+              return rows as Plate_x_Food[]
+              
+        } finally {
+            cnx.release();
+        }
+    }
     async getall(): Promise<Food[]> {
         const cnx = await dbGluko.getConnection();
         try {
