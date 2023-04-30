@@ -34,5 +34,10 @@ class ReportService {
             return this.reportRepository.lastReportI(token);
         });
     }
+    allReports(token, max) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.reportRepository.allReports(token, max);
+        });
+    }
 }
 exports.ReportService = ReportService;

@@ -28,8 +28,10 @@ router.post('/report',reportController.addReport.bind(reportController))
 router.get('/report/:token',reportController.dailyReports.bind(reportController))
 router.get('/report/last/:token',reportController.lastReport.bind(reportController))
 router.get('/report/lastI/:token',reportController.lastReportI.bind(reportController))
+router.get('/report/all/:token/:max',reportController.allReports.bind(reportController))
 router.get('/recomendationTest/:token',plateController.trainTest.bind(plateController))
-router.get('/report/pdf/:token',reportController.generatePdf.bind(reportController))
+router.get('/report/pdf/:token/:max',reportController.generatePdf.bind(reportController))
 router.post('/socket/:message',socketcontroller.SocketTest.bind(socketcontroller))
+
 
 export default router;

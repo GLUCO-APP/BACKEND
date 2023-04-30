@@ -12,8 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FoodController = void 0;
 const MySQLFoodRepository_1 = require("../../infrastructure/repositories/MySQLFoodRepository");
 const FoodService_1 = require("../../application/services/FoodService");
-const Food_1 = require("../../domain/entities/Food");
-const axios = require('axios');
 class FoodController {
     constructor() {
         this.foodService = new FoodService_1.FoodService(new MySQLFoodRepository_1.MySqlFoodRepository());
@@ -33,30 +31,13 @@ class FoodController {
     addFoodCode(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const codeBar = req.params.code;
-            const apiUrl = 'https://world.openfoodfacts.org/api/v2/product/';
-            const url = apiUrl + codeBar;
             try {
-                const response = yield axios.get(url);
-                const data = response.data;
-                let cant_servicio;
-                const productName = data.product.product_name;
-                if ('serving_quantity' in data.product) {
-                    cant_servicio = data.product.serving_quantity;
-                }
-                else {
-                    cant_servicio = 100;
-                }
-                const nutriments = data.product.nutriments;
-                const image = "atun.png";
-                const protein = (cant_servicio / 100) * (nutriments.proteins_value);
-                const carbohydrates = (cant_servicio / 100) * nutriments.carbohydrates_value;
-                const fat = (cant_servicio / 100) * nutriments.fat_value;
-                const foodData = new Food_1.Food(productName, carbohydrates, protein, fat, image, cant_servicio);
-                const food = yield this.foodService.addFood(foodData);
-                res.status(201).json(food);
+                const foods = yield this.foodService.addFoodCode(codeBar);
+                res.status(200).json(foods);
             }
-            catch (error) {
-                res.status(400).send('Producto no encontrado');
+            catch (err) {
+                console.error(err);
+                res.status(500).send('Producto no encontrado');
             }
         });
     }
