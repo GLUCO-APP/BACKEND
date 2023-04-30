@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { io } from "socket.io-client";
 
 
-const socket = io("http://localhost:8080");
+const socket = io("http://prueba2-env.eba-i9peqcmf.us-east-1.elasticbeanstalk.com");
 export class socketController{
 
     constructor(){}
