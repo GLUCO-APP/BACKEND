@@ -15,6 +15,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MySqlFoodRepository = void 0;
 const dbconfig_1 = __importDefault(require("../database/dbconfig"));
 class MySqlFoodRepository {
+    getbyplate(ids) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                const placeholders = ids.map(() => '?').join(',');
+                const query = `SELECT * FROM Food WHERE id IN (${placeholders})`;
+                const result = yield cnx.query(query, ids);
+                return result[0];
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
+    getbyid(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                const [rows, fields] = yield cnx.execute('SELECT * FROM gluko.Plate_x_Food where plate_id = ?;', [id]);
+                return rows;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
     getall() {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();

@@ -6,12 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const express_1 = __importDefault(require("express"));
-const routes_1 = __importDefault(require("./interfaces/routes/routes"));
-const morgan_1 = __importDefault(require("morgan"));
+const socketcon_1 = __importDefault(require("./interfaces/utils/socketcon"));
 const app = (0, express_1.default)();
-app.use(express_1.default.json());
-app.use(routes_1.default);
-app.use((0, morgan_1.default)('dev'));
-app.listen(8080, () => {
-    console.log('Servidor corriendo en el puerto 8080');
-});
+const server = new socketcon_1.default();
+if (!module.parent) {
+    server.start(() => {
+        console.log(`Server listening in port ${server.port} Test Git new image`);
+    });
+}

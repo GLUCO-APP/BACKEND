@@ -1,4 +1,5 @@
 import { Food } from "../../domain/entities/Food";
+import { Plate_x_Food } from "../../domain/entities/pl_x_food";
 import { MySqlFoodRepository } from "../../infrastructure/repositories/MySQLFoodRepository";
 
 const axios = require('axios');
@@ -17,8 +18,6 @@ export class FoodService {
     public async addFood(food:Food):Promise<Food> {
         return this.foodRespository.add(food);
     }
-
-
     public async addFoodCode(code: String):Promise<Food | null> {
         const apiUrl = 'https://world.openfoodfacts.org/api/v2/product/';
         const url = apiUrl + code;
@@ -45,4 +44,11 @@ export class FoodService {
             throw new Error(`Error al procesar la solicitud`);
         }
     }
+    public async getbyid(id:number):Promise<Plate_x_Food[]>{
+        return this.foodRespository.getbyid(id);
+    }
+    public async getbyplate(ids:Number[]):Promise<Food[]>{
+        return this.foodRespository.getbyplate(ids);
+    }
+
 }

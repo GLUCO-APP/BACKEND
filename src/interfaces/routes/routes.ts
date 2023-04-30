@@ -5,6 +5,7 @@ import { UserController } from "../controllers/UserController";
 import { UserService } from "../../application/services/UserService";
 import { EmergencyContoller } from "../controllers/EmergencyController";
 import { ReportController } from "../controllers/ReportController";
+import { socketController } from "../controllers/testController";
 
 const router = Router();
 
@@ -13,6 +14,7 @@ const foodController = new FoodController();
 const usercontroller = new UserController();
 const emergencytcontroller = new EmergencyContoller();
 const reportController = new ReportController();
+const socketcontroller = new socketController();
 router.post('/plate',plateController.addPlate.bind(plateController))
 router.get('/allFoods',foodController.getAll.bind(foodController))
 router.post('/codebar/:code',foodController.addFoodCode.bind(foodController))
@@ -29,5 +31,7 @@ router.get('/report/lastI/:token',reportController.lastReportI.bind(reportContro
 router.get('/report/all/:token/:max',reportController.allReports.bind(reportController))
 router.get('/recomendationTest/:token',plateController.trainTest.bind(plateController))
 router.get('/report/pdf/:token/:max',reportController.generatePdf.bind(reportController))
+router.post('/socket/:message',socketcontroller.SocketTest.bind(socketcontroller))
+
 
 export default router;

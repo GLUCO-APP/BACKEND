@@ -3,13 +3,19 @@ dotenv.config();
 import express from 'express';
 import router from './interfaces/routes/routes';
 import morgan from 'morgan';
+import Server from './interfaces/utils/socketcon'
+import http from 'http';
+
+
 
 const app = express();
 
-app.use(express.json());
-app.use(router);
-app.use(morgan('dev'));
 
-app.listen(8080, () => {
-  console.log('Servidor corriendo en el puerto 8080');
-});
+const server = new Server();
+
+if (!module.parent) {
+
+  server.start(() => {
+      console.log(`Server listening in port ${server.port} Test Git new image`);
+    });
+}
