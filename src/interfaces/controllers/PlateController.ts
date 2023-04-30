@@ -10,7 +10,6 @@ export class PlateController {
     constructor(){
         this.plateService = new PlateService(new MySQLPlateRepository());
     }
-  
 
 
     public async addPlate(req: Request, res:Response):Promise<void>{
@@ -34,4 +33,6 @@ export class PlateController {
             res.status(400).send(err.message)
         }
     }
+
+    
 }

@@ -1,4 +1,5 @@
 import { Report } from "../../domain/entities/Report";
+import { ReportPDF} from "../../domain/entities/ReportPDF";
 import { dailyRep } from "../../domain/entities/dailyRep";
 import { ReportRepository } from "../../domain/repositories/ReportRepository";
 import dbGluko from "../database/dbconfig";
@@ -46,6 +47,29 @@ export class MySQLReportRepository implements ReportRepository {
             cnx.release();
         }
     }
+
+    async allReports(token: string, max: string): Promise<ReportPDF[] | null> {
+        const cnx = await dbGluko.getConnection();
+        try {
+            await cnx.beginTransaction();
+            const [rows, fields] = await cnx.execute(
+                "SELECT DISTINCT gluko.Report.glucosa, gluko.Report.fecha, gluko.Report.unidades_insulina, gluko.Plate.type, gluko.Plate.Carbohydrates FROM gluko.Report INNER JOIN gluko.Plate ON gluko.Report.id_plato = gluko.Plate.id WHERE gluko.Report.token = ? ORDER BY gluko.Report.fecha DESC LIMIT ?",
+                [token, max]
+            );
+            const reports = rows as ReportPDF[];
+            if (reports.length === 0) {
+                return null;
+            }
+            return reports;
+        } catch (err: any) {
+            await cnx.query('ROLLBACK');
+            throw err;
+        } finally {
+            cnx.release();
+        }
+    }
+    
+
     async add(Report: Report): Promise<Report> {
         const cnx = await dbGluko.getConnection();
         try {

@@ -37,7 +37,7 @@ class MySqlFoodRepository {
                 food.carbs = value * food.carbs;
                 food.protein = (value * food.protein);
                 food.fats = (value * food.fats);
-                const [result] = yield cnx.query('UPDATE Food SET carbs=?, protein=?, fats=?, image=?, cant_servicio=? WHERE name=?;', [food.carbs, food.protein, food.fats, food.image, food.cant_servicio, food.name]);
+                const [result] = yield cnx.query('UPDATE Food SET carbs=?, protein=?, fats=?, image=?,tag=? , cant_servicio=? WHERE name=?;', [food.carbs, food.protein, food.fats, food.image, food.tag, food.cant_servicio, food.name]);
                 const affectedRows = result.affectedRows;
                 if (affectedRows === 0) {
                     // Si no se actualizó ningún alimento, lanzamos un error
@@ -50,6 +50,7 @@ class MySqlFoodRepository {
                     fats: food.fats,
                     image: food.image,
                     id: food.id,
+                    tag: food.tag,
                     cant_servicio: food.cant_servicio,
                     getData() {
                         return {
@@ -59,6 +60,7 @@ class MySqlFoodRepository {
                             fats: this.fats,
                             image: this.image,
                             id: this.id,
+                            tag: this.tag,
                             cant_servicio: this.cant_servicio,
                         };
                     },
@@ -91,6 +93,7 @@ class MySqlFoodRepository {
                         image: rows[0].image,
                         id: rows[0].id,
                         cant_servicio: rows[0].cant_servicio,
+                        tag: rows[0].tag,
                         getData() {
                             return {
                                 name: this.name,
@@ -100,6 +103,7 @@ class MySqlFoodRepository {
                                 image: this.image,
                                 id: this.id,
                                 cant_servicio: this.cant_servicio,
+                                tag: this.tag,
                             };
                         },
                     };
@@ -125,6 +129,7 @@ class MySqlFoodRepository {
                     image: food.image,
                     id: id,
                     cant_servicio: food.cant_servicio,
+                    tag: food.tag,
                     getData() {
                         return {
                             name: this.name,
@@ -134,6 +139,7 @@ class MySqlFoodRepository {
                             image: this.image,
                             id: this.id,
                             cant_servicio: this.cant_servicio,
+                            tag: this.tag,
                         };
                     },
                 };

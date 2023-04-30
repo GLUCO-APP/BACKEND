@@ -6,7 +6,8 @@ export class Food{
     public fats: number,
     public image: string,
     public cant_servicio : number,
-    public id?: number
+    public id?: number,
+    public tag?: string
     
   ){}
 
@@ -19,6 +20,7 @@ export class Food{
       image: this.image,
       id: this.id,
       cant_servicio : this.cant_servicio,
+      tag : this.tag,
     };
   }
 }

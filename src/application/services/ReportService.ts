@@ -21,4 +21,8 @@ export class ReportService{
     public async lastreportI(token:string){
         return this.reportRepository.lastReportI(token);
     }
+
+    public async allReports(token:string , max:string ){
+        return this.reportRepository.allReports(token , max);
+    }
 }

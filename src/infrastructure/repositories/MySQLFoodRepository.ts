@@ -31,8 +31,8 @@ export class MySqlFoodRepository implements FoodRepository {
             food.fats = (value * food.fats);
 
             const [result] = await cnx.query(
-                'UPDATE Food SET carbs=?, protein=?, fats=?, image=?, cant_servicio=? WHERE name=?;',
-                [food.carbs, food.protein, food.fats, food.image, food.cant_servicio, food.name]
+                'UPDATE Food SET carbs=?, protein=?, fats=?, image=?,tag=? , cant_servicio=? WHERE name=?;',
+                [food.carbs, food.protein, food.fats, food.image, food.tag , food.cant_servicio, food.name]
             );
             const affectedRows = (result as mysql.OkPacket).affectedRows;
 
@@ -48,6 +48,7 @@ export class MySqlFoodRepository implements FoodRepository {
                 fats: food.fats,
                 image: food.image,
                 id: food.id,
+                tag: food.tag,
                 cant_servicio: food.cant_servicio,
                 getData() {
                     return {
@@ -57,6 +58,7 @@ export class MySqlFoodRepository implements FoodRepository {
                         fats: this.fats,
                         image: this.image,
                         id: this.id,
+                        tag : this.tag,
                         cant_servicio: this.cant_servicio,
                     };
                 },
@@ -95,6 +97,7 @@ export class MySqlFoodRepository implements FoodRepository {
                     image: rows[0].image,
                     id: rows[0].id,
                     cant_servicio: rows[0].cant_servicio,
+                    tag :rows[0].tag,
                     getData() {
                         return {
                             name: this.name,
@@ -104,6 +107,7 @@ export class MySqlFoodRepository implements FoodRepository {
                             image: this.image,
                             id: this.id,
                             cant_servicio: this.cant_servicio,
+                            tag: this.tag,
                         };
                     },
                 };
@@ -134,6 +138,7 @@ export class MySqlFoodRepository implements FoodRepository {
                 image: food.image,
                 id: id,
                 cant_servicio: food.cant_servicio,
+                tag : food.tag,
                 getData() {
                     return {
                         name: this.name,
@@ -143,10 +148,10 @@ export class MySqlFoodRepository implements FoodRepository {
                         image: this.image,
                         id: this.id,
                         cant_servicio: this.cant_servicio,
+                        tag : this.tag,
                     };
                 },
             };
-
             await cnx.query('COMMIT');
             return newFood;
         } catch (err) {
