@@ -58,12 +58,14 @@ export class PlateService {
         const predictionValue = prediction instanceof Array ? prediction[0].arraySync() : prediction.arraySync();
         console.log(Number(predictionValue) * maxCarbs);
         const estimacion  =  Number(predictionValue) * maxCarbs
-         const recPlates : Plate[] = await this.plateRepository.publicPlates();
-         const tolerancia = 5;
+        const recPlates : Plate[] = await this.plateRepository.publicPlates();
+        const tolerancia = 5;
         const similarPlates = recPlates.filter((plate:Plate) => {
             return Math.abs(plate.Carbohydrates-estimacion) <= tolerancia;
         });
         console.log(similarPlates);
         return similarPlates;
     }
+
+
 }

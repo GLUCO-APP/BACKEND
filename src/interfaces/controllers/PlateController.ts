@@ -15,7 +15,6 @@ export class PlateController {
         this.plateService = new PlateService(new MySQLPlateRepository());
         this.foodService = new FoodService(new MySqlFoodRepository());
     }
-  
 
 
     public async addPlate(req: Request, res:Response):Promise<void>{
@@ -52,4 +51,6 @@ export class PlateController {
             res.status(400).send(err.message)
         }
     }
+
+    
 }

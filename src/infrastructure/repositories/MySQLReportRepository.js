@@ -57,6 +57,27 @@ class MySQLReportRepository {
             }
         });
     }
+    allReports(token, max) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                yield cnx.beginTransaction();
+                const [rows, fields] = yield cnx.execute("SELECT DISTINCT gluko.Report.glucosa, gluko.Report.fecha, gluko.Report.unidades_insulina, gluko.Plate.type, gluko.Plate.Carbohydrates FROM gluko.Report INNER JOIN gluko.Plate ON gluko.Report.id_plato = gluko.Plate.id WHERE gluko.Report.token = ? ORDER BY gluko.Report.fecha DESC LIMIT ?", [token, max]);
+                const reports = rows;
+                if (reports.length === 0) {
+                    return null;
+                }
+                return reports;
+            }
+            catch (err) {
+                yield cnx.query('ROLLBACK');
+                throw err;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
     add(Report) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();

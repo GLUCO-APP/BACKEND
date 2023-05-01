@@ -1,18 +1,31 @@
 import { Request, Response } from "express";
 import { ReportService } from "../../application/services/ReportService";
+import { UserService } from "../../application/services/UserService";
+import { PlateService } from "../../application/services/PlateService";
 import { MySQLReportRepository } from "../../infrastructure/repositories/MySQLReportRepository";
 import { Report } from "../../domain/entities/Report";
 import moment from 'moment-timezone';
-const PDFDocument = require('pdfkit');
+import { MySQLUserRepository } from "../../infrastructure/repositories/MySQLUserRepository";
+import { MySQLPlateRepository } from "../../infrastructure/repositories/MySQLPlateRepository";
+
+//const PDFDocument = require('pdfkit');
+const PDFDocument = require("pdfkit-table");
+
+
+
 const fs = require('fs');
 
 
 
 export class ReportController {
     private reportService: ReportService
+    private userService: UserService
+    private plateService: PlateService
 
     constructor() {
         this.reportService = new ReportService(new MySQLReportRepository);
+        this.userService = new UserService(new MySQLUserRepository);
+        this.plateService = new PlateService(new MySQLPlateRepository);
     }
 
     public async addReport(req: Request, res: Response): Promise<void> {
@@ -54,37 +67,68 @@ export class ReportController {
             res.status(400).send(err.message)
         }
     }
-    fs = require('fs');
-    PDFDocument = require('pdfkit');
 
-    public async generatePdf(req: Request, res: Response): Promise<void> {
+    public async allReports(req: Request, res: Response): Promise<void> {
+        const max = (req.params.max);
         try {
             const token = req.params.token;
-            const report = await this.reportService.lastreport(token);
-            const doc = new PDFDocument();
+            const report = await this.reportService.allReports(token, max );
+            res.status(200).json(report);
+        } catch (err: any) {
+            res.status(400).send(err.message)
+        }
+    }
 
-            // Agregar los datos del informe a la plantilla PDF
+    public async generatePdf(req: Request, res: Response): Promise<void> {
+        const token = req.params.token;
+        const max = (req.params.max);
+        const reports = await this.reportService.allReports(token , max );
+
+        try {
+            if (!reports) {
+                throw new Error('No se encontraron informes para el token especificado');
+            }
+            const doc = new PDFDocument();
+            const fecha = new Date(); // Fecha actual
+            const fechaFormateada = fecha.toLocaleDateString(); // Formato de fecha
+            const horaFormateada = fecha.toLocaleTimeString().slice(0, 5);  // Formato de hora
+            doc.image('template/logo.png', 50, 50, { width: 60 });
+            // Agregar los datos de cada informe a la plantilla PDF
             doc.fontSize(24).font('Helvetica-Bold').text(`REPORTE DE DIABETES`, {
                 align: 'center'
             });
+            const table = {
+                headers: ['Nro.', 'Fecha', 'Glucemia (mg/dL)', "Insulina", 'CH', "Categoría"],
+                rows: await Promise.all(reports.map(async (report, index) => {
+                    return [
+                        (index + 1).toString(),
+                        report.fecha ? new Date(report.fecha).toLocaleString() : '',
+                        report.glucosa ? report.glucosa.toString() : '',
+                        report.unidades_insulina ? report.unidades_insulina.toString() : '',
+                        report.Carbohydrates ? report.Carbohydrates.toString(): ' ',
+                        report.type ? report.type.toString(): ' ',
+                    ];
+                }))
+            };
+            const tableOptions = {
+                columns: {
+                    0: { width: 50, align: 'center' },
+                    1: { width: 100, align: 'center' },
+                    2: { width: 100, align: 'center' },
+                    3: { width: 100, align: 'center' },
+                    4: { width: 100, align: 'center' }
+                },
+                header: {
+                    fillColor: '#f2f2f2'
+                },
+                margin: { top: 50, bottom: 30 },
+                layout: 'lightHorizontalLines'
+            };
 
-            const startY = 150;
-            const lineTopY = startY + 20;
-            const lineBottomY = 120;
-
-            doc.lineWidth(1).moveTo(50, lineTopY).lineTo(550, lineTopY).stroke();
-            doc.lineWidth(1).moveTo(50, lineBottomY).lineTo(550, lineBottomY).stroke();
-
-            doc.fontSize(12);
-            doc.fillColor('black');
-            doc.image('template/logo.png', 50, 50, { width: 60 });
-            doc.text(`Fecha: ${report?.fecha}`, 100, startY + 40);
-            doc.text(`Glucosa: ${report?.glucosa}`, 100, startY + 60);
-            doc.text(`Unidades de insulina: ${report?.unidades_insulina}`, 100, startY + 80);
-            doc.text(`ID plato: ${report?.id_plato}`, 100, startY + 100);       
-            doc.text()
-            doc.end()
-            // Enviar el archivo PDF generado como respuesta a la solicitud
+            doc.moveDown(2);
+            doc.lineWidth(0.5);
+            doc.table(table, tableOptions);
+            doc.end();
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=reporte.pdf`);
             doc.pipe(res);
@@ -92,6 +136,11 @@ export class ReportController {
             res.status(400).send(err.message);
         }
     }
+
+
+
+
+
 
 
 
