@@ -84,7 +84,10 @@ class MySQLReportRepository {
             try {
                 yield cnx.beginTransaction();
                 console.log(Report.fecha);
-                const [result] = yield cnx.query('INSERT INTO Report (glucosa, fecha, unidades_insulina, id_plato, token) VALUES (?, ?, ?, ?, ?);', [Report.glucosa, Report.fecha, Report.unidades_insulina, Report.id_plato, Report.token_usuario]);
+                const [rows] = yield cnx.query('SELECT NOW() as now');
+                const serverTime = rows[0].now;
+                console.log(serverTime);
+                const [result] = yield cnx.query('INSERT INTO Report (glucosa, fecha, unidades_insulina, id_plato, token) VALUES (?, ?, ?, ?, ?);', [Report.glucosa, serverTime, Report.unidades_insulina, Report.id_plato, Report.token_usuario]);
                 const id = result.insertId;
                 const newReport = {
                     id: id,

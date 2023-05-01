@@ -76,9 +76,12 @@ export class MySQLReportRepository implements ReportRepository {
 
             await cnx.beginTransaction();
             console.log(Report.fecha)
+            const [rows] = await cnx.query('SELECT NOW() as now');
+            const serverTime = (rows as RowDataPacket)[0].now;
+            console.log(serverTime);
             const [result] = await cnx.query(
                 'INSERT INTO Report (glucosa, fecha, unidades_insulina, id_plato, token) VALUES (?, ?, ?, ?, ?);',
-                [Report.glucosa, Report.fecha, Report.unidades_insulina, Report.id_plato, Report.token_usuario]
+                [Report.glucosa, serverTime, Report.unidades_insulina, Report.id_plato, Report.token_usuario]
             );
             const id = (result as mysql.OkPacket).insertId;
             const newReport = {
