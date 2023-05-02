@@ -17,8 +17,6 @@ const MySQLReportRepository_1 = require("../../infrastructure/repositories/MySQL
 const Report_1 = require("../../domain/entities/Report");
 const MySQLUserRepository_1 = require("../../infrastructure/repositories/MySQLUserRepository");
 const MySQLPlateRepository_1 = require("../../infrastructure/repositories/MySQLPlateRepository");
-//const PDFDocument = require('pdfkit');
-const PDFDocument = require("pdfkit-table");
 const fs = require('fs');
 class ReportController {
     constructor() {
@@ -92,55 +90,9 @@ class ReportController {
     generatePdf(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const token = req.params.token;
-            const max = (req.params.max);
-            const reports = yield this.reportService.allReports(token, max);
+            const max = req.params.max;
             try {
-                if (!reports) {
-                    throw new Error('No se encontraron informes para el token especificado');
-                }
-                const doc = new PDFDocument();
-                const fecha = new Date(); // Fecha actual
-                const fechaFormateada = fecha.toLocaleDateString(); // Formato de fecha
-                const horaFormateada = fecha.toLocaleTimeString().slice(0, 5); // Formato de hora
-                doc.image('template/logo.png', 50, 50, { width: 60 });
-                // Agregar los datos de cada informe a la plantilla PDF
-                doc.fontSize(24).font('Helvetica-Bold').text(`REPORTE DE DIABETES`, {
-                    align: 'center'
-                });
-                const table = {
-                    headers: ['Nro.', 'Fecha', 'Glucemia (mg/dL)', "Insulina", 'CH', "Categoría"],
-                    rows: yield Promise.all(reports.map((report, index) => __awaiter(this, void 0, void 0, function* () {
-                        return [
-                            (index + 1).toString(),
-                            report.fecha ? new Date(report.fecha).toLocaleString() : '',
-                            report.glucosa ? report.glucosa.toString() : '',
-                            report.unidades_insulina ? report.unidades_insulina.toString() : '',
-                            report.Carbohydrates ? report.Carbohydrates.toString() : ' ',
-                            report.type ? report.type.toString() : ' ',
-                        ];
-                    })))
-                };
-                const tableOptions = {
-                    columns: {
-                        0: { width: 50, align: 'center' },
-                        1: { width: 100, align: 'center' },
-                        2: { width: 100, align: 'center' },
-                        3: { width: 100, align: 'center' },
-                        4: { width: 100, align: 'center' }
-                    },
-                    header: {
-                        fillColor: '#f2f2f2'
-                    },
-                    margin: { top: 50, bottom: 30 },
-                    layout: 'lightHorizontalLines'
-                };
-                doc.moveDown(2);
-                doc.lineWidth(0.5);
-                doc.table(table, tableOptions);
-                doc.end();
-                res.setHeader('Content-Type', 'application/pdf');
-                res.setHeader('Content-Disposition', `attachment; filename=reporte.pdf`);
-                doc.pipe(res);
+                yield this.reportService.generate(token, max, res);
             }
             catch (err) {
                 res.status(400).send(err.message);
