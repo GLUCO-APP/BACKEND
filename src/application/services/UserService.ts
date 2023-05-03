@@ -4,6 +4,8 @@ import * as bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import * as tf from '@tensorflow/tfjs';
 import * as Papa from 'papaparse';
+import { rejects } from "assert";
+const nodemailer = require('nodemailer');
 
 
 export class UserService {
@@ -61,5 +63,113 @@ export class UserService {
 
         return Promise.resolve(result);
 
+    }
+
+
+
+    public verify(email: string): Promise<number> {
+        return new Promise((resolve, reject) => {
+            // Configurar transporte SMTP
+            const transporter = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    user: 'glukoservice@gmail.com',
+                    pass: 'nqfwmxpvzhissilq',
+                },
+            });
+
+            const min = 10000;
+            const max = 99999;
+            const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
+            console.log(randomNumber);
+
+            const mailOptions = {
+                from: 'glukoservice@gmail.com',
+                to: email,
+                subject: 'Verificación de correo electrónico de Gluko',
+                html: `<div>
+                        <style>
+                            p { margin-bottom: 10px; }
+                        </style>
+                        <p>Estimado/a Usuario,</p>
+            
+                        <p>Gracias por registrarte en la aplicación Gluko. Para completar tu registro, necesitamos verificar tu dirección de correo electrónico.</p>
+            
+                        <p>Tu código de verificación es: <strong>${randomNumber}</strong></p>
+            
+                        <p>Por favor, introduce este código en la aplicación para confirmar tu dirección de correo electrónico y continuar el proceso de registro.</p>
+            
+                        <p>Si no te has registrado en Gluko, por favor ignora este correo electrónico.</p>
+            
+                        <p>Gracias por elegir Gluko. Si tienes alguna pregunta o problema, por favor no dudes en contactar con nosotros.</p>
+            
+                        <p>Atentamente,</p>
+                        <p>Equipo de Gluko</p>
+                    </div>`
+            };
+            transporter.sendMail(mailOptions, (error: Error | null, info: any) => {
+                if (error) {
+                    console.log(error);
+                    reject(500); 
+                } else {
+                    console.log('Correo electrónico enviado: ' + info.response);
+                    resolve(randomNumber); // Resuelve la promesa con el número aleatorio generado
+                }
+            });
+        });
+    }
+
+
+
+    public verifyPassword(email: string): Promise<number> {
+        return new Promise((resolve, reject) => {
+            // Configurar transporte SMTP
+            const transporter = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    user: 'glukoservice@gmail.com',
+                    pass: 'nqfwmxpvzhissilq',
+                },
+            });
+
+            const min = 10000;
+            const max = 99999;
+            const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
+            console.log(randomNumber);
+
+            const mailOptions = {
+                from: 'glukoservice@gmail.com',
+                to: email,
+                subject: 'Verificación de cambio de contraseña de Gluko',
+                html: `<div>
+                        <style>
+                            p { margin-bottom: 10px; }
+                        </style>
+                        <p>Estimado/a Usuario,</p>
+            
+                        <p>Hemos recibido una solicitud para cambiar la contraseña de tu cuenta Gluko. Para completar el cambio, necesitamos verificar que es realmente tú quien ha solicitado el cambio.</p>
+            
+                        <p>Tu código de verificación es: <strong>${randomNumber}</strong></p>
+            
+                        <p>Por favor, introduce este código en la aplicación para verificar y completar el cambio de contraseña.</p>
+            
+                        <p>Si no has solicitado cambiar tu contraseña en Gluko, por favor ignora este correo electrónico.</p>
+            
+                        <p>Gracias por elegir Gluko. Si tienes alguna pregunta o problema, por favor no dudes en contactar con nosotros.</p>
+            
+                        <p>Atentamente,</p>
+                        <p>Equipo de Gluko</p>
+                    </div>`
+            };
+            transporter.sendMail(mailOptions, (error: Error | null, info: any) => {
+                if (error) {
+                    console.log(error);
+                    reject(500); 
+                } else {
+                    console.log('Correo electrónico enviado: ' + info.response);
+                    resolve(randomNumber); // Resuelve la promesa con el número aleatorio generado
+                }
+            });
+        });
     }
 }

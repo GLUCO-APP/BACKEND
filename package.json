@@ -31,18 +31,18 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "fontkit": "^2.0.2",
     "express-asyncify": "^1.1.0",
+    "fontkit": "^2.0.2",
     "jsonwebtoken": "^9.0.0",
     "moment-timezone": "^0.5.43",
     "morgan": "^1.10.0",
     "mysql2": "^3.2.0",
+    "nodemailer": "^6.9.1",
     "pdf-lib": "^1.17.1",
-    "pdfkit-table": "^0.1.99",
     "pdfkit": "^0.13.0",
+    "pdfkit-table": "^0.1.99",
     "pm2": "^5.3.0",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1"
-
   }
 }
