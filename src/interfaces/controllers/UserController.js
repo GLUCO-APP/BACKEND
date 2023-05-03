@@ -101,5 +101,29 @@ class UserController {
             }
         });
     }
+    verifyEmail(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const email = req.params.email;
+            try {
+                const code = yield this.userService.verify(email);
+                res.status(200).json({ "codigo": code });
+            }
+            catch (err) {
+                res.status(400).send(err.message);
+            }
+        });
+    }
+    verifyPassword(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const email = req.params.email;
+            try {
+                const code = yield this.userService.verifyPassword(email);
+                res.status(200).json({ "codigo": code });
+            }
+            catch (err) {
+                res.status(400).send(err.message);
+            }
+        });
+    }
 }
 exports.UserController = UserController;

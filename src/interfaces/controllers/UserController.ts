@@ -132,4 +132,24 @@ export class UserController {
         }
     }
 
+    public async verifyEmail(req: Request, res: Response): Promise< void > {
+        const email = req.params.email;
+        try {
+            const code = await this.userService.verify(email);
+            res.status(200).json({ "codigo": code  })
+        } catch (err: any) {
+            res.status(400).send(err.message);
+        }
+    }
+
+    public async verifyPassword(req: Request, res: Response): Promise< void > {
+        const email = req.params.email;
+        try {
+            const code = await this.userService.verifyPassword(email);
+            res.status(200).json({ "codigo": code  })
+        } catch (err: any) {
+            res.status(400).send(err.message);
+        }
+    }
+
 }
