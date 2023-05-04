@@ -70,7 +70,7 @@ class PlateService {
             const tensorLabels = tf.tensor2d(normalizedData.map(item => [Number(item.Carbohydrates)]));
             yield model.fit(tensorData, tensorLabels, {
                 batchSize: 32,
-                epochs: 1000,
+                epochs: 100,
                 shuffle: true,
                 callbacks: {
                     onEpochEnd: (epoch, logs) => console.log(`Epoch ${epoch}: loss = ${logs === null || logs === void 0 ? void 0 : logs.loss}`),
@@ -88,6 +88,7 @@ class PlateService {
             const similarPlates = recPlates.filter((plate) => {
                 return Math.abs(plate.Carbohydrates - estimacion) <= tolerancia;
             });
+            // await model.save('file://E:/REPO BACK/BACKEND/src/application/trainedModel');
             console.log(similarPlates);
             return similarPlates;
         });
