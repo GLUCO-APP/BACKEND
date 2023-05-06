@@ -34,6 +34,7 @@ router.get('/report/pdf/:token/:max',reportController.generatePdf.bind(reportCon
 router.post('/socket/:message',socketcontroller.SocketTest.bind(socketcontroller))
 router.get('/user/verifyEmail/:email', usercontroller.verifyEmail.bind(usercontroller))
 router.get('/user/verifyPassword/:email', usercontroller.verifyPassword.bind(usercontroller))
+router.get('/allInsulin',usercontroller.getInsulins.bind(usercontroller))
 
 
 export default router;
