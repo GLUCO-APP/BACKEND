@@ -40,6 +40,11 @@ class UserService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
+    getInsulins() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.userRepository.getInsulins();
+        });
+    }
     addUser(usuario) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.userRepository.add(usuario);

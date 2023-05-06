@@ -32,6 +32,18 @@ class UserController {
     constructor() {
         this.userService = new UserService_1.UserService(new MySQLUserRepository_1.MySQLUserRepository());
     }
+    getInsulins(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const insulins = yield this.userService.getInsulins();
+                res.status(200).json({ success: true, data: insulins });
+            }
+            catch (err) {
+                console.error(err);
+                res.status(500).json({ error: 'Something went wrong' });
+            }
+        });
+    }
     addUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

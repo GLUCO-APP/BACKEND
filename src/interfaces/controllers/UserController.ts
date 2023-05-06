@@ -10,6 +10,15 @@ export class UserController {
     constructor() {
         this.userService = new UserService(new MySQLUserRepository());
     }
+    public async getInsulins(req: Request, res: Response):Promise<void>{
+        try {
+            const insulins = await this.userService.getInsulins();
+            res.status(200).json({ success: true, data: insulins });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Something went wrong' });
+        }
+    }
 
     public async addUser(req: Request, res: Response): Promise<void> {
         try {
