@@ -16,6 +16,18 @@ export class UserService {
         this.userRepository = userRepository;
     }
 
+    public async getInsulinUser(ids:Number[]):Promise<Insulin[]>{
+        return this.userRepository.getInsulinsUser(ids);
+    }
+
+    public async getInsulinids(id:number):Promise<Number[]>{
+        return this.userRepository.getInsulinids(id);
+    }
+
+    public async getId(token:string):Promise<number>{
+        return this.userRepository.getId(token);
+    }
+
     public async getInsulins():Promise<Insulin[]>{
         return this.userRepository.getInsulins();
     }

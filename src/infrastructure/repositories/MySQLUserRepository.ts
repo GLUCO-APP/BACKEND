@@ -8,6 +8,47 @@ import { Insulin } from "../../domain/entities/Insulin";
 
 
 export class MySQLUserRepository implements UserRepository {
+  async getInsulinsUser(ids: Number[]): Promise<Insulin[]> {
+    const cnx = await dbGluko.getConnection();
+    try {
+      const placeholders = ids.map(() => '?').join(',');
+      const query = `SELECT * FROM insulin WHERE id IN (${placeholders})`;
+      const result = await cnx.query(query, ids);
+
+      return result[0] as Insulin[]
+    } finally {
+      cnx.release();
+    }
+  }
+   async getInsulinids(id: number): Promise<Number[]> {
+    const cnx = await dbGluko.getConnection();
+    try {
+      const [rows] = await cnx.execute(
+        "SELECT insulin_id FROM user_x_insulin WHERE user_id = ?",
+        [id]
+      );
+      const insulinIds = (rows as RowDataPacket[]).map((row: any) => row.insulin_id);
+      return insulinIds;
+    } finally {
+      cnx.release();
+    }
+      
+  }
+  async getId(token: string): Promise<number> {
+    const cnx = await dbGluko.getConnection();
+    try {
+      const [rows] = await cnx.execute(
+        "SELECT id FROM usuarios WHERE token = ? LIMIT 1",
+        [token]
+      );
+      const id  = (rows as RowDataPacket[]).length > 0 ?(rows as RowDataPacket[])[0].id.toString() : "";
+      console.log(id);
+      return Number(id);
+    } finally {
+      cnx.release();
+    }
+  }
+  
 
   async getInsulins(): Promise<Insulin[]> {
     const cnx = await dbGluko.getConnection();
