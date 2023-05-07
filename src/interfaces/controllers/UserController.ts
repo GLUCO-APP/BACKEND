@@ -165,8 +165,30 @@ export class UserController {
             const code = await this.userService.verifyPassword(email);
             res.status(200).json({ "codigo": code  })
         } catch (err: any) {
-            res.status(400).send(err.message);
+            res.status(404).send("Email not Found");
         }
     }
 
+    public async changePassword(req: Request, res: Response): Promise< void > {
+        const token = req.params.token;
+        const oldPass = req.params.old;
+        const newPass = req.params.new;
+        try {
+            const code = await this.userService.changePassword(token,oldPass,newPass);
+            res.status(200).json({ "status": code  })
+        } catch (err: any) {
+            res.status(400).send(err.message);
+        }
+    }
+    public async resetPassword(req: Request, res: Response): Promise< void > {
+        const token = req.params.token;
+        const newPass = req.params.new;
+        
+        try {
+            const code = await this.userService.resetPassword(token, newPass);
+            res.status(200).json({ "status": code  })
+        } catch (err: any) {
+            res.status(400).send(err.message);
+        }
+    }
 }

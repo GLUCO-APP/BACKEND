@@ -23,7 +23,6 @@ export class EmergencyService {
             const min = user.hipo;
             const max = user.hyper;
             const obje = user.estable;
-
             if (ind < min) {
                 const food = await this.foodService.getAll();
                 const filteredFood = food.filter((foodItem) => {

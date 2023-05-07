@@ -206,5 +206,54 @@ class MySQLUserRepository {
             }
         });
     }
+    getPass(tkUser) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let cnx;
+            try {
+                cnx = yield dbconfig_1.default.getConnection();
+                const [rows] = yield cnx.execute("SELECT password FROM usuarios WHERE token = ?", [tkUser]);
+                const user = rows;
+                if (user.length === 0) {
+                    return null;
+                }
+                return user[0].password;
+            }
+            catch (error) {
+                console.error(error);
+                return null;
+            }
+            finally {
+                if (cnx) {
+                    cnx.release();
+                }
+            }
+        });
+    }
+    UpdatePass(tkUser, newPass) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log(newPass);
+            const saltRounds = yield bcrypt.genSalt(10);
+            const newHash = yield bcrypt.hash(newPass, saltRounds);
+            let cnx;
+            try {
+                cnx = yield dbconfig_1.default.getConnection();
+                const [rows] = yield cnx.execute("UPDATE usuarios SET password = ? WHERE token = ?", [newHash, tkUser]);
+                const user = rows;
+                if (user.length === 0) {
+                    return null;
+                }
+                return "se actualizo la contrasea";
+            }
+            catch (error) {
+                console.error(error);
+                return null;
+            }
+            finally {
+                if (cnx) {
+                    cnx.release();
+                }
+            }
+        });
+    }
 }
 exports.MySQLUserRepository = MySQLUserRepository;
