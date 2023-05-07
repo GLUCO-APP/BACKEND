@@ -133,6 +133,33 @@ class UserController {
                 res.status(200).json({ "codigo": code });
             }
             catch (err) {
+                res.status(404).send("Email not Found");
+            }
+        });
+    }
+    changePassword(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const token = req.params.token;
+            const oldPass = req.params.old;
+            const newPass = req.params.new;
+            try {
+                const code = yield this.userService.changePassword(token, oldPass, newPass);
+                res.status(200).json({ "status": code });
+            }
+            catch (err) {
+                res.status(400).send(err.message);
+            }
+        });
+    }
+    resetPassword(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const token = req.params.token;
+            const newPass = req.params.new;
+            try {
+                const code = yield this.userService.resetPassword(token, newPass);
+                res.status(200).json({ "status": code });
+            }
+            catch (err) {
                 res.status(400).send(err.message);
             }
         });

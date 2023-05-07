@@ -141,6 +141,60 @@ export class MySQLUserRepository implements UserRepository {
       }
     }
   }
+
+  async getPass(tkUser: string): Promise<string | null> {
+    let cnx;
+    try {
+      cnx = await dbGluko.getConnection();
+      const [rows] = await cnx.execute(
+        "SELECT password FROM usuarios WHERE token = ?",
+        [tkUser]
+      );
+      const user = rows as Usuario[];
+      if (user.length === 0) {
+        return null;
+      }
+      return user[0].password; 
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      if (cnx) {
+        cnx.release();
+      }
+    }
+  }
+
+
+  async UpdatePass(tkUser: string , newPass : string ): Promise<string | null> {
+
+    console.log(newPass)
+    
+    const saltRounds = await bcrypt.genSalt(10);
+    const newHash = await bcrypt.hash(newPass, saltRounds);
+    
+    let cnx;
+    try {
+      cnx = await dbGluko.getConnection();
+      const [rows] = await cnx.execute(
+        "UPDATE usuarios SET password = ? WHERE token = ?",
+        [newHash,tkUser]
+      );
+      const user = rows as Usuario[];
+      if (user.length === 0) {
+        return null;
+      }
+      return "se actualizo la contrasea"; 
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      if (cnx) {
+        cnx.release();
+      }
+    }
+  }
   
+
 
 }

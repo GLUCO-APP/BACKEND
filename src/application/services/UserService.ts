@@ -73,6 +73,7 @@ export class UserService {
 
 
     public verify(email: string): Promise<number> {
+
         return new Promise((resolve, reject) => {
             // Configurar transporte SMTP
             const transporter = nodemailer.createTransport({
@@ -115,7 +116,7 @@ export class UserService {
             transporter.sendMail(mailOptions, (error: Error | null, info: any) => {
                 if (error) {
                     console.log(error);
-                    reject(500); 
+                    reject(500);
                 } else {
                     console.log('Correo electrónico enviado: ' + info.response);
                     resolve(randomNumber); // Resuelve la promesa con el número aleatorio generado
@@ -126,7 +127,13 @@ export class UserService {
 
 
 
-    public verifyPassword(email: string): Promise<number> {
+    public async verifyPassword(email: string): Promise<number> {
+        const existEmail = await this.userRepository.findEmail(email);
+
+        // Verificar si el correo electrónico está registrado
+        if (!existEmail) {
+            throw new Error('El correo electrónico no está registrado.');
+        }
         return new Promise((resolve, reject) => {
             // Configurar transporte SMTP
             const transporter = nodemailer.createTransport({
@@ -136,45 +143,84 @@ export class UserService {
                     pass: 'nqfwmxpvzhissilq',
                 },
             });
-
             const min = 10000;
             const max = 99999;
             const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
-            console.log(randomNumber);
-
             const mailOptions = {
                 from: 'glukoservice@gmail.com',
                 to: email,
                 subject: 'Verificación de cambio de contraseña de Gluko',
                 html: `<div>
-                        <style>
-                            p { margin-bottom: 10px; }
-                        </style>
-                        <p>Estimado/a Usuario,</p>
-            
-                        <p>Hemos recibido una solicitud para cambiar la contraseña de tu cuenta Gluko. Para completar el cambio, necesitamos verificar que es realmente tú quien ha solicitado el cambio.</p>
-            
-                        <p>Tu código de verificación es: <strong>${randomNumber}</strong></p>
-            
-                        <p>Por favor, introduce este código en la aplicación para verificar y completar el cambio de contraseña.</p>
-            
-                        <p>Si no has solicitado cambiar tu contraseña en Gluko, por favor ignora este correo electrónico.</p>
-            
-                        <p>Gracias por elegir Gluko. Si tienes alguna pregunta o problema, por favor no dudes en contactar con nosotros.</p>
-            
-                        <p>Atentamente,</p>
-                        <p>Equipo de Gluko</p>
-                    </div>`
+                    <style>
+                        p { margin-bottom: 10px; }
+                    </style>
+                    <p>Estimado/a Usuario,</p>
+    
+                    <p>Hemos recibido una solicitud para cambiar la contraseña de tu cuenta Gluko. Para completar el cambio, necesitamos verificar que es realmente tú quien ha solicitado el cambio.</p>
+    
+                    <p>Tu código de verificación es: <strong>${randomNumber}</strong></p>
+    
+                    <p>Por favor, introduce este código en la aplicación para verificar y completar el cambio de contraseña.</p>
+    
+                    <p>Si no has solicitado cambiar tu contraseña en Gluko, por favor ignora este correo electrónico.</p>
+    
+                    <p>Gracias por elegir Gluko. Si tienes alguna pregunta o problema, por favor no dudes en contactar con nosotros.</p>
+    
+                    <p>Atentamente,</p>
+                    <p>Equipo de Gluko</p>
+                </div>`
             };
             transporter.sendMail(mailOptions, (error: Error | null, info: any) => {
                 if (error) {
                     console.log(error);
-                    reject(500); 
+                    reject(500);
                 } else {
                     console.log('Correo electrónico enviado: ' + info.response);
-                    resolve(randomNumber); // Resuelve la promesa con el número aleatorio generado
+                    resolve(randomNumber);
                 }
             });
         });
     }
+
+
+    public async changePassword(token: string, oldPass: string, newPass: string): Promise<string> {
+
+
+        // Obtener la contraseña del usuario
+        const tkUser = await this.userRepository.getPass(token);
+        // Comparar la contraseña antigua con la almacenada en la base de datos
+        const match = tkUser && await bcrypt.compare(oldPass, tkUser);
+        // Si la contraseña no coincide o el valor de tkUser está vacío, devolver un mensaje de error
+        if (!match) {
+            return "contraseña incorrecta";
+        }
+        // Si la contraseña coincide, actualizarla con la nueva contraseña
+        try {
+            const response = await this.userRepository.UpdatePass(token, newPass);
+            if (!response) {
+                // En caso de que el valor de respuesta sea null o undefined, se ejecuta esta condición.
+                return "Ocurrió un error al actualizar la contraseña";
+            }
+            return "Contraseña actualizada exitosamente";
+        } catch (error) {
+            console.log(error);
+            return "Ocurrió un error al actualizar la contraseña";
+        }
+    }
+
+    public async resetPassword(token: string, newPass: string): Promise<string> {
+
+        try {
+            const response = await this.userRepository.UpdatePass(token, newPass);
+            if (!response) {
+                return "Ocurrió un error al actualizar la contraseña";
+            }
+            return "Contraseña actualizada exitosamente";
+        } catch (error) {
+            console.log(error);
+            return "Ocurrió un error al actualizar la contraseña";
+        }
+    }
+
+
 }
