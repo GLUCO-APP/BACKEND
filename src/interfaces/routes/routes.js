@@ -33,4 +33,6 @@ router.get('/report/pdf/:token/:max', reportController.generatePdf.bind(reportCo
 router.post('/socket/:message', socketcontroller.SocketTest.bind(socketcontroller));
 router.get('/user/verifyEmail/:email', usercontroller.verifyEmail.bind(usercontroller));
 router.get('/user/verifyPassword/:email', usercontroller.verifyPassword.bind(usercontroller));
+router.put('/user/changePassword/:token/:old/:new', usercontroller.changePassword.bind(usercontroller));
+router.put('/user/resetPassword/:token/:new', usercontroller.resetPassword.bind(usercontroller));
 exports.default = router;
