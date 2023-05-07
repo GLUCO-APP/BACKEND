@@ -2,6 +2,7 @@ import { MySQLPlateRepository } from "../../infrastructure/repositories/MySQLPla
 import { Plate } from "../../domain/entities/Plate";
 import * as tf from '@tensorflow/tfjs';
 import { trdata } from "../../domain/entities/trdata";
+import * as fs from 'fs';
 
 export class PlateService {
 
@@ -44,7 +45,7 @@ export class PlateService {
         const tensorLabels = tf.tensor2d(normalizedData.map(item => [Number(item.Carbohydrates)]));
         await model.fit(tensorData, tensorLabels, {
             batchSize: 32,
-            epochs: 1000,
+            epochs: 100,
             shuffle: true,
             callbacks: {
                 onEpochEnd: (epoch, logs) => console.log(`Epoch ${epoch}: loss = ${logs?.loss}`),
@@ -63,6 +64,7 @@ export class PlateService {
         const similarPlates = recPlates.filter((plate:Plate) => {
             return Math.abs(plate.Carbohydrates-estimacion) <= tolerancia;
         });
+       // await model.save('file://E:/REPO BACK/BACKEND/src/application/trainedModel');
         console.log(similarPlates);
         return similarPlates;
     }

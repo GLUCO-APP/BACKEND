@@ -40,6 +40,11 @@ class UserService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
+    getInsulins() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.userRepository.getInsulins();
+        });
+    }
     addUser(usuario) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.userRepository.add(usuario);
@@ -159,7 +164,6 @@ class UserService {
                 const min = 10000;
                 const max = 99999;
                 const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
-                console.log(randomNumber);
                 const mailOptions = {
                     from: 'glukoservice@gmail.com',
                     to: email,

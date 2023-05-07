@@ -4,9 +4,22 @@ import dbGluko from "../database/dbconfig";
 import mysql, { RowDataPacket } from 'mysql2/promise';
 import * as bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
+import { Insulin } from "../../domain/entities/Insulin";
 
 
 export class MySQLUserRepository implements UserRepository {
+
+  async getInsulins(): Promise<Insulin[]> {
+    const cnx = await dbGluko.getConnection();
+    try {
+      await cnx.beginTransaction();
+      const [rows] = await cnx.query('SELECT * FROM insulin');
+      return rows as Insulin[];
+
+    } finally {
+      cnx.release();
+    }
+  }
   
   async findEmail(email: string): Promise<Usuario | null> {
     const cnx = await dbGluko.getConnection()

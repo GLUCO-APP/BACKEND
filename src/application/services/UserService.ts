@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import * as tf from '@tensorflow/tfjs';
 import * as Papa from 'papaparse';
 import { rejects } from "assert";
+import { Insulin } from "../../domain/entities/Insulin";
 const nodemailer = require('nodemailer');
 
 
@@ -13,6 +14,10 @@ export class UserService {
 
     constructor(userRepository: MySQLUserRepository) {
         this.userRepository = userRepository;
+    }
+
+    public async getInsulins():Promise<Insulin[]>{
+        return this.userRepository.getInsulins();
     }
 
     public async addUser(usuario: Usuario): Promise<string> {

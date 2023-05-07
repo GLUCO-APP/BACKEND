@@ -40,6 +40,19 @@ const dbconfig_1 = __importDefault(require("../database/dbconfig"));
 const bcrypt = __importStar(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class MySQLUserRepository {
+    getInsulins() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                yield cnx.beginTransaction();
+                const [rows] = yield cnx.query('SELECT * FROM insulin');
+                return rows;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
     findEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
