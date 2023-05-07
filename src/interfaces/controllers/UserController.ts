@@ -83,11 +83,19 @@ export class UserController {
     public async getUser(req: Request, res: Response): Promise<void> {
         const token = req.params.token;
         const user = await this.userService.getToken(token);
+        const id  = await this.userService.getId(token);
+        const insulinIds = await this.userService.getInsulinids(id);
+        const ins = await this.userService.getInsulinUser(insulinIds);
+      
+        console.log(ins);
         if (user === null) {
             res.status(404).json({ message: 'Usuario no encontrado' });
+
         } else {
-            const { password, ...userWithoutPassword } = user;
-            res.status(200).json(userWithoutPassword);
+            const { password, ...usuario } = user;
+            const resultado = {usuario, ins};
+    
+            res.status(200).json(resultado);
         }
     }
 

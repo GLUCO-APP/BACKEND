@@ -40,6 +40,47 @@ const dbconfig_1 = __importDefault(require("../database/dbconfig"));
 const bcrypt = __importStar(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class MySQLUserRepository {
+    getInsulinsUser(ids) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                const placeholders = ids.map(() => '?').join(',');
+                const query = `SELECT * FROM insulin WHERE id IN (${placeholders})`;
+                const result = yield cnx.query(query, ids);
+                return result[0];
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
+    getInsulinids(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                const [rows] = yield cnx.execute("SELECT insulin_id FROM user_x_insulin WHERE user_id = ?", [id]);
+                const insulinIds = rows.map((row) => row.insulin_id);
+                return insulinIds;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
+    getId(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                const [rows] = yield cnx.execute("SELECT id FROM usuarios WHERE token = ? LIMIT 1", [token]);
+                const id = rows.length > 0 ? rows[0].id.toString() : "";
+                console.log(id);
+                return Number(id);
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
     getInsulins() {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();

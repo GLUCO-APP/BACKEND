@@ -78,12 +78,17 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const token = req.params.token;
             const user = yield this.userService.getToken(token);
+            const id = yield this.userService.getId(token);
+            const insulinIds = yield this.userService.getInsulinids(id);
+            const ins = yield this.userService.getInsulinUser(insulinIds);
+            console.log(ins);
             if (user === null) {
                 res.status(404).json({ message: 'Usuario no encontrado' });
             }
             else {
-                const { password } = user, userWithoutPassword = __rest(user, ["password"]);
-                res.status(200).json(userWithoutPassword);
+                const { password } = user, usuario = __rest(user, ["password"]);
+                const resultado = { usuario, ins };
+                res.status(200).json(resultado);
             }
         });
     }
