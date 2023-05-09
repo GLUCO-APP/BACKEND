@@ -40,6 +40,11 @@ class UserService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
+    getUsetype(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.userRepository.getUsetype(token);
+        });
+    }
     getInsulinUser(ids) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.userRepository.getInsulinsUser(ids);

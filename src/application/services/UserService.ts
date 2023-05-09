@@ -16,6 +16,10 @@ export class UserService {
         this.userRepository = userRepository;
     }
 
+    public async getUsetype(token:String):Promise<String> {
+        return this.userRepository.getUsetype(token);
+    }
+
     public async getInsulinUser(ids:Number[]):Promise<Insulin[]>{
         return this.userRepository.getInsulinsUser(ids);
     }
