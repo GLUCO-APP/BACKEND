@@ -36,4 +36,5 @@ router.get('/user/verifyPassword/:email', usercontroller.verifyPassword.bind(use
 router.put('/user/changePassword/:token/:old/:new', usercontroller.changePassword.bind(usercontroller));
 router.put('/user/resetPassword/:token/:new', usercontroller.resetPassword.bind(usercontroller));
 router.get('/allInsulin', usercontroller.getInsulins.bind(usercontroller));
+router.get('/userType/:token', usercontroller.getUsetype.bind(usercontroller));
 exports.default = router;

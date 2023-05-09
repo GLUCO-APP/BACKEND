@@ -10,6 +10,18 @@ export class UserController {
     constructor() {
         this.userService = new UserService(new MySQLUserRepository());
     }
+    public async getUsetype(req: Request, res: Response):Promise<void>{
+        const token = req.params.token;
+        try {
+            const tipo = await this.userService.getUsetype(token);
+            console.log(tipo)
+            res.status(200).json({ success: true, tipo: tipo });
+
+        }catch (err: any) {
+            console.error(err);
+            res.status(500).send(err.message);
+        }
+    }
     public async getInsulins(req: Request, res: Response):Promise<void>{
         try {
             const insulins = await this.userService.getInsulins();
@@ -50,9 +62,10 @@ export class UserController {
                 objective_carbs,
                 physical_activity,
                 info_adicional,
+                tipo_usuario
             } = req.body;
 
-            const UserData: Usuario = new Usuario(nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional);
+            const UserData: Usuario = new Usuario(nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional,tipo_usuario);
             const resp = await this.userService.addUser(UserData);
             res.status(201).json({ "status": resp });
         } catch (err: any) {
@@ -129,9 +142,10 @@ export class UserController {
                 objective_carbs,
                 physical_activity,
                 info_adicional,
+                tipo_usuario
             } = req.body;
 
-            const UserData: Usuario = new Usuario(nombre, email, " ", fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional);
+            const UserData: Usuario = new Usuario(nombre, email, " ", fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional,tipo_usuario);
             const resp = await this.userService.updateUser(UserData, token);
             res.status(201).json({ "status": resp, "message": "Usuario actualizado" });
         } catch (err: any) {

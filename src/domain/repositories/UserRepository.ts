@@ -8,4 +8,5 @@ export interface UserRepository{
     getId(token:string):Promise<number>
     getInsulinids(id:number):Promise<Number[]>
     getInsulinsUser(ids:Number[]):Promise<Insulin[]>
+    getUsetype(token:String):Promise<String>
 }
