@@ -18,7 +18,7 @@ export class Usuario {
       public hipo: number,
       public sensitivity: number,
       public rate: number,
-      public precis: number,
+      public basal: Date,
       public breakfast_start: Date,
       public breakfast_end:Date,
       public lunch_start: Date,
