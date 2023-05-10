@@ -14,7 +14,8 @@ export class UserController {
     public async testgluService(req: Request, res: Response):Promise<void>{
         const token = req.params.token;
         try {
-            this.userService.smartNotifications(token);
+            const fechapr = await this.userService.smartNotifications(token);
+            res.status(200).send(fechapr);
         }catch (err: any) {
             console.error(err);
             res.status(500).send(err.message);
