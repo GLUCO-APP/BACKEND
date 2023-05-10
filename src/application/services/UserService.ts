@@ -16,7 +16,7 @@ export class UserService {
         this.userRepository = userRepository;
     }
 
-    public async smartNotifications(token:String) {
+    public async smartNotifications(token:String):Promise<String> {
         const glucosalevel = [120,150,96,80,100,124,125,110,70];
         const timeStamps = [
             "2021-10-01 08:00:00", 
@@ -73,7 +73,7 @@ export class UserService {
         const formattedDate: string = now.toLocaleString('es-ES', options);
         console.log(formattedDate);
         console.log(now);
-
+        return formattedDate;
     }
     public async getUsetype(token:String):Promise<String> {
         return this.userRepository.getUsetype(token);

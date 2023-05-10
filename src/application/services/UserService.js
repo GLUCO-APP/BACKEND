@@ -91,6 +91,7 @@ class UserService {
             const formattedDate = now.toLocaleString('es-ES', options);
             console.log(formattedDate);
             console.log(now);
+            return formattedDate;
         });
     }
     getUsetype(token) {
