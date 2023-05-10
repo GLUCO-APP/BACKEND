@@ -32,6 +32,18 @@ class UserController {
     constructor() {
         this.userService = new UserService_1.UserService(new MySQLUserRepository_1.MySQLUserRepository());
     }
+    testgluService(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const token = req.params.token;
+            try {
+                this.userService.smartNotifications(token);
+            }
+            catch (err) {
+                console.error(err);
+                res.status(500).send(err.message);
+            }
+        });
+    }
     getUsetype(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const token = req.params.token;

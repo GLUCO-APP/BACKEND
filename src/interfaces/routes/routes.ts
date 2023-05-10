@@ -38,7 +38,7 @@ router.put('/user/changePassword/:token/:old/:new', usercontroller.changePasswor
 router.put('/user/resetPassword/:token/:new', usercontroller.resetPassword.bind(usercontroller))
 router.get('/allInsulin',usercontroller.getInsulins.bind(usercontroller))
 router.get('/userType/:token',usercontroller.getUsetype.bind(usercontroller))
-
+router.get('/pruebaGlucemia',usercontroller.testgluService.bind(usercontroller))
 
 
 export default router;

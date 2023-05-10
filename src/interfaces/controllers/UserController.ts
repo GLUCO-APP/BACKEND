@@ -10,6 +10,16 @@ export class UserController {
     constructor() {
         this.userService = new UserService(new MySQLUserRepository());
     }
+
+    public async testgluService(req: Request, res: Response):Promise<void>{
+        const token = req.params.token;
+        try {
+            this.userService.smartNotifications(token);
+        }catch (err: any) {
+            console.error(err);
+            res.status(500).send(err.message);
+        }
+    }
     public async getUsetype(req: Request, res: Response):Promise<void>{
         const token = req.params.token;
         try {

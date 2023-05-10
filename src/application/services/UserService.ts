@@ -16,6 +16,65 @@ export class UserService {
         this.userRepository = userRepository;
     }
 
+    public async smartNotifications(token:String) {
+        const glucosalevel = [120,150,96,80,100,124,125,110,70];
+        const timeStamps = [
+            "2021-10-01 08:00:00", 
+            "2021-10-01 09:00:00",
+            "2021-10-01 10:00:00", 
+            "2021-10-01 11:00:00",
+            "2021-10-01 12:00:00", 
+            "2021-10-01 13:00:00",
+            "2021-10-01 14:00:00", 
+            "2021-10-01 15:00:00", 
+            "2021-10-01 16:00:00"
+          ];
+
+          // Dividir los datos en conjuntos de entrenamiento y prueba
+        const numData = glucosalevel.length;
+        const trainingDataSize = 0.8; // El 80% de los datos se usa para entrenamiento
+        const numTrainingData = Math.floor(trainingDataSize * numData);
+
+        const trainData = tf.tensor1d(glucosalevel.slice(0, numTrainingData)); // datos de entrenamiento de glucemia
+        const testData = tf.tensor1d(glucosalevel.slice(numTrainingData)); // datos de prueba de glucemia
+        const testTimeStamps = timeStamps.slice(numTrainingData); // tiempos de prueba
+
+        
+        // Crear modelo secuencial de red neuronal de una sola capa densa
+        const model = tf.sequential();
+        model.add(tf.layers.dense({
+        inputShape: [1], // Una única entrada (la glucemia)
+        units: 1, // Una única salida (predicción de glucemia)
+        }));
+
+        // Definir la función de pérdida y optimizador
+        model.compile({
+        loss: 'meanSquaredError',
+        optimizer: 'adam',
+        });
+
+        // Entrenar el modelo
+        const history = await model.fit(trainData, trainData, { epochs: 100 });
+
+        // Usar el modelo para hacer predicciones
+        const predictions = await model.predict(testData) as tf.Tensor;
+        console.log(predictions);
+        // asumiendo que las predicciones están almacenadas en una variable llamada "predictions"
+        console.log(predictions.arraySync()); // muestra los valores de las predicciones en la consola
+        const now: Date = new Date();
+        const options: Intl.DateTimeFormatOptions = { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+          };
+        const formattedDate: string = now.toLocaleString('es-ES', options);
+        console.log(formattedDate);
+        console.log(now);
+
+    }
     public async getUsetype(token:String):Promise<String> {
         return this.userRepository.getUsetype(token);
     }

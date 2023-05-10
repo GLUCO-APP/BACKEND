@@ -40,6 +40,59 @@ class UserService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
+    smartNotifications(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const glucosalevel = [120, 150, 96, 80, 100, 124, 125, 110, 70];
+            const timeStamps = [
+                "2021-10-01 08:00:00",
+                "2021-10-01 09:00:00",
+                "2021-10-01 10:00:00",
+                "2021-10-01 11:00:00",
+                "2021-10-01 12:00:00",
+                "2021-10-01 13:00:00",
+                "2021-10-01 14:00:00",
+                "2021-10-01 15:00:00",
+                "2021-10-01 16:00:00"
+            ];
+            // Dividir los datos en conjuntos de entrenamiento y prueba
+            const numData = glucosalevel.length;
+            const trainingDataSize = 0.8; // El 80% de los datos se usa para entrenamiento
+            const numTrainingData = Math.floor(trainingDataSize * numData);
+            const trainData = tf.tensor1d(glucosalevel.slice(0, numTrainingData)); // datos de entrenamiento de glucemia
+            const testData = tf.tensor1d(glucosalevel.slice(numTrainingData)); // datos de prueba de glucemia
+            const testTimeStamps = timeStamps.slice(numTrainingData); // tiempos de prueba
+            // Crear modelo secuencial de red neuronal de una sola capa densa
+            const model = tf.sequential();
+            model.add(tf.layers.dense({
+                inputShape: [1],
+                units: 1, // Una única salida (predicción de glucemia)
+            }));
+            // Definir la función de pérdida y optimizador
+            model.compile({
+                loss: 'meanSquaredError',
+                optimizer: 'adam',
+            });
+            // Entrenar el modelo
+            const history = yield model.fit(trainData, trainData, { epochs: 100 });
+            // Usar el modelo para hacer predicciones
+            const predictions = yield model.predict(testData);
+            console.log(predictions);
+            // asumiendo que las predicciones están almacenadas en una variable llamada "predictions"
+            console.log(predictions.arraySync()); // muestra los valores de las predicciones en la consola
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            };
+            const formattedDate = now.toLocaleString('es-ES', options);
+            console.log(formattedDate);
+            console.log(now);
+        });
+    }
     getUsetype(token) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.userRepository.getUsetype(token);
