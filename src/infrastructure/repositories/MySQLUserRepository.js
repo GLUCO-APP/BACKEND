@@ -259,7 +259,7 @@ class MySQLUserRepository {
             }
         });
     }
-    UpdatePass(tkUser, newPass) {
+    UpdatePass(email, newPass) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log(newPass);
             const saltRounds = yield bcrypt.genSalt(10);
@@ -267,7 +267,7 @@ class MySQLUserRepository {
             let cnx;
             try {
                 cnx = yield dbconfig_1.default.getConnection();
-                const [rows] = yield cnx.execute("UPDATE usuarios SET password = ? WHERE token = ?", [newHash, tkUser]);
+                const [rows] = yield cnx.execute("UPDATE usuarios SET password = ? WHERE email = ?", [newHash, email]);
                 const user = rows;
                 if (user.length === 0) {
                     return null;

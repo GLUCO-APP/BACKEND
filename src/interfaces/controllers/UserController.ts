@@ -209,11 +209,11 @@ export class UserController {
         }
     }
     public async resetPassword(req: Request, res: Response): Promise< void > {
-        const token = req.params.token;
+        const email = req.params.token;
         const newPass = req.params.new;
         
         try {
-            const code = await this.userService.resetPassword(token, newPass);
+            const code = await this.userService.resetPassword(email, newPass);
             res.status(200).json({ "status": code  })
         } catch (err: any) {
             res.status(400).send(err.message);
