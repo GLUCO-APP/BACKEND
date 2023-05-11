@@ -241,7 +241,7 @@ export class MySQLUserRepository implements UserRepository {
   }
 
 
-  async UpdatePass(tkUser: string , newPass : string ): Promise<string | null> {
+  async UpdatePass(email: string , newPass : string ): Promise<string | null> {
 
     console.log(newPass)
     
@@ -252,8 +252,8 @@ export class MySQLUserRepository implements UserRepository {
     try {
       cnx = await dbGluko.getConnection();
       const [rows] = await cnx.execute(
-        "UPDATE usuarios SET password = ? WHERE token = ?",
-        [newHash,tkUser]
+        "UPDATE usuarios SET password = ? WHERE email = ?",
+        [newHash,email]
       );
       const user = rows as Usuario[];
       if (user.length === 0) {
@@ -269,7 +269,4 @@ export class MySQLUserRepository implements UserRepository {
       }
     }
   }
-  
-
-
 }
