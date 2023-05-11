@@ -42,25 +42,26 @@ class UserService {
     }
     smartNotifications(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            const glucosalevel = [120, 150, 96, 80, 100, 124, 125, 110, 70];
-            const timeStamps = [
-                "2021-10-01 08:00:00",
-                "2021-10-01 09:00:00",
-                "2021-10-01 10:00:00",
-                "2021-10-01 11:00:00",
-                "2021-10-01 12:00:00",
-                "2021-10-01 13:00:00",
-                "2021-10-01 14:00:00",
-                "2021-10-01 15:00:00",
-                "2021-10-01 16:00:00"
-            ];
+            const glucolevel = yield this.userRepository.getglycemia(token);
+            const glucosalevel = glucolevel.glucemias;
+            const timeStamps = glucolevel.fechas;
+            console.log(glucosalevel);
+            console.log(timeStamps);
+            const gl = glucosalevel.map((stringNumber) => Number(stringNumber));
+            const formattedDates = [];
+            timeStamps.forEach((timeStamps) => {
+                const date = new Date(timeStamps);
+                const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+                formattedDates.push(formattedDate);
+            });
+            console.log(formattedDates);
             // Dividir los datos en conjuntos de entrenamiento y prueba
-            const numData = glucosalevel.length;
+            const numData = gl.length;
             const trainingDataSize = 0.8; // El 80% de los datos se usa para entrenamiento
             const numTrainingData = Math.floor(trainingDataSize * numData);
-            const trainData = tf.tensor1d(glucosalevel.slice(0, numTrainingData)); // datos de entrenamiento de glucemia
-            const testData = tf.tensor1d(glucosalevel.slice(numTrainingData)); // datos de prueba de glucemia
-            const testTimeStamps = timeStamps.slice(numTrainingData); // tiempos de prueba
+            const trainData = tf.tensor1d(gl.slice(0, numTrainingData)); // datos de entrenamiento de glucemia
+            const testData = tf.tensor1d(gl.slice(numTrainingData)); // datos de prueba de glucemia
+            const testTimeStamps = formattedDates.slice(numTrainingData); // tiempos de prueba
             // Crear modelo secuencial de red neuronal de una sola capa densa
             const model = tf.sequential();
             model.add(tf.layers.dense({
@@ -73,7 +74,8 @@ class UserService {
                 optimizer: 'adam',
             });
             // Entrenar el modelo
-            const history = yield model.fit(trainData, trainData, { epochs: 100 });
+            const history = yield model.fit(trainData, trainData, { epochs: 1000 });
+            console.log("llegue");
             // Usar el modelo para hacer predicciones
             const predictions = yield model.predict(testData);
             console.log(predictions);

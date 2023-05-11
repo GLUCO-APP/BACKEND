@@ -5,9 +5,29 @@ import mysql, { RowDataPacket } from 'mysql2/promise';
 import * as bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
 import { Insulin } from "../../domain/entities/Insulin";
+import { glycemia } from "../../domain/entities/glycemia";
 
 
 export class MySQLUserRepository implements UserRepository {
+
+  
+  async getglycemia(token: String): Promise<glycemia> {
+    const cnx = await dbGluko.getConnection();
+    try {  
+      const [rows] = await cnx.execute(
+        "SELECT glucosa,fecha FROM gluko.Report where token = ?",
+        [token]
+      );
+      const glucosaArr: number[] = (rows as RowDataPacket[]).map(row => row.glucosa);
+      const fechaArr: string[] = (rows as RowDataPacket[]).map(row => row.fecha);
+
+      
+      const dataset = new glycemia(glucosaArr,fechaArr);
+      return dataset;
+    } finally {
+      cnx.release();
+    }
+  }
   async getUsetype(token: String): Promise<String> {
     const cnx = await dbGluko.getConnection();
     try {
