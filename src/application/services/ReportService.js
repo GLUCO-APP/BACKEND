@@ -129,8 +129,8 @@ class ReportService {
             const { JSDOM } = jsdom;
             const dom = new JSDOM();
             const canvas = dom.window.document.createElement('canvas');
-            canvas.width = 250;
-            canvas.height = 250;
+            canvas.width = 200;
+            canvas.height = 200;
             const ctx = canvas.getContext('2d');
             if (!ctx) {
                 throw new Error('Canvas rendering context not available');
