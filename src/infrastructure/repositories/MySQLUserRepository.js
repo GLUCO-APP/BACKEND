@@ -39,7 +39,23 @@ exports.MySQLUserRepository = void 0;
 const dbconfig_1 = __importDefault(require("../database/dbconfig"));
 const bcrypt = __importStar(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const glycemia_1 = require("../../domain/entities/glycemia");
 class MySQLUserRepository {
+    getglycemia(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                const [rows] = yield cnx.execute("SELECT glucosa,fecha FROM gluko.Report where token = ?", [token]);
+                const glucosaArr = rows.map(row => row.glucosa);
+                const fechaArr = rows.map(row => row.fecha);
+                const dataset = new glycemia_1.glycemia(glucosaArr, fechaArr);
+                return dataset;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
     getUsetype(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
