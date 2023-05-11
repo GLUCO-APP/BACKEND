@@ -3,6 +3,7 @@ import { UserService } from "../../application/services/UserService";
 import { Usuario } from "../../domain/entities/User";
 import { MySQLUserRepository } from "../../infrastructure/repositories/MySQLUserRepository";
 import morgan from "morgan";
+import { Server } from 'socket.io';
 
 export class UserController {
     private userService: UserService;
@@ -96,6 +97,8 @@ export class UserController {
                 this.userService.login(email, password),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
             ]);
+            const io: Server = req.app.get('socketIo');
+            io.emit((token as string),"prueba de notificacion parcular 😎")
             res.status(200).json({ "status": token })
 
         } catch (err: any) {
