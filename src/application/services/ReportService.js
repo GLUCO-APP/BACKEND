@@ -133,7 +133,7 @@ class ReportService {
             canvas.height = 200;
             const ctx = canvas.getContext('2d');
             if (!ctx) {
-                throw new Error('Canvas rendering context not available');
+                throw new Error('Canvas rendering context not disponible');
             }
             const labels = [`Hiper (${((countHiper / total) * 100).toFixed(2)}%)`, `Hipo (${((countHipo / total) * 100).toFixed(2)}%)`, `Normal (${((countNormal / total) * 100).toFixed(2)}%)`];
             const backgroundColor = [
