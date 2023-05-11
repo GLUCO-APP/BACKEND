@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MySQLReportRepository = void 0;
 const dbconfig_1 = __importDefault(require("../database/dbconfig"));
+//const PDFDocument = require("pdfkit-table");
 class MySQLReportRepository {
     lastReport(token) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -141,6 +142,29 @@ class MySQLReportRepository {
             }
             finally {
                 cnx.release();
+            }
+        });
+    }
+    getToken(tkUser) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let cnx;
+            try {
+                cnx = yield dbconfig_1.default.getConnection();
+                const [rows] = yield cnx.execute("SELECT nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional FROM usuarios WHERE token = ?", [tkUser]);
+                const user = rows;
+                if (user.length === 0) {
+                    return null;
+                }
+                return user[0];
+            }
+            catch (error) {
+                console.error(error);
+                return null;
+            }
+            finally {
+                if (cnx) {
+                    cnx.release();
+                }
             }
         });
     }

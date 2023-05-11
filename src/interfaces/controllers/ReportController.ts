@@ -87,14 +87,13 @@ export class ReportController {
             res.status(400).send(err.message);
         }
     }
-
-
-
-
-
-
-
-
-
-
+    public async generatePdfGraf(req: Request, res: Response): Promise<void> {
+        const token = req.params.token;
+        const max = req.params.max;
+        try {
+            await this.reportService.generateCircle(token, res);
+        } catch (err: any) {
+            res.status(400).send(err.message);
+        }
+    }
 }

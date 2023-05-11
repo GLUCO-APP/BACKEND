@@ -8,9 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReportService = void 0;
-const PDFDocument = require("pdfkit-table");
+const PDFDocumentTable = require("pdfkit-table");
+const PDFDocument = require("pdfkit");
+const auto_1 = __importDefault(require("chart.js/auto"));
+const jsdom = require("jsdom");
+const fs = require('fs');
 class ReportService {
     constructor(reportRepository) {
         this.reportRepository = reportRepository;
@@ -47,7 +54,7 @@ class ReportService {
                 if (!reports) {
                     throw new Error('No se encontraron informes para el token especificado');
                 }
-                const doc = new PDFDocument();
+                const doc = new PDFDocumentTable();
                 const fecha = new Date(); // Fecha actual
                 const fechaFormateada = fecha.toLocaleDateString(); // Formato de fecha
                 const horaFormateada = fecha.toLocaleTimeString().slice(0, 5); // Formato de hora
@@ -91,6 +98,83 @@ class ReportService {
                 res.setHeader('Content-Type', 'application/pdf');
                 res.setHeader('Content-Disposition', `attachment; filename=reporte.pdf`);
                 doc.pipe(res);
+            }
+            catch (err) {
+                res.status(400).send(err.message);
+            }
+        });
+    }
+    generatePieChart(token, max, hipo, hiper) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const reports = yield this.allReports(token, max);
+            if (!reports) {
+                throw new Error('No se encontraron reportes para el usuario especificado');
+            }
+            let countHipo = 0;
+            let countNormal = 0;
+            let countHiper = 0;
+            for (const report of reports) {
+                if (report.glucosa > hiper) {
+                    countHiper++;
+                }
+                else if (report.glucosa < hipo) {
+                    countHipo++;
+                }
+                else {
+                    countNormal++;
+                }
+            }
+            console.log(`Número de reportes con niveles de glucosa hipo: ${countHipo}`);
+            console.log(`Número de reportes con niveles de glucosa normales: ${countNormal}`);
+            console.log(`Número de reportes con niveles de glucosa hiper: ${countHiper}`);
+            const data = [countHiper, countHipo, countNormal];
+            const { JSDOM } = jsdom;
+            const dom = new JSDOM();
+            const canvas = dom.window.document.createElement('canvas');
+            canvas.width = 250;
+            canvas.height = 250;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                throw new Error('Canvas rendering context not available');
+            }
+            const labels = ['Hiper', 'Hipo', 'Normal'];
+            const backgroundColor = [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)'
+            ];
+            const myChart = new auto_1.default(ctx, {
+                type: 'pie',
+                data: {
+                    labels,
+                    datasets: [{
+                            data,
+                            backgroundColor
+                        }]
+                }
+            });
+            const chartDataUrl = canvas.toDataURL();
+            const chartImage = Buffer.from(chartDataUrl.split(',')[1], 'base64');
+            return chartImage;
+        });
+    }
+    generateCircle(token, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const doc = new PDFDocument();
+            const user = yield this.reportRepository.getToken(token);
+            const hipooo = user === null || user === void 0 ? void 0 : user.hipo;
+            const hipo = typeof (user === null || user === void 0 ? void 0 : user.hipo) === 'number' ? user === null || user === void 0 ? void 0 : user.hipo : 0;
+            const hiper = typeof (user === null || user === void 0 ? void 0 : user.hyper) === 'number' ? user === null || user === void 0 ? void 0 : user.hyper : 0;
+            console.log(hipooo, hiper);
+            try {
+                const chartImage7 = yield this.generatePieChart(token, "7", hipo, hiper);
+                //const chartImage15 = await this.generatePieChart(15);
+                //const chartImage30 = await this.generatePieChart(30);
+                doc.image(chartImage7);
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', `attachment; filename=report.pdf`);
+                doc.pipe(res);
+                doc.end();
             }
             catch (err) {
                 res.status(400).send(err.message);

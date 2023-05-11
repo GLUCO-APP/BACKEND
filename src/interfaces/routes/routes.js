@@ -30,6 +30,7 @@ router.get('/report/lastI/:token', reportController.lastReportI.bind(reportContr
 router.get('/report/all/:token/:max', reportController.allReports.bind(reportController));
 router.get('/recomendationTest/:token', plateController.trainTest.bind(plateController));
 router.get('/report/pdf/:token/:max', reportController.generatePdf.bind(reportController));
+router.get('/report/pdf/:token', reportController.generatePdfGraf.bind(reportController));
 router.post('/socket/:message', socketcontroller.SocketTest.bind(socketcontroller));
 router.get('/user/verifyEmail/:email', usercontroller.verifyEmail.bind(usercontroller));
 router.get('/user/verifyPassword/:email', usercontroller.verifyPassword.bind(usercontroller));

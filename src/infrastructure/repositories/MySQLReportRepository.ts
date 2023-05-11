@@ -1,11 +1,17 @@
+import PDFDocumentWithTables from "pdfkit-table";
 import { Report } from "../../domain/entities/Report";
-import { ReportPDF} from "../../domain/entities/ReportPDF";
+import { Usuario } from "../../domain/entities/User";
+import { ReportPDF } from "../../domain/entities/ReportPDF";
 import { dailyRep } from "../../domain/entities/dailyRep";
 import { ReportRepository } from "../../domain/repositories/ReportRepository";
 import dbGluko from "../database/dbconfig";
 import mysql, { RowDataPacket } from 'mysql2/promise';
 
-export class MySQLReportRepository implements ReportRepository {
+//const PDFDocument = require("pdfkit-table");
+
+
+
+export class MySQLReportRepository implements ReportRepository  {
 
     async lastReport(token: string): Promise<Report | null> {
         const cnx = await dbGluko.getConnection();
@@ -68,7 +74,7 @@ export class MySQLReportRepository implements ReportRepository {
             cnx.release();
         }
     }
-    
+
 
     async add(Report: Report): Promise<Report> {
         const cnx = await dbGluko.getConnection();
@@ -141,5 +147,29 @@ export class MySQLReportRepository implements ReportRepository {
             cnx.release();
         }
     }
+
+    async getToken(tkUser: string): Promise<Usuario | null> {
+        let cnx;
+        try {
+            cnx = await dbGluko.getConnection();
+            const [rows] = await cnx.execute(
+                "SELECT nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional FROM usuarios WHERE token = ?",
+                [tkUser]
+            );
+            const user = rows as Usuario[];
+            if (user.length === 0) {
+                return null;
+            }
+            return user[0];
+        } catch (error) {
+            console.error(error);
+            return null;
+        } finally {
+            if (cnx) {
+                cnx.release();
+            }
+        }
+    }
+
 
 }
