@@ -187,7 +187,7 @@ class UserController {
     }
     resetPassword(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const email = req.params.token;
+            const email = req.params.email;
             const newPass = req.params.new;
             try {
                 const code = yield this.userService.resetPassword(email, newPass);
