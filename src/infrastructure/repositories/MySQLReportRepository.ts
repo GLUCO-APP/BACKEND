@@ -11,7 +11,7 @@ import mysql, { RowDataPacket } from 'mysql2/promise';
 
 
 
-export class MySQLReportRepository implements ReportRepository  {
+export class MySQLReportRepository implements ReportRepository {
 
     async lastReport(token: string): Promise<Report | null> {
         const cnx = await dbGluko.getConnection();
@@ -153,7 +153,7 @@ export class MySQLReportRepository implements ReportRepository  {
         try {
             cnx = await dbGluko.getConnection();
             const [rows] = await cnx.execute(
-                "SELECT nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional FROM usuarios WHERE token = ?",
+                "SELECT nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional, tipo_usuario FROM usuarios WHERE token = ?",
                 [tkUser]
             );
             const user = rows as Usuario[];

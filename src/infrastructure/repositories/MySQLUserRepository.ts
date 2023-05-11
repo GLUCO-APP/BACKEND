@@ -8,6 +8,61 @@ import { Insulin } from "../../domain/entities/Insulin";
 
 
 export class MySQLUserRepository implements UserRepository {
+  async getUsetype(token: String): Promise<String> {
+    const cnx = await dbGluko.getConnection();
+    try {
+      const [rows] = await cnx.execute(
+        "SELECT tipo_usuario FROM usuarios WHERE token  = ?",
+        [token]
+      );
+      const tipo  = (rows as RowDataPacket[]).length > 0 ?(rows as RowDataPacket[])[0].tipo_usuario.toString() : "";
+      console.log(tipo)
+      return tipo;
+    } finally {
+      cnx.release();
+    }
+  }
+  async getInsulinsUser(ids: Number[]): Promise<Insulin[]> {
+    const cnx = await dbGluko.getConnection();
+    try {
+      const placeholders = ids.map(() => '?').join(',');
+      const query = `SELECT * FROM insulin WHERE id IN (${placeholders})`;
+      const result = await cnx.query(query, ids);
+
+      return result[0] as Insulin[]
+    } finally {
+      cnx.release();
+    }
+  }
+   async getInsulinids(id: number): Promise<Number[]> {
+    const cnx = await dbGluko.getConnection();
+    try {
+      const [rows] = await cnx.execute(
+        "SELECT insulin_id FROM user_x_insulin WHERE user_id = ?",
+        [id]
+      );
+      const insulinIds = (rows as RowDataPacket[]).map((row: any) => row.insulin_id);
+      return insulinIds;
+    } finally {
+      cnx.release();
+    }
+      
+  }
+  async getId(token: string): Promise<number> {
+    const cnx = await dbGluko.getConnection();
+    try {
+      const [rows] = await cnx.execute(
+        "SELECT id FROM usuarios WHERE token = ? LIMIT 1",
+        [token]
+      );
+      const id  = (rows as RowDataPacket[]).length > 0 ?(rows as RowDataPacket[])[0].id.toString() : "";
+      console.log(id);
+      return Number(id);
+    } finally {
+      cnx.release();
+    }
+  }
+  
 
   async getInsulins(): Promise<Insulin[]> {
     const cnx = await dbGluko.getConnection();
@@ -71,8 +126,8 @@ export class MySQLUserRepository implements UserRepository {
       const hashedpass = await bcrypt.hash(usuario.password, salt);
       await cnx.beginTransaction();
       const [result] = await cnx.query(
-        'INSERT INTO usuarios (nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional, token) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
-        [usuario.nombre, usuario.email, hashedpass, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, token]
+        'INSERT INTO usuarios (nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional, token,tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
+        [usuario.nombre, usuario.email, hashedpass, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, token,usuario.tipo_usuario]
       );
 
       const id = (result as mysql.OkPacket).insertId;
@@ -98,7 +153,7 @@ export class MySQLUserRepository implements UserRepository {
     try {
       cnx = await dbGluko.getConnection();
       const [rows] = await cnx.execute(
-        "SELECT nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional FROM usuarios WHERE token = ?",
+        "SELECT nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional, tipo_usuario FROM usuarios WHERE token = ?",
         [tkUser]
       );
       const user = rows as Usuario[];
@@ -129,7 +184,7 @@ export class MySQLUserRepository implements UserRepository {
       }
       await cnx.execute(
         "UPDATE usuarios SET nombre = ?, email = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ?, precis = ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ? WHERE token = ?",
-        [usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.precis, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, tokenUser]
+        [usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, tokenUser]
       );
       return usuario;
     } catch (error) {

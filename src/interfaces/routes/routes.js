@@ -32,9 +32,12 @@ router.get('/recomendationTest/:token', plateController.trainTest.bind(plateCont
 router.get('/report/pdf/:token/:max', reportController.generatePdf.bind(reportController));
 router.get('/report/pdf/:token', reportController.generatePdfGraf.bind(reportController));
 router.post('/socket/:message', socketcontroller.SocketTest.bind(socketcontroller));
+router.post('/socket/:socket/:message', socketcontroller.SocketTest.bind(socketcontroller));
 router.get('/user/verifyEmail/:email', usercontroller.verifyEmail.bind(usercontroller));
 router.get('/user/verifyPassword/:email', usercontroller.verifyPassword.bind(usercontroller));
 router.put('/user/changePassword/:token/:old/:new', usercontroller.changePassword.bind(usercontroller));
 router.put('/user/resetPassword/:token/:new', usercontroller.resetPassword.bind(usercontroller));
 router.get('/allInsulin', usercontroller.getInsulins.bind(usercontroller));
+router.get('/userType/:token', usercontroller.getUsetype.bind(usercontroller));
+router.get('/pruebaGlucemia', usercontroller.testgluService.bind(usercontroller));
 exports.default = router;

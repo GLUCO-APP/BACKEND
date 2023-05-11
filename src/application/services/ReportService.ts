@@ -94,22 +94,18 @@ export class ReportService {
 
 
 
-
-
     public async generatePieChart(token: string, max: string, hipo: number, hiper: number) {
 
         const reports = await this.allReports(token, max);
-
+    
         if(!reports){
             throw new Error('No se encontraron reportes para el usuario especificado');
         }
-
+    
         let countHipo = 0;
         let countNormal = 0;
         let countHiper = 0;
-
-        
-
+    
         for (const report of reports) {
             if (report.glucosa > hiper) {
                 countHiper++;
@@ -119,30 +115,27 @@ export class ReportService {
                 countNormal++;
             }
         }
-
-        console.log(`Número de reportes con niveles de glucosa hipo: ${countHipo}`);
-        console.log(`Número de reportes con niveles de glucosa normales: ${countNormal}`);
-        console.log(`Número de reportes con niveles de glucosa hiper: ${countHiper}`);
-
-        const data = [countHiper, countHipo, countNormal]
+    
+        const total = countHipo + countNormal + countHiper;
+        const data = [countHiper, countHipo, countNormal];
         const { JSDOM } = jsdom;
         const dom = new JSDOM();
         const canvas = dom.window.document.createElement('canvas');
         canvas.width = 250;
         canvas.height = 250;
         const ctx = canvas.getContext('2d');
-
+    
         if (!ctx) {
             throw new Error('Canvas rendering context not available');
         }
-
-        const labels = ['Hiper', 'Hipo', 'Normal'];
+    
+        const labels = [`Hiper (${((countHiper / total) * 100).toFixed(2)}%)`, `Hipo (${((countHipo / total) * 100).toFixed(2)}%)`, `Normal (${((countNormal / total) * 100).toFixed(2)}%)`];
         const backgroundColor = [
             'rgba(255, 99, 132, 0.2)',
             'rgba(75, 192, 192, 0.2)',
             'rgba(54, 162, 235, 0.2)'
         ];
-
+    
         const myChart = new Chart(ctx, {
             type: 'pie',
             data: {
@@ -153,7 +146,7 @@ export class ReportService {
                 }]
             }
         });
-
+    
         const chartDataUrl = canvas.toDataURL();
         const chartImage = Buffer.from(chartDataUrl.split(',')[1], 'base64');
         return chartImage;
@@ -168,15 +161,17 @@ export class ReportService {
         const hipo = typeof user?.hipo === 'number' ? user?.hipo : 0;
         const hiper = typeof user?.hyper === 'number' ? user?.hyper : 0;
 
-        console.log (hipooo , hiper )
+        
         try {
 
             const chartImage7 = await this.generatePieChart(token, "7", hipo, hiper)
-            //const chartImage15 = await this.generatePieChart(15);
-            //const chartImage30 = await this.generatePieChart(30);
+            const chartImage15 = await this.generatePieChart(token, "15", hipo, hiper);
+            const chartImage30 = await this.generatePieChart(token, "30", hipo, hiper);
 
 
             doc.image(chartImage7);
+            doc.image(chartImage15);
+            doc.image(chartImage30);
 
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=report.pdf`);

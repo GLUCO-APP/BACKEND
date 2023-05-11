@@ -32,6 +32,33 @@ class UserController {
     constructor() {
         this.userService = new UserService_1.UserService(new MySQLUserRepository_1.MySQLUserRepository());
     }
+    testgluService(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const token = req.params.token;
+            try {
+                const fechapr = yield this.userService.smartNotifications(token);
+                res.status(200).send(fechapr);
+            }
+            catch (err) {
+                console.error(err);
+                res.status(500).send(err.message);
+            }
+        });
+    }
+    getUsetype(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const token = req.params.token;
+            try {
+                const tipo = yield this.userService.getUsetype(token);
+                console.log(tipo);
+                res.status(200).json({ success: true, tipo: tipo });
+            }
+            catch (err) {
+                console.error(err);
+                res.status(500).send(err.message);
+            }
+        });
+    }
     getInsulins(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -47,8 +74,8 @@ class UserController {
     addUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional, } = req.body;
-                const UserData = new User_1.Usuario(nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional);
+                const { nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional, tipo_usuario } = req.body;
+                const UserData = new User_1.Usuario(nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional, tipo_usuario);
                 const resp = yield this.userService.addUser(UserData);
                 res.status(201).json({ "status": resp });
             }
@@ -67,6 +94,8 @@ class UserController {
                     this.userService.login(email, password),
                     new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
                 ]);
+                const io = req.app.get('socketIo');
+                io.emit(token, "prueba de notificacion parcular 😎");
                 res.status(200).json({ "status": token });
             }
             catch (err) {
@@ -78,12 +107,17 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const token = req.params.token;
             const user = yield this.userService.getToken(token);
+            const id = yield this.userService.getId(token);
+            const insulinIds = yield this.userService.getInsulinids(id);
+            const ins = yield this.userService.getInsulinUser(insulinIds);
+            console.log(ins);
             if (user === null) {
                 res.status(404).json({ message: 'Usuario no encontrado' });
             }
             else {
-                const { password } = user, userWithoutPassword = __rest(user, ["password"]);
-                res.status(200).json(userWithoutPassword);
+                const { password } = user, usuario = __rest(user, ["password"]);
+                const resultado = { usuario, ins };
+                res.status(200).json(resultado);
             }
         });
     }
@@ -91,8 +125,8 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const token = req.params.token;
             try {
-                const { nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional, } = req.body;
-                const UserData = new User_1.Usuario(nombre, email, " ", fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional);
+                const { nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional, tipo_usuario } = req.body;
+                const UserData = new User_1.Usuario(nombre, email, " ", fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional, tipo_usuario);
                 const resp = yield this.userService.updateUser(UserData, token);
                 res.status(201).json({ "status": resp, "message": "Usuario actualizado" });
             }

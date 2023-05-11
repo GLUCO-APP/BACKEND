@@ -124,9 +124,7 @@ class ReportService {
                     countNormal++;
                 }
             }
-            console.log(`Número de reportes con niveles de glucosa hipo: ${countHipo}`);
-            console.log(`Número de reportes con niveles de glucosa normales: ${countNormal}`);
-            console.log(`Número de reportes con niveles de glucosa hiper: ${countHiper}`);
+            const total = countHipo + countNormal + countHiper;
             const data = [countHiper, countHipo, countNormal];
             const { JSDOM } = jsdom;
             const dom = new JSDOM();
@@ -137,7 +135,7 @@ class ReportService {
             if (!ctx) {
                 throw new Error('Canvas rendering context not available');
             }
-            const labels = ['Hiper', 'Hipo', 'Normal'];
+            const labels = [`Hiper (${((countHiper / total) * 100).toFixed(2)}%)`, `Hipo (${((countHipo / total) * 100).toFixed(2)}%)`, `Normal (${((countNormal / total) * 100).toFixed(2)}%)`];
             const backgroundColor = [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(75, 192, 192, 0.2)',
@@ -165,12 +163,13 @@ class ReportService {
             const hipooo = user === null || user === void 0 ? void 0 : user.hipo;
             const hipo = typeof (user === null || user === void 0 ? void 0 : user.hipo) === 'number' ? user === null || user === void 0 ? void 0 : user.hipo : 0;
             const hiper = typeof (user === null || user === void 0 ? void 0 : user.hyper) === 'number' ? user === null || user === void 0 ? void 0 : user.hyper : 0;
-            console.log(hipooo, hiper);
             try {
                 const chartImage7 = yield this.generatePieChart(token, "7", hipo, hiper);
-                //const chartImage15 = await this.generatePieChart(15);
-                //const chartImage30 = await this.generatePieChart(30);
+                const chartImage15 = yield this.generatePieChart(token, "15", hipo, hiper);
+                const chartImage30 = yield this.generatePieChart(token, "30", hipo, hiper);
                 doc.image(chartImage7);
+                doc.image(chartImage15);
+                doc.image(chartImage30);
                 res.setHeader('Content-Type', 'application/pdf');
                 res.setHeader('Content-Disposition', `attachment; filename=report.pdf`);
                 doc.pipe(res);

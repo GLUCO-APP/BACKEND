@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Usuario = void 0;
 class Usuario {
-    constructor(nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional) {
+    constructor(nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional, tipo_usuario) {
         this.nombre = nombre;
         this.email = email;
         this.password = password;
@@ -19,7 +19,7 @@ class Usuario {
         this.hipo = hipo;
         this.sensitivity = sensitivity;
         this.rate = rate;
-        this.precis = precis;
+        this.basal = basal;
         this.breakfast_start = breakfast_start;
         this.breakfast_end = breakfast_end;
         this.lunch_start = lunch_start;
@@ -30,6 +30,7 @@ class Usuario {
         this.objective_carbs = objective_carbs;
         this.physical_activity = physical_activity;
         this.info_adicional = info_adicional;
+        this.tipo_usuario = tipo_usuario;
     }
 }
 exports.Usuario = Usuario;
