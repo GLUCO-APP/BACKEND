@@ -243,8 +243,6 @@ export class MySQLUserRepository implements UserRepository {
 
   async UpdatePass(email: string , newPass : string ): Promise<string | null> {
 
-    console.log(newPass)
-    
     const saltRounds = await bcrypt.genSalt(10);
     const newHash = await bcrypt.hash(newPass, saltRounds);
     

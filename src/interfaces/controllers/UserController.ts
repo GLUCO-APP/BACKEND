@@ -209,7 +209,7 @@ export class UserController {
         }
     }
     public async resetPassword(req: Request, res: Response): Promise< void > {
-        const email = req.params.token;
+        const email = req.params.email;
         const newPass = req.params.new;
         
         try {

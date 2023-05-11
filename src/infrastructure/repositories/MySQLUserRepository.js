@@ -261,7 +261,6 @@ class MySQLUserRepository {
     }
     UpdatePass(email, newPass) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(newPass);
             const saltRounds = yield bcrypt.genSalt(10);
             const newHash = yield bcrypt.hash(newPass, saltRounds);
             let cnx;
