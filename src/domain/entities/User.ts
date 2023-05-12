@@ -29,7 +29,7 @@ export class Usuario {
       public objective_carbs: number,
       public physical_activity: number,
       public info_adicional: string,
-      public tipo_usuario:string
+      public tipo_usuario?:string
     ) {}
     
 
