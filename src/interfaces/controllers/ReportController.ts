@@ -7,6 +7,7 @@ import { Report } from "../../domain/entities/Report";
 import moment from 'moment-timezone';
 import { MySQLUserRepository } from "../../infrastructure/repositories/MySQLUserRepository";
 import { MySQLPlateRepository } from "../../infrastructure/repositories/MySQLPlateRepository";
+import { Server } from "socket.io";
 
 
 
@@ -33,6 +34,18 @@ export class ReportController {
             const { id_plato, token_usuario, glucosa, unidades_insulina } = req.body;
             const reportData: Report = new Report(id_plato, token_usuario, glucosa, fechaActual, unidades_insulina);
             const report = await this.reportService.addReport(reportData);
+            const predict = await this.userService.smartNotifications(token_usuario)
+            const io: Server = req.app.get('socketIo');
+            for (let i = 0; i < predict.length; i++) {
+                const prediction = predict[i];
+                if(prediction>0){
+                    if (prediction < 60) {
+                        io.emit(token_usuario, "Tu glucemia podria bajar 😰");
+                    } else if (prediction > 250) {
+                        io.emit(token_usuario, "Tu glucemia podria subir 🥵");
+                    }
+                }
+            }
             res.status(201).json(report);
         } catch (err: any) {
             res.status(400).send(err.message)

@@ -80,20 +80,10 @@ class UserService {
             const predictions = yield model.predict(testData);
             console.log(predictions);
             // asumiendo que las predicciones están almacenadas en una variable llamada "predictions"
-            console.log(predictions.arraySync()); // muestra los valores de las predicciones en la consola
-            const now = new Date();
-            const options = {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric'
-            };
-            const formattedDate = now.toLocaleString('es-ES', options);
-            console.log(formattedDate);
-            console.log(now);
-            return formattedDate;
+            const predictionsArray = predictions.arraySync();
+            // muestra los valores de las predicciones en la consola
+            console.log(predictionsArray);
+            return predictionsArray;
         });
     }
     getUsetype(token) {

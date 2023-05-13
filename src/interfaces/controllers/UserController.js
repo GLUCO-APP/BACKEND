@@ -36,8 +36,8 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const token = req.params.token;
             try {
-                const fechapr = yield this.userService.smartNotifications(token);
-                res.status(200).send(fechapr);
+                yield this.userService.smartNotifications(token);
+                res.status(200).send("Prueba ejecutada");
             }
             catch (err) {
                 console.error(err);
