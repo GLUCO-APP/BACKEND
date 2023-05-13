@@ -73,7 +73,13 @@ class MySQLPlateRepository {
                 };
                 // Insertar los registros correspondientes en la tabla Plate_x_Food
                 for (const food of plate.foods) {
-                    yield cnx.execute('INSERT INTO Plate_x_Food (plate_id, food_id) VALUES (?, ?);', [id, food.id]);
+                    const [rows] = yield cnx.execute('SELECT * FROM Plate_x_Food WHERE plate_id = ? AND food_id = ?;', [id, food.id]);
+                    if (rows.length == 0) {
+                        yield cnx.execute('INSERT INTO Plate_x_Food (plate_id, food_id) VALUES (?, ?);', [id, food.id]);
+                    }
+                    else {
+                        yield cnx.execute('UPDATE Plate_x_Food SET cantidad = cantidad + 1 WHERE plate_id = ? AND food_id = ?;', [id, food.id]);
+                    }
                 }
                 yield cnx.query('COMMIT');
                 return newPlate;
