@@ -222,7 +222,7 @@ class MySQLUserRepository {
                 if (!existingUser) {
                     throw new Error(`No se encontró un usuario con el ID ${tokenUser}`);
                 }
-                yield cnx.execute("UPDATE usuarios SET nombre = ?, email = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ?, precis = ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ? WHERE token = ?", [usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, tokenUser]);
+                yield cnx.execute("UPDATE usuarios SET nombre = ?, email = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ? , basal= ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ? WHERE token = ?", [usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, tokenUser]);
                 return usuario;
             }
             catch (error) {
@@ -259,15 +259,14 @@ class MySQLUserRepository {
             }
         });
     }
-    UpdatePass(tkUser, newPass) {
+    UpdatePass(email, newPass) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(newPass);
             const saltRounds = yield bcrypt.genSalt(10);
             const newHash = yield bcrypt.hash(newPass, saltRounds);
             let cnx;
             try {
                 cnx = yield dbconfig_1.default.getConnection();
-                const [rows] = yield cnx.execute("UPDATE usuarios SET password = ? WHERE token = ?", [newHash, tkUser]);
+                const [rows] = yield cnx.execute("UPDATE usuarios SET password = ? WHERE email = ?", [newHash, email]);
                 const user = rows;
                 if (user.length === 0) {
                     return null;

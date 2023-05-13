@@ -34,7 +34,7 @@ router.post('/socket/:socket/:message', socketcontroller.SocketTest.bind(socketc
 router.get('/user/verifyEmail/:email', usercontroller.verifyEmail.bind(usercontroller));
 router.get('/user/verifyPassword/:email', usercontroller.verifyPassword.bind(usercontroller));
 router.put('/user/changePassword/:token/:old/:new', usercontroller.changePassword.bind(usercontroller));
-router.put('/user/resetPassword/:token/:new', usercontroller.resetPassword.bind(usercontroller));
+router.put('/user/resetPassword/:email/:new', usercontroller.resetPassword.bind(usercontroller));
 router.get('/allInsulin', usercontroller.getInsulins.bind(usercontroller));
 router.get('/userType/:token', usercontroller.getUsetype.bind(usercontroller));
 router.get('/pruebaGlucemia/:token', usercontroller.testgluService.bind(usercontroller));

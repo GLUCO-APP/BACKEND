@@ -279,41 +279,38 @@ class UserService {
     }
     changePassword(token, oldPass, newPass) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Obtener la contraseña del usuario
             const tkUser = yield this.userRepository.getPass(token);
-            // Comparar la contraseña antigua con la almacenada en la base de datos
             const match = tkUser && (yield bcrypt.compare(oldPass, tkUser));
-            // Si la contraseña no coincide o el valor de tkUser está vacío, devolver un mensaje de error
             if (!match) {
                 return "contraseña incorrecta";
             }
-            // Si la contraseña coincide, actualizarla con la nueva contraseña
+            const user = yield this.userRepository.getToken(token);
+            if (!user) {
+                return "No se encontro el usuario";
+            }
             try {
-                const response = yield this.userRepository.UpdatePass(token, newPass);
+                const response = yield this.userRepository.UpdatePass(user === null || user === void 0 ? void 0 : user.email, newPass);
                 if (!response) {
-                    // En caso de que el valor de respuesta sea null o undefined, se ejecuta esta condición.
                     return "Ocurrió un error al actualizar la contraseña";
                 }
                 return "Contraseña actualizada exitosamente";
             }
             catch (error) {
-                console.log(error);
                 return "Ocurrió un error al actualizar la contraseña";
             }
         });
     }
-    resetPassword(token, newPass) {
+    resetPassword(email, newPass) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield this.userRepository.UpdatePass(token, newPass);
+                const response = yield this.userRepository.UpdatePass(email, newPass);
                 if (!response) {
                     return "Ocurrió un error al actualizar la contraseña";
                 }
                 return "Contraseña actualizada exitosamente";
             }
             catch (error) {
-                console.log(error);
-                return "Ocurrió un error al actualizar la contraseña";
+                return "Ocurrió un error";
             }
         });
     }
