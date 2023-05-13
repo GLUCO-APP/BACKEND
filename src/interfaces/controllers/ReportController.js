@@ -31,6 +31,19 @@ class ReportController {
                 const { id_plato, token_usuario, glucosa, unidades_insulina } = req.body;
                 const reportData = new Report_1.Report(id_plato, token_usuario, glucosa, fechaActual, unidades_insulina);
                 const report = yield this.reportService.addReport(reportData);
+                const predict = yield this.userService.smartNotifications(token_usuario);
+                const io = req.app.get('socketIo');
+                for (let i = 0; i < predict.length; i++) {
+                    const prediction = predict[i];
+                    if (prediction > 0) {
+                        if (prediction < 60) {
+                            io.emit(token_usuario, "Tu glucemia podria bajar 😰");
+                        }
+                        else if (prediction > 250) {
+                            io.emit(token_usuario, "Tu glucemia podria subir 🥵");
+                        }
+                    }
+                }
                 res.status(201).json(report);
             }
             catch (err) {

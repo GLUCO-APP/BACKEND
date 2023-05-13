@@ -7,6 +7,7 @@ import * as Papa from 'papaparse';
 import { rejects } from "assert";
 import { Insulin } from "../../domain/entities/Insulin";
 const nodemailer = require('nodemailer');
+import { Server } from 'socket.io';
 
 
 export class UserService {
@@ -16,7 +17,7 @@ export class UserService {
         this.userRepository = userRepository;
     }
 
-    public async smartNotifications(token:String):Promise<String> {
+    public async smartNotifications(token:String):Promise<number[]> {
         const glucolevel = await this.userRepository.getglycemia(token);
 
         const glucosalevel = glucolevel.glucemias;
@@ -67,20 +68,11 @@ export class UserService {
         const predictions = await model.predict(testData) as tf.Tensor;
         console.log(predictions);
         // asumiendo que las predicciones están almacenadas en una variable llamada "predictions"
-        console.log(predictions.arraySync()); // muestra los valores de las predicciones en la consola
-        const now: Date = new Date();
-        const options: Intl.DateTimeFormatOptions = { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric'
-          };
-        const formattedDate: string = now.toLocaleString('es-ES', options);
-        console.log(formattedDate);
-        console.log(now);
-        return formattedDate;
+        const predictionsArray = predictions.arraySync();
+         // muestra los valores de las predicciones en la consola
+         console.log(predictionsArray)
+        return predictionsArray as number[]
+
     }
     public async getUsetype(token:String):Promise<String> {
         return this.userRepository.getUsetype(token);
