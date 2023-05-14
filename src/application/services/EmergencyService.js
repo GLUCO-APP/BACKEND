@@ -29,7 +29,7 @@ class EmergencyService {
                 if (ind < min) {
                     const food = yield this.foodService.getAll();
                     const filteredFood = food.filter((foodItem) => {
-                        return foodItem.tag == "drink" && foodItem.carbs <= 30 && foodItem.cant_servicio > 100;
+                        return foodItem.tag == "bebida_emer" && foodItem.carbs <= 30 && foodItem.cant_servicio > 100;
                     });
                     return {
                         status: 200,
