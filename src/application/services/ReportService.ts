@@ -5,8 +5,8 @@ const PDFDocumentTable = require("pdfkit-table");
 const PDFDocument = require("pdfkit");
 import { Request, Response } from "express";
 import Chart from 'chart.js/auto';
+const { createCanvas } = require('canvas');
 
-const jsdom = require("jsdom")
 
 const fs = require('fs');
 
@@ -94,8 +94,9 @@ export class ReportService {
 
 
 
-    public async generatePieChart(token: string, max: string, hipo: number, hiper: number) {
 
+
+    public async generatePieChart(token: string, max: string, hipo: number, hiper: number) {
         const reports = await this.allReports(token, max);
     
         if(!reports){
@@ -118,11 +119,7 @@ export class ReportService {
     
         const total = countHipo + countNormal + countHiper;
         const data = [countHiper, countHipo, countNormal];
-        const { JSDOM } = jsdom;
-        const dom = new JSDOM();
-        const canvas = dom.window.document.createElement('canvas');
-        canvas.width = 200;
-        canvas.height = 200;
+        const canvas = createCanvas(200, 200);
         const ctx = canvas.getContext('2d');
     
         if (!ctx) {

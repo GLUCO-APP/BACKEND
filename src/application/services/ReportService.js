@@ -16,7 +16,7 @@ exports.ReportService = void 0;
 const PDFDocumentTable = require("pdfkit-table");
 const PDFDocument = require("pdfkit");
 const auto_1 = __importDefault(require("chart.js/auto"));
-const jsdom = require("jsdom");
+const { createCanvas } = require('canvas');
 const fs = require('fs');
 class ReportService {
     constructor(reportRepository) {
@@ -126,14 +126,10 @@ class ReportService {
             }
             const total = countHipo + countNormal + countHiper;
             const data = [countHiper, countHipo, countNormal];
-            const { JSDOM } = jsdom;
-            const dom = new JSDOM();
-            const canvas = dom.window.document.createElement('canvas');
-            canvas.width = 200;
-            canvas.height = 200;
+            const canvas = createCanvas(200, 200);
             const ctx = canvas.getContext('2d');
             if (!ctx) {
-                throw new Error('Canvas rendering context not disponible');
+                throw new Error('Canvas no disponible');
             }
             const labels = [`Hiper (${((countHiper / total) * 100).toFixed(2)}%)`, `Hipo (${((countHipo / total) * 100).toFixed(2)}%)`, `Normal (${((countNormal / total) * 100).toFixed(2)}%)`];
             const backgroundColor = [
