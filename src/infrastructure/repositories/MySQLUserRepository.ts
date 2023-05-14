@@ -5,9 +5,29 @@ import mysql, { RowDataPacket } from 'mysql2/promise';
 import * as bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
 import { Insulin } from "../../domain/entities/Insulin";
+import { glycemia } from "../../domain/entities/glycemia";
 
 
 export class MySQLUserRepository implements UserRepository {
+
+  
+  async getglycemia(token: String): Promise<glycemia> {
+    const cnx = await dbGluko.getConnection();
+    try {  
+      const [rows] = await cnx.execute(
+        "SELECT glucosa,fecha FROM gluko.Report where token = ?",
+        [token]
+      );
+      const glucosaArr: number[] = (rows as RowDataPacket[]).map(row => row.glucosa);
+      const fechaArr: string[] = (rows as RowDataPacket[]).map(row => row.fecha);
+
+      
+      const dataset = new glycemia(glucosaArr,fechaArr);
+      return dataset;
+    } finally {
+      cnx.release();
+    }
+  }
   async getUsetype(token: String): Promise<String> {
     const cnx = await dbGluko.getConnection();
     try {
@@ -183,7 +203,7 @@ export class MySQLUserRepository implements UserRepository {
         throw new Error(`No se encontró un usuario con el ID ${tokenUser}`);
       }
       await cnx.execute(
-        "UPDATE usuarios SET nombre = ?, email = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ?, precis = ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ? WHERE token = ?",
+        "UPDATE usuarios SET nombre = ?, email = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ? , basal= ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ? WHERE token = ?",
         [usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, tokenUser]
       );
       return usuario;
@@ -221,10 +241,8 @@ export class MySQLUserRepository implements UserRepository {
   }
 
 
-  async UpdatePass(tkUser: string , newPass : string ): Promise<string | null> {
+  async UpdatePass(email: string , newPass : string ): Promise<string | null> {
 
-    console.log(newPass)
-    
     const saltRounds = await bcrypt.genSalt(10);
     const newHash = await bcrypt.hash(newPass, saltRounds);
     
@@ -232,8 +250,8 @@ export class MySQLUserRepository implements UserRepository {
     try {
       cnx = await dbGluko.getConnection();
       const [rows] = await cnx.execute(
-        "UPDATE usuarios SET password = ? WHERE token = ?",
-        [newHash,tkUser]
+        "UPDATE usuarios SET password = ? WHERE email = ?",
+        [newHash,email]
       );
       const user = rows as Usuario[];
       if (user.length === 0) {
@@ -249,7 +267,4 @@ export class MySQLUserRepository implements UserRepository {
       }
     }
   }
-  
-
-
 }

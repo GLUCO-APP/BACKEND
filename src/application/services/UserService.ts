@@ -7,6 +7,7 @@ import * as Papa from 'papaparse';
 import { rejects } from "assert";
 import { Insulin } from "../../domain/entities/Insulin";
 const nodemailer = require('nodemailer');
+import { Server } from 'socket.io';
 
 
 export class UserService {
@@ -16,28 +17,35 @@ export class UserService {
         this.userRepository = userRepository;
     }
 
-    public async smartNotifications(token:String):Promise<String> {
-        const glucosalevel = [120,150,96,80,100,124,125,110,70];
-        const timeStamps = [
-            "2021-10-01 08:00:00", 
-            "2021-10-01 09:00:00",
-            "2021-10-01 10:00:00", 
-            "2021-10-01 11:00:00",
-            "2021-10-01 12:00:00", 
-            "2021-10-01 13:00:00",
-            "2021-10-01 14:00:00", 
-            "2021-10-01 15:00:00", 
-            "2021-10-01 16:00:00"
-          ];
+    public async smartNotifications(token:String):Promise<number[]> {
+        const glucolevel = await this.userRepository.getglycemia(token);
+
+        const glucosalevel = glucolevel.glucemias;
+        const timeStamps = glucolevel.fechas;
+
+        console.log(glucosalevel);
+        console.log(timeStamps);
+
+        const gl: number[] = glucosalevel.map((stringNumber: number) => Number(stringNumber));
+
+        const formattedDates: string[] = [];
+
+        timeStamps.forEach((timeStamps: string) => {
+        const date: Date = new Date(timeStamps);
+        const formattedDate: string = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+        formattedDates.push(formattedDate);
+        });
+
+        console.log(formattedDates);
 
           // Dividir los datos en conjuntos de entrenamiento y prueba
-        const numData = glucosalevel.length;
+        const numData = gl.length;
         const trainingDataSize = 0.8; // El 80% de los datos se usa para entrenamiento
         const numTrainingData = Math.floor(trainingDataSize * numData);
 
-        const trainData = tf.tensor1d(glucosalevel.slice(0, numTrainingData)); // datos de entrenamiento de glucemia
-        const testData = tf.tensor1d(glucosalevel.slice(numTrainingData)); // datos de prueba de glucemia
-        const testTimeStamps = timeStamps.slice(numTrainingData); // tiempos de prueba
+        const trainData = tf.tensor1d(gl.slice(0, numTrainingData)); // datos de entrenamiento de glucemia
+        const testData = tf.tensor1d(gl.slice(numTrainingData)); // datos de prueba de glucemia
+        const testTimeStamps = formattedDates.slice(numTrainingData); // tiempos de prueba
 
         
         // Crear modelo secuencial de red neuronal de una sola capa densa
@@ -52,28 +60,19 @@ export class UserService {
         loss: 'meanSquaredError',
         optimizer: 'adam',
         });
-
+        
         // Entrenar el modelo
-        const history = await model.fit(trainData, trainData, { epochs: 100 });
-
+        const history = await model.fit(trainData, trainData, { epochs: 1000 });
+        console.log("llegue");
         // Usar el modelo para hacer predicciones
         const predictions = await model.predict(testData) as tf.Tensor;
         console.log(predictions);
         // asumiendo que las predicciones están almacenadas en una variable llamada "predictions"
-        console.log(predictions.arraySync()); // muestra los valores de las predicciones en la consola
-        const now: Date = new Date();
-        const options: Intl.DateTimeFormatOptions = { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric'
-          };
-        const formattedDate: string = now.toLocaleString('es-ES', options);
-        console.log(formattedDate);
-        console.log(now);
-        return formattedDate;
+        const predictionsArray = predictions.arraySync();
+         // muestra los valores de las predicciones en la consola
+         console.log(predictionsArray)
+        return predictionsArray as number[]
+
     }
     public async getUsetype(token:String):Promise<String> {
         return this.userRepository.getUsetype(token);
@@ -261,39 +260,38 @@ export class UserService {
     public async changePassword(token: string, oldPass: string, newPass: string): Promise<string> {
 
 
-        // Obtener la contraseña del usuario
         const tkUser = await this.userRepository.getPass(token);
-        // Comparar la contraseña antigua con la almacenada en la base de datos
+        
         const match = tkUser && await bcrypt.compare(oldPass, tkUser);
-        // Si la contraseña no coincide o el valor de tkUser está vacío, devolver un mensaje de error
-        if (!match) {
+        
+        if (  !match ) {
             return "contraseña incorrecta";
         }
-        // Si la contraseña coincide, actualizarla con la nueva contraseña
+        const user = await this.userRepository.getToken(token)
+        if (  !user ) {
+            return "No se encontro el usuario";
+        }
         try {
-            const response = await this.userRepository.UpdatePass(token, newPass);
+            const response = await this.userRepository.UpdatePass(user?.email, newPass);
             if (!response) {
-                // En caso de que el valor de respuesta sea null o undefined, se ejecuta esta condición.
                 return "Ocurrió un error al actualizar la contraseña";
             }
             return "Contraseña actualizada exitosamente";
         } catch (error) {
-            console.log(error);
             return "Ocurrió un error al actualizar la contraseña";
         }
     }
 
-    public async resetPassword(token: string, newPass: string): Promise<string> {
+    public async resetPassword(email: string, newPass: string): Promise<string> {
 
         try {
-            const response = await this.userRepository.UpdatePass(token, newPass);
+            const response = await this.userRepository.UpdatePass(email, newPass);
             if (!response) {
                 return "Ocurrió un error al actualizar la contraseña";
             }
             return "Contraseña actualizada exitosamente";
         } catch (error) {
-            console.log(error);
-            return "Ocurrió un error al actualizar la contraseña";
+            return "Ocurrió un error";
         }
     }
 

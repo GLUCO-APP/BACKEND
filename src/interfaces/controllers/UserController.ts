@@ -15,8 +15,8 @@ export class UserController {
     public async testgluService(req: Request, res: Response):Promise<void>{
         const token = req.params.token;
         try {
-            const fechapr = await this.userService.smartNotifications(token);
-            res.status(200).send(fechapr);
+            await this.userService.smartNotifications(token);
+            res.status(200).send("Prueba ejecutada");
         }catch (err: any) {
             console.error(err);
             res.status(500).send(err.message);
@@ -113,7 +113,7 @@ export class UserController {
         const id  = await this.userService.getId(token);
         const insulinIds = await this.userService.getInsulinids(id);
         const ins = await this.userService.getInsulinUser(insulinIds);
-      
+    
         console.log(ins);
         if (user === null) {
             res.status(404).json({ message: 'Usuario no encontrado' });
@@ -145,7 +145,7 @@ export class UserController {
                 hipo,
                 sensitivity,
                 rate,
-                precis,
+                basal,
                 breakfast_start,
                 breakfast_end,
                 lunch_start,
@@ -159,7 +159,7 @@ export class UserController {
                 tipo_usuario
             } = req.body;
 
-            const UserData: Usuario = new Usuario(nombre, email, " ", fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, precis, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional,tipo_usuario);
+            const UserData: Usuario = new Usuario(nombre, email, " ", fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional,tipo_usuario);
             const resp = await this.userService.updateUser(UserData, token);
             res.status(201).json({ "status": resp, "message": "Usuario actualizado" });
         } catch (err: any) {
@@ -209,11 +209,11 @@ export class UserController {
         }
     }
     public async resetPassword(req: Request, res: Response): Promise< void > {
-        const token = req.params.token;
+        const email = req.params.email;
         const newPass = req.params.new;
         
         try {
-            const code = await this.userService.resetPassword(token, newPass);
+            const code = await this.userService.resetPassword(email, newPass);
             res.status(200).json({ "status": code  })
         } catch (err: any) {
             res.status(400).send(err.message);
