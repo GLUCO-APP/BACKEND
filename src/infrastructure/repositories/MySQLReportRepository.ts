@@ -69,7 +69,20 @@ export class MySQLReportRepository implements ReportRepository {
         }
     }
     
+    async curDate():Promise<Date>{
+        const cnx = await dbGluko.getConnection();
+        try{
+            const [rows] = await cnx.query('SELECT NOW() as now');
+            const serverTime = (rows as RowDataPacket)[0].now;
+            return serverTime;
+         } catch (err: any) {
+            await cnx.query('ROLLBACK');
+            throw err;
+        } finally {
+            cnx.release();
+        }
 
+    }
     async add(Report: Report): Promise<Report> {
         const cnx = await dbGluko.getConnection();
         try {

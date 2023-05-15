@@ -78,6 +78,23 @@ class MySQLReportRepository {
             }
         });
     }
+    curDate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                const [rows] = yield cnx.query('SELECT NOW() as now');
+                const serverTime = rows[0].now;
+                return serverTime;
+            }
+            catch (err) {
+                yield cnx.query('ROLLBACK');
+                throw err;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
     add(Report) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();

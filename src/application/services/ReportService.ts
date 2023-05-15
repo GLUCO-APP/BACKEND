@@ -10,6 +10,9 @@ export class ReportService{
     constructor(reportRepository: MySQLReportRepository){
         this.reportRepository = reportRepository;
     }
+    public async getCurdate(){
+        return this.reportRepository.curDate();
+    }
 
     public async addReport(report:Report){
             return this.reportRepository.add(report);

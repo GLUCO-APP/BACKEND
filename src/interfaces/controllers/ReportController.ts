@@ -8,6 +8,7 @@ import moment from 'moment-timezone';
 import { MySQLUserRepository } from "../../infrastructure/repositories/MySQLUserRepository";
 import { MySQLPlateRepository } from "../../infrastructure/repositories/MySQLPlateRepository";
 import { Server } from "socket.io";
+import { unit } from "../../domain/entities/Units";
 
 
 
@@ -58,6 +59,25 @@ export class ReportController {
             const daily = await this.reportService.dailyReports(token);
             res.status(200).json(daily);
         } catch (err: any) {
+            res.status(400).send(err.message)
+        }
+    }
+    public async curUnits(req: Request, res: Response): Promise<void> {
+        try{
+            const token = req.params.token;
+            const daily = await this.reportService.dailyReports(token);
+            const unidades_administradas = daily?.unidades_insulina;
+            const fecha_toma = daily?.fecha;
+            const fecha_actual = await this.reportService.getCurdate();
+            if (fecha_toma != undefined && unidades_administradas != undefined){
+                const diffTime = Math.abs(fecha_actual.getTime() - fecha_toma.getTime());
+                const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+                const unidades_restanates = unidades_administradas/diffMinutes;
+                const unidades = new unit(unidades_administradas,unidades_restanates);
+                res.status(200).json(unidades);
+            }
+
+        }catch (err: any) {
             res.status(400).send(err.message)
         }
     }
