@@ -57,7 +57,21 @@ class ReportController {
             try {
                 const token = req.params.token;
                 const daily = yield this.reportService.dailyReports(token);
-                res.status(200).json(daily);
+                const userid = yield this.userService.getId(token);
+                const dur = yield this.reportService.getDuration(userid);
+                const unidades_administradas = daily === null || daily === void 0 ? void 0 : daily.unidades_insulina;
+                const fecha_actual = yield this.reportService.getCurdate();
+                const fecha_toma = daily === null || daily === void 0 ? void 0 : daily.fecha;
+                if (fecha_toma != undefined && unidades_administradas != undefined) {
+                    const gasto = unidades_administradas / (dur * 60);
+                    const diffTime = Math.abs(fecha_actual.getTime() - fecha_toma.getTime());
+                    const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+                    console.log(diffMinutes);
+                    const gastado = gasto * diffMinutes;
+                    const unidades = new Units_1.unit(unidades_administradas, (unidades_administradas - gastado));
+                    let response = Object.assign(Object.assign({}, daily), { unidades_restantes: unidades_administradas - gastado });
+                    res.status(200).json(response);
+                }
             }
             catch (err) {
                 res.status(400).send(err.message);
