@@ -141,9 +141,9 @@ export class MySQLReportRepository implements ReportRepository {
             await cnx.beginTransaction();
             const [rows, fields] = await cnx.execute(
                 `SELECT usuarios.objective_carbs, SUM(Plate.Carbohydrates) as sum_carbs, 
-                (SELECT glucosa FROM Report WHERE token = ? ORDER BY fecha DESC LIMIT 1) as glucosa, 
-                (SELECT fecha FROM Report WHERE token = ? ORDER BY fecha DESC LIMIT 1) as fecha,
-                (SELECT unidades_insulina FROM Report WHERE token = ? AND unidades_insulina IS NOT NULL ORDER BY fecha DESC LIMIT 1) as unidades_insulina 
+                (SELECT glucosa FROM Report WHERE token = ?  AND DATE(Report.fecha) = curdate() ORDER BY fecha DESC LIMIT 1) as glucosa, 
+                (SELECT fecha FROM Report WHERE token = ?  AND DATE(Report.fecha) = curdate() ORDER BY fecha DESC LIMIT 1) as fecha,
+                (SELECT unidades_insulina FROM Report WHERE token = ? AND unidades_insulina IS NOT NULL  AND DATE(Report.fecha) = curdate() ORDER BY fecha DESC LIMIT 1) as unidades_insulina 
                 
                 FROM usuarios 
                     usuarios 
@@ -151,9 +151,9 @@ export class MySQLReportRepository implements ReportRepository {
                     JOIN Plate ON Report.id_plato = Plate.id 
                 
                 WHERE 
-                    usuarios.token = ? 
+                    usuarios.token = ?
                     AND DATE(Report.fecha) = curdate()
-                    ORDER BY Report.fecha DESC `,
+                    ORDER BY Report.fecha DESC`,
                 [token, token, token, token]
             );
             const daily = rows as dailyRep[]

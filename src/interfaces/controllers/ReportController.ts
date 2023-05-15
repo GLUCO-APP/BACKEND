@@ -72,6 +72,9 @@ export class ReportController {
                 const unidades = new unit(unidades_administradas,(unidades_administradas-gastado));
                 let response = {...daily, unidades_restantes: unidades_administradas-gastado};
                 res.status(200).json(response);
+            }else{
+                let response = {status:"no se ha reportado el dia de hoy"};
+                res.status(200).json(response);
             }
         } catch (err: any) {
             res.status(400).send(err.message)

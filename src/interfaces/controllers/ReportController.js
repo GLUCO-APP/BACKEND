@@ -72,6 +72,10 @@ class ReportController {
                     let response = Object.assign(Object.assign({}, daily), { unidades_restantes: unidades_administradas - gastado });
                     res.status(200).json(response);
                 }
+                else {
+                    let response = { status: "no se ha reportado el dia de hoy" };
+                    res.status(200).json(response);
+                }
             }
             catch (err) {
                 res.status(400).send(err.message);
