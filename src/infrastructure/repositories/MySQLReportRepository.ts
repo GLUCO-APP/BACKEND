@@ -7,6 +7,26 @@ import mysql, { RowDataPacket } from 'mysql2/promise';
 
 export class MySQLReportRepository implements ReportRepository {
 
+    async getDuration(id:number):Promise<number>{
+        const cnx = await dbGluko.getConnection();
+        try{
+            console.log(id);
+            const [rows] = await cnx.execute(
+                "SELECT duration FROM insulin where type = 'Bolo' and id = ? LIMIT 1",
+                [id]
+            );
+            console.log(rows);
+            const duration  = (rows as RowDataPacket[]).length > 0 ?(rows as RowDataPacket[])[0].duration.toString() : "";
+            console.log(duration);
+            return Number(duration);
+        }catch (err: any) {
+            await cnx.query('ROLLBACK');
+            throw err;
+        } finally {
+            cnx.release();
+        }
+    }
+
     async lastReport(token: string): Promise<Report | null> {
         const cnx = await dbGluko.getConnection();
         try {

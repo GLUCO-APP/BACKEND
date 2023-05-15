@@ -15,6 +15,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MySQLReportRepository = void 0;
 const dbconfig_1 = __importDefault(require("../database/dbconfig"));
 class MySQLReportRepository {
+    getDuration(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                console.log(id);
+                const [rows] = yield cnx.execute("SELECT duration FROM insulin where type = 'Bolo' and id = ? LIMIT 1", [id]);
+                console.log(rows);
+                const duration = rows.length > 0 ? rows[0].duration.toString() : "";
+                console.log(duration);
+                return Number(duration);
+            }
+            catch (err) {
+                yield cnx.query('ROLLBACK');
+                throw err;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
     lastReport(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
