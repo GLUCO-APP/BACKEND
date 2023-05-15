@@ -17,6 +17,7 @@ const MySQLReportRepository_1 = require("../../infrastructure/repositories/MySQL
 const Report_1 = require("../../domain/entities/Report");
 const MySQLUserRepository_1 = require("../../infrastructure/repositories/MySQLUserRepository");
 const MySQLPlateRepository_1 = require("../../infrastructure/repositories/MySQLPlateRepository");
+const Units_1 = require("../../domain/entities/Units");
 const fs = require('fs');
 class ReportController {
     constructor() {
@@ -57,6 +58,27 @@ class ReportController {
                 const token = req.params.token;
                 const daily = yield this.reportService.dailyReports(token);
                 res.status(200).json(daily);
+            }
+            catch (err) {
+                res.status(400).send(err.message);
+            }
+        });
+    }
+    curUnits(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const token = req.params.token;
+                const daily = yield this.reportService.dailyReports(token);
+                const unidades_administradas = daily === null || daily === void 0 ? void 0 : daily.unidades_insulina;
+                const fecha_toma = daily === null || daily === void 0 ? void 0 : daily.fecha;
+                const fecha_actual = yield this.reportService.getCurdate();
+                if (fecha_toma != undefined && unidades_administradas != undefined) {
+                    const diffTime = Math.abs(fecha_actual.getTime() - fecha_toma.getTime());
+                    const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+                    const unidades_restanates = unidades_administradas / diffMinutes;
+                    const unidades = new Units_1.unit(unidades_administradas, unidades_restanates);
+                    res.status(200).json(unidades);
+                }
             }
             catch (err) {
                 res.status(400).send(err.message);

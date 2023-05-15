@@ -38,4 +38,5 @@ router.put('/user/resetPassword/:email/:new', usercontroller.resetPassword.bind(
 router.get('/allInsulin', usercontroller.getInsulins.bind(usercontroller));
 router.get('/userType/:token', usercontroller.getUsetype.bind(usercontroller));
 router.get('/pruebaGlucemia/:token', usercontroller.testgluService.bind(usercontroller));
+router.get('/unidades/:token', reportController.curUnits.bind(reportController));
 exports.default = router;
