@@ -68,8 +68,8 @@ class ReportController {
                     const diffMinutes = Math.ceil(diffTime / (1000 * 60));
                     console.log(diffMinutes);
                     const gastado = gasto * diffMinutes;
-                    const unidades = new Units_1.unit(unidades_administradas, (unidades_administradas - gastado));
-                    let response = Object.assign(Object.assign({}, daily), { unidades_restantes: unidades_administradas - gastado });
+                    let unidades_restantes = (unidades_administradas - gastado >= 0) ? unidades_administradas - gastado : 0;
+                    let response = Object.assign(Object.assign({}, daily), { unidades_restantes: unidades_restantes });
                     res.status(200).json(response);
                 }
                 else {

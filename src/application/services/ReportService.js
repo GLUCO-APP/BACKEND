@@ -17,6 +17,11 @@ class ReportService {
     constructor(reportRepository) {
         this.reportRepository = reportRepository;
     }
+    addReport(report) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.reportRepository.add(report);
+        });
+    }
     getCurdate() {
         return __awaiter(this, void 0, void 0, function* () {
             return this.reportRepository.curDate();
@@ -25,11 +30,6 @@ class ReportService {
     getDuration(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.reportRepository.getDuration(id);
-        });
-    }
-    addReport(report) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.reportRepository.add(report);
         });
     }
     dailyReports(token) {
