@@ -1,9 +1,15 @@
+import PDFDocumentWithTables from "pdfkit-table";
 import { Report } from "../../domain/entities/Report";
-import { ReportPDF} from "../../domain/entities/ReportPDF";
+import { Usuario } from "../../domain/entities/User";
+import { ReportPDF } from "../../domain/entities/ReportPDF";
 import { dailyRep } from "../../domain/entities/dailyRep";
 import { ReportRepository } from "../../domain/repositories/ReportRepository";
 import dbGluko from "../database/dbconfig";
 import mysql, { RowDataPacket } from 'mysql2/promise';
+
+//const PDFDocument = require("pdfkit-table");
+
+
 
 export class MySQLReportRepository implements ReportRepository {
 
@@ -88,6 +94,7 @@ export class MySQLReportRepository implements ReportRepository {
             cnx.release();
         }
     }
+
     
     async curDate():Promise<Date>{
         const cnx = await dbGluko.getConnection();
@@ -95,7 +102,7 @@ export class MySQLReportRepository implements ReportRepository {
             const [rows] = await cnx.query('SELECT NOW() as now');
             const serverTime = (rows as RowDataPacket)[0].now;
             return serverTime;
-         } catch (err: any) {
+        } catch (err: any) {
             await cnx.query('ROLLBACK');
             throw err;
         } finally {
@@ -175,4 +182,151 @@ export class MySQLReportRepository implements ReportRepository {
         }
     }
 
+    async getToken(tkUser: string): Promise<Usuario | null> {
+        let cnx;
+        try {
+            cnx = await dbGluko.getConnection();
+            const [rows] = await cnx.execute(
+                "SELECT nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional, tipo_usuario FROM usuarios WHERE token = ?",
+                [tkUser]
+            );
+            const user = rows as Usuario[];
+            if (user.length === 0) {
+                return null;
+            }
+            return user[0];
+        } catch (error) {
+            console.error(error);
+            return null;
+        } finally {
+            if (cnx) {
+                cnx.release();
+            }
+        }
+    }
+
+    async IMC(tkUser: string): Promise<string> {
+        const user = await this.getToken(tkUser);
+
+        if (!user) {
+            return 'No se encontró el usuario';
+        }
+
+        const IMC = ((user.peso) / (user.estatura * user.estatura)) * 1000;
+        return IMC.toFixed(2);
+    }
+
+    async TMB(tkUser: string): Promise<number> {
+        const user = await this.getToken(tkUser);
+
+        if (!user) {
+            throw new Error('No se encontró el usuario');
+        }
+
+        let TMB = 0;
+
+        if (user.genero == 'Masculino') {
+            TMB = 10 * user.peso + 6.25 * user.estatura - 5 * user.edad + 5;
+        } else {
+            TMB = 10 * user.peso + 6.25 * user.estatura - 5 * user.edad - 161;
+        }
+
+        return TMB;
+    }
+
+    async RCAL(tkUser: string): Promise<number> {
+        const user = await this.getToken(tkUser);
+
+        if (!user) {
+            throw new Error('No se encontró el usuario');
+        }
+
+        let req = 0;
+
+        if (user.genero == 'Masculino') {
+            req = 66 + (13.7 * user.peso) + (5 * user.estatura) - (6.5 * user.edad)
+        } else {
+            req = 655 + (9.6 * user.peso) + (1.8 * user.estatura) - (4.7 * user.edad)
+        }
+
+        return req;
+    }
+
+    async  variacion(tkuser: string): Promise<string[][]> {
+    const report7 = await this.allReports(tkuser, "7");
+    const report15 = await this.allReports(tkuser, "15");
+    const report30 = await this.allReports(tkuser, "30");
+    const user = await this.getToken(tkuser)
+
+    let hipo7 = 0,
+        normal7 = 0,
+        hyper7 = 0,
+        hipo15 = 0,
+        normal15 = 0,
+        hyper15 = 0,
+        hipo30 = 0,
+        normal30 = 0,
+        hyper30 = 0;
+
+    if (!report7 || !user || !report15 || !report30){
+        throw new Error('No se encontró el usuario');
+    }
+    for (const report of report7) {
+        if (report.glucosa < user?.hipo) {
+            hipo7++;
+        } else if (report.glucosa >= user.hipo && report.glucosa <= user.hyper) {
+            normal7++;
+        } else {
+            hyper7++;
+        }
+    }
+
+    for (const report of report15) {
+        if (report.glucosa < user.hipo) {
+            hipo15++;
+        } else if (report.glucosa >= user.hipo && report.glucosa <= user.hyper) {
+            normal15++;
+        } else {
+            hyper15++;
+        }
+    }
+
+    for (const report of report30) {
+        if (report.glucosa < user.hipo) {
+            hipo30++;
+        } else if (report.glucosa >= user.hipo && report.glucosa <= user.hyper) {
+            normal30++;
+        } else {
+            hyper30++;
+        }
+    }
+
+    const data = [
+        [
+            '7 dias',
+            hipo7.toString(),
+            normal7.toString(),
+            hyper7.toString(),
+            (hipo7 + normal7 + hyper7).toString(),
+        ],
+        [
+            '15 dias',
+            hipo15.toString(),
+            normal15.toString(),
+            hyper15.toString(),
+            (hipo15 + normal15 + hyper15).toString(),
+        ],
+        [
+            '30 dias',
+            hipo30.toString(),
+            normal30.toString(),
+            hyper30.toString(),
+            (hipo30 + normal30 + hyper30).toString(),
+        ],
+    ];
+
+    return new Promise((resolve) => {
+        resolve(data);
+    });
+}
 }

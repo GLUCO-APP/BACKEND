@@ -161,5 +161,17 @@ class ReportController {
             }
         });
     }
+    generatePdfGraf(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const token = req.params.token;
+            const max = req.params.max;
+            try {
+                yield this.reportService.generateCircle(token, res);
+            }
+            catch (err) {
+                res.status(400).send(err.message);
+            }
+        });
+    }
 }
 exports.ReportController = ReportController;
