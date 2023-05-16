@@ -4,8 +4,10 @@ import { MySQLReportRepository } from "../../infrastructure/repositories/MySQLRe
 const PDFDocumentTable = require("pdfkit-table");
 const PDFDocument = require("pdfkit");
 import { Request, Response } from "express";
-import Chart from 'chart.js/auto';
-const { createCanvas } = require('canvas');
+
+
+
+
 
 
 const fs = require('fs');
@@ -93,88 +95,79 @@ export class ReportService {
     }
 
 
+    async generateTable(headers: string[], row: string[][]) {
+
+        
+        const table = {
+            headers: ['Periodo', 'Hipo', 'normal', 'Hiper', 'Total'],
+            rows: await Promise.all(row.map(async (report, index) => {
+                return [report[0], report[1], report[2], report[3], report[4]];
+            }))
+        };
+        const tableOptions = {
+            columns: {
+                0: { width: 25 },
+                1: { width: 95, align: 'center' },
+                2: { width: 60, align: 'center' },
+                3: { width: 80, align: 'center' },
+                4: { width: 60, align: 'center' },
+            },
+            header: {
+                fillColor: '#f2f2f2',
+            },
+            margin: { top: 50, bottom: 30 },
+            layout: 'lightHorizontalLines',
+        };
 
 
-
-    public async generatePieChart(token: string, max: string, hipo: number, hiper: number) {
-        const reports = await this.allReports(token, max);
-    
-        if(!reports){
-            throw new Error('No se encontraron reportes para el usuario especificado');
-        }
-    
-        let countHipo = 0;
-        let countNormal = 0;
-        let countHiper = 0;
-    
-        for (const report of reports) {
-            if (report.glucosa > hiper) {
-                countHiper++;
-            } else if (report.glucosa < hipo) {
-                countHipo++;
-            } else {
-                countNormal++;
-            }
-        }
-    
-        const total = countHipo + countNormal + countHiper;
-        const data = [countHiper, countHipo, countNormal];
-        const canvas = createCanvas(200, 200);
-        const ctx = canvas.getContext('2d');
-    
-        if (!ctx) {
-            throw new Error('Canvas no disponible');
-        }
-    
-        const labels = [`Hiper (${((countHiper / total) * 100).toFixed(2)}%)`, `Hipo (${((countHipo / total) * 100).toFixed(2)}%)`, `Normal (${((countNormal / total) * 100).toFixed(2)}%)`];
-        const backgroundColor = [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(54, 162, 235, 0.2)'
-        ];
-    
-        const myChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels,
-                datasets: [{
-                    data,
-                    backgroundColor
-                }]
-            }
-        });
-    
-        const chartDataUrl = canvas.toDataURL();
-        const chartImage = Buffer.from(chartDataUrl.split(',')[1], 'base64');
-        return chartImage;
+        return table ;
     }
 
 
-
     public async generateCircle(token: string, res: Response) {
-        const doc = new PDFDocument();
-        const user = await this.reportRepository.getToken(token)
-        const hipooo = user?.hipo;
-        const hipo = typeof user?.hipo === 'number' ? user?.hipo : 0;
-        const hiper = typeof user?.hyper === 'number' ? user?.hyper : 0;
-
-        
+        const user = await this.reportRepository.getToken(token);
+        const RCAL = await this.reportRepository.RCAL(token);
+        const IMC = await this.reportRepository.IMC(token);
+        const TMB = await this.reportRepository.TMB(token);
+        const reports = await this.allReports(token, "30");
         try {
+            if (!reports || !user) {
+                throw new Error('No se encontraron informes para el token especificado');
+            }
+            const doc = new PDFDocumentTable();
+            const fecha = new Date(); // Fecha actual
+            doc.image('template/logo.png', 50, 50, { width: 50 });
 
-            const chartImage7 = await this.generatePieChart(token, "7", hipo, hiper)
-            const chartImage15 = await this.generatePieChart(token, "15", hipo, hiper);
-            const chartImage30 = await this.generatePieChart(token, "30", hipo, hiper);
 
+            // Agregar los datos de cada informe a la plantilla PDF
+            doc.fontSize(24).font('Helvetica-Bold').text(`INFORME DE DIABETES`, {
+                align: 'center'
+            });
+            doc.moveDown(0.5);
+            doc.fontSize(16).font('Helvetica-Bold').text('Información Personal', { align: 'left' });
+            doc.moveDown(0.8);
+            doc.fontSize(12).font('Helvetica').text(`Nombre:  ${user.nombre}`, { align: 'left' });
+            doc.text(`Fecha de nacimiento:  ${(user.fecha_nacimiento).toLocaleString()} (Edad: ${user.edad} años)`, { align: 'left' });
+            doc.text(`Peso:  ${user.peso}`, { align: 'left' });
+            doc.text(`Índice de masa corporal (IMC):  ${IMC} Normal`, { align: 'left' });
+            doc.text(`Tasa metabólica basal (TMB):  ${TMB} kcal`, { align: 'left' });
+            doc.text(`Necesidades calóricas diarias:  ${RCAL} kcal`, { align: 'left' });
+            doc.text(`Insulina total (TDD):  ${user.basal} U`, { align: 'left' });
+            doc.text(`Insulina basal total (TBD): ${user.basal} U`, { align: 'left' });
+            doc.text(`Ratios de HC (I:C): 1 U :  ${user.rate}g`, { align: 'left' });
+            doc.text(`Sensibilidad a la insulina (ISF):  ${user.sensitivity} mg/dL`, { align: 'left' });
+            doc.moveDown(2);
 
-            doc.image(chartImage7);
-            doc.image(chartImage15);
-            doc.image(chartImage30);
-
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename=report.pdf`);
-            doc.pipe(res);
+            const headers = ['Periodo', 'Hipo', 'normal', 'Hiper', 'Total'];
+            const row = await this.reportRepository.variacion(token)
+            const table2 = await this.generateTable(headers,row)
+            
+            doc.table(table2)
+            doc.lineWidth(0.5);
             doc.end();
-
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=reporte.pdf`);
+            doc.pipe(res);
         } catch (err: any) {
             res.status(400).send(err.message);
         }

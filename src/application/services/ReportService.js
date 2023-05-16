@@ -8,15 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReportService = void 0;
 const PDFDocumentTable = require("pdfkit-table");
 const PDFDocument = require("pdfkit");
-const auto_1 = __importDefault(require("chart.js/auto"));
-const { createCanvas } = require('canvas');
 const fs = require('fs');
 class ReportService {
     constructor(reportRepository) {
@@ -104,72 +99,72 @@ class ReportService {
             }
         });
     }
-    generatePieChart(token, max, hipo, hiper) {
+    generateTable(headers, row) {
         return __awaiter(this, void 0, void 0, function* () {
-            const reports = yield this.allReports(token, max);
-            if (!reports) {
-                throw new Error('No se encontraron reportes para el usuario especificado');
-            }
-            let countHipo = 0;
-            let countNormal = 0;
-            let countHiper = 0;
-            for (const report of reports) {
-                if (report.glucosa > hiper) {
-                    countHiper++;
-                }
-                else if (report.glucosa < hipo) {
-                    countHipo++;
-                }
-                else {
-                    countNormal++;
-                }
-            }
-            const total = countHipo + countNormal + countHiper;
-            const data = [countHiper, countHipo, countNormal];
-            const canvas = createCanvas(200, 200);
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-                throw new Error('Canvas no disponible');
-            }
-            const labels = [`Hiper (${((countHiper / total) * 100).toFixed(2)}%)`, `Hipo (${((countHipo / total) * 100).toFixed(2)}%)`, `Normal (${((countNormal / total) * 100).toFixed(2)}%)`];
-            const backgroundColor = [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(54, 162, 235, 0.2)'
-            ];
-            const myChart = new auto_1.default(ctx, {
-                type: 'pie',
-                data: {
-                    labels,
-                    datasets: [{
-                            data,
-                            backgroundColor
-                        }]
-                }
-            });
-            const chartDataUrl = canvas.toDataURL();
-            const chartImage = Buffer.from(chartDataUrl.split(',')[1], 'base64');
-            return chartImage;
+            const table = {
+                headers: ['Periodo', 'Hipo', 'normal', 'Hiper', 'Total'],
+                rows: yield Promise.all(row.map((report, index) => __awaiter(this, void 0, void 0, function* () {
+                    return [report[0], report[1], report[2], report[3], report[4]];
+                })))
+            };
+            const tableOptions = {
+                columns: {
+                    0: { width: 25 },
+                    1: { width: 95, align: 'center' },
+                    2: { width: 60, align: 'center' },
+                    3: { width: 80, align: 'center' },
+                    4: { width: 60, align: 'center' },
+                },
+                header: {
+                    fillColor: '#f2f2f2',
+                },
+                margin: { top: 50, bottom: 30 },
+                layout: 'lightHorizontalLines',
+            };
+            return table;
         });
     }
     generateCircle(token, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const doc = new PDFDocument();
             const user = yield this.reportRepository.getToken(token);
-            const hipooo = user === null || user === void 0 ? void 0 : user.hipo;
-            const hipo = typeof (user === null || user === void 0 ? void 0 : user.hipo) === 'number' ? user === null || user === void 0 ? void 0 : user.hipo : 0;
-            const hiper = typeof (user === null || user === void 0 ? void 0 : user.hyper) === 'number' ? user === null || user === void 0 ? void 0 : user.hyper : 0;
+            const RCAL = yield this.reportRepository.RCAL(token);
+            const IMC = yield this.reportRepository.IMC(token);
+            const TMB = yield this.reportRepository.TMB(token);
+            const reports = yield this.allReports(token, "30");
             try {
-                const chartImage7 = yield this.generatePieChart(token, "7", hipo, hiper);
-                const chartImage15 = yield this.generatePieChart(token, "15", hipo, hiper);
-                const chartImage30 = yield this.generatePieChart(token, "30", hipo, hiper);
-                doc.image(chartImage7);
-                doc.image(chartImage15);
-                doc.image(chartImage30);
-                res.setHeader('Content-Type', 'application/pdf');
-                res.setHeader('Content-Disposition', `attachment; filename=report.pdf`);
-                doc.pipe(res);
+                if (!reports || !user) {
+                    throw new Error('No se encontraron informes para el token especificado');
+                }
+                const doc = new PDFDocumentTable();
+                const fecha = new Date(); // Fecha actual
+                doc.image('template/logo.png', 50, 50, { width: 50 });
+                // Agregar los datos de cada informe a la plantilla PDF
+                doc.fontSize(24).font('Helvetica-Bold').text(`INFORME DE DIABETES`, {
+                    align: 'center'
+                });
+                doc.moveDown(0.5);
+                doc.fontSize(16).font('Helvetica-Bold').text('Información Personal', { align: 'left' });
+                doc.moveDown(0.8);
+                doc.fontSize(12).font('Helvetica').text(`Nombre:  ${user.nombre}`, { align: 'left' });
+                doc.text(`Fecha de nacimiento:  ${(user.fecha_nacimiento).toLocaleString()} (Edad: ${user.edad} años)`, { align: 'left' });
+                doc.text(`Peso:  ${user.peso}`, { align: 'left' });
+                doc.text(`Índice de masa corporal (IMC):  ${IMC} Normal`, { align: 'left' });
+                doc.text(`Tasa metabólica basal (TMB):  ${TMB} kcal`, { align: 'left' });
+                doc.text(`Necesidades calóricas diarias:  ${RCAL} kcal`, { align: 'left' });
+                doc.text(`Insulina total (TDD):  ${user.basal} U`, { align: 'left' });
+                doc.text(`Insulina basal total (TBD): ${user.basal} U`, { align: 'left' });
+                doc.text(`Ratios de HC (I:C): 1 U :  ${user.rate}g`, { align: 'left' });
+                doc.text(`Sensibilidad a la insulina (ISF):  ${user.sensitivity} mg/dL`, { align: 'left' });
+                doc.moveDown(2);
+                const headers = ['Periodo', 'Hipo', 'normal', 'Hiper', 'Total'];
+                const row = yield this.reportRepository.variacion(token);
+                const table2 = yield this.generateTable(headers, row);
+                doc.table(table2);
+                doc.lineWidth(0.5);
                 doc.end();
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', `attachment; filename=reporte.pdf`);
+                doc.pipe(res);
             }
             catch (err) {
                 res.status(400).send(err.message);
