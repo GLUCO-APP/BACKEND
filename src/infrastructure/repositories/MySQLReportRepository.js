@@ -16,14 +16,14 @@ exports.MySQLReportRepository = void 0;
 const dbconfig_1 = __importDefault(require("../database/dbconfig"));
 //const PDFDocument = require("pdfkit-table");
 class MySQLReportRepository {
-    getDuration(id) {
+    getDuration(ids) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
             try {
-                console.log(id);
-                const [rows] = yield cnx.execute("SELECT duration FROM insulin where type = 'Bolo' and id = ? LIMIT 1", [id]);
-                console.log(rows);
-                const duration = rows.length > 0 ? rows[0].duration.toString() : "";
+                const placeholders = ids.map(() => '?').join(',');
+                const query = `SELECT duration FROM insulin where type = 'Bolo' and id  IN (${placeholders})`;
+                const result = yield cnx.query(query, ids);
+                const duration = result.length > 0 ? result[0][0].duration.toString() : "";
                 console.log(duration);
                 return Number(duration);
             }

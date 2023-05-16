@@ -6,5 +6,5 @@ export interface ReportRepository {
     dailyReports(token:string):Promise<dailyRep | null>;
     lastReport(token:string):Promise<Report | null>
     lastReportI(token:string):Promise<Report | null>
-    getDuration(id:number):Promise<number>
+    getDuration(ids:number[]):Promise<number>
 }
