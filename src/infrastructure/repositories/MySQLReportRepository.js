@@ -16,6 +16,26 @@ exports.MySQLReportRepository = void 0;
 const dbconfig_1 = __importDefault(require("../database/dbconfig"));
 //const PDFDocument = require("pdfkit-table");
 class MySQLReportRepository {
+    getDuration(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                console.log(id);
+                const [rows] = yield cnx.execute("SELECT duration FROM insulin where type = 'Bolo' and id = ? LIMIT 1", [id]);
+                console.log(rows);
+                const duration = rows.length > 0 ? rows[0].duration.toString() : "";
+                console.log(duration);
+                return Number(duration);
+            }
+            catch (err) {
+                yield cnx.query('ROLLBACK');
+                throw err;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
     lastReport(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
@@ -79,6 +99,23 @@ class MySQLReportRepository {
             }
         });
     }
+    curDate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cnx = yield dbconfig_1.default.getConnection();
+            try {
+                const [rows] = yield cnx.query('SELECT NOW() as now');
+                const serverTime = rows[0].now;
+                return serverTime;
+            }
+            catch (err) {
+                yield cnx.query('ROLLBACK');
+                throw err;
+            }
+            finally {
+                cnx.release();
+            }
+        });
+    }
     add(Report) {
         return __awaiter(this, void 0, void 0, function* () {
             const cnx = yield dbconfig_1.default.getConnection();
@@ -116,9 +153,9 @@ class MySQLReportRepository {
             try {
                 yield cnx.beginTransaction();
                 const [rows, fields] = yield cnx.execute(`SELECT usuarios.objective_carbs, SUM(Plate.Carbohydrates) as sum_carbs, 
-                (SELECT glucosa FROM Report WHERE token = ? ORDER BY fecha DESC LIMIT 1) as glucosa, 
-                (SELECT fecha FROM Report WHERE token = ? ORDER BY fecha DESC LIMIT 1) as fecha,
-                (SELECT unidades_insulina FROM Report WHERE token = ? AND unidades_insulina IS NOT NULL ORDER BY fecha DESC LIMIT 1) as unidades_insulina 
+                (SELECT glucosa FROM Report WHERE token = ?  AND DATE(Report.fecha) = curdate() ORDER BY fecha DESC LIMIT 1) as glucosa, 
+                (SELECT fecha FROM Report WHERE token = ?  AND DATE(Report.fecha) = curdate() ORDER BY fecha DESC LIMIT 1) as fecha,
+                (SELECT unidades_insulina FROM Report WHERE token = ? AND unidades_insulina IS NOT NULL  AND DATE(Report.fecha) = curdate() ORDER BY fecha DESC LIMIT 1) as unidades_insulina 
                 
                 FROM usuarios 
                     usuarios 
@@ -126,9 +163,9 @@ class MySQLReportRepository {
                     JOIN Plate ON Report.id_plato = Plate.id 
                 
                 WHERE 
-                    usuarios.token = ? 
+                    usuarios.token = ?
                     AND DATE(Report.fecha) = curdate()
-                    ORDER BY Report.fecha DESC `, [token, token, token, token]);
+                    ORDER BY Report.fecha DESC`, [token, token, token, token]);
                 const daily = rows;
                 if (daily.length === 0) {
                     return null;

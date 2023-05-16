@@ -17,6 +17,7 @@ const MySQLReportRepository_1 = require("../../infrastructure/repositories/MySQL
 const Report_1 = require("../../domain/entities/Report");
 const MySQLUserRepository_1 = require("../../infrastructure/repositories/MySQLUserRepository");
 const MySQLPlateRepository_1 = require("../../infrastructure/repositories/MySQLPlateRepository");
+const Units_1 = require("../../domain/entities/Units");
 const fs = require('fs');
 class ReportController {
     constructor() {
@@ -56,7 +57,55 @@ class ReportController {
             try {
                 const token = req.params.token;
                 const daily = yield this.reportService.dailyReports(token);
-                res.status(200).json(daily);
+                const userid = yield this.userService.getId(token);
+                const dur = yield this.reportService.getDuration(userid);
+                const unidades_administradas = daily === null || daily === void 0 ? void 0 : daily.unidades_insulina;
+                const fecha_actual = yield this.reportService.getCurdate();
+                const fecha_toma = daily === null || daily === void 0 ? void 0 : daily.fecha;
+                if (fecha_toma != undefined && unidades_administradas != undefined) {
+                    const gasto = unidades_administradas / (dur * 60);
+                    const diffTime = Math.abs(fecha_actual.getTime() - fecha_toma.getTime());
+                    const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+                    console.log(diffMinutes);
+                    const gastado = gasto * diffMinutes;
+                    const unidades = new Units_1.unit(unidades_administradas, (unidades_administradas - gastado));
+                    let response = Object.assign(Object.assign({}, daily), { unidades_restantes: unidades_administradas - gastado });
+                    res.status(200).json(response);
+                }
+                else {
+                    let response = { status: "no se ha reportado el dia de hoy" };
+                    res.status(200).json(response);
+                }
+            }
+            catch (err) {
+                res.status(400).send(err.message);
+            }
+        });
+    }
+    curUnits(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const token = req.params.token;
+                const userid = yield this.userService.getId(token);
+                console.log(userid);
+                const dur = yield this.reportService.getDuration(userid);
+                console.log(dur);
+                const daily = yield this.reportService.dailyReports(token);
+                const unidades_administradas = daily === null || daily === void 0 ? void 0 : daily.unidades_insulina;
+                console.log(unidades_administradas);
+                const fecha_toma = daily === null || daily === void 0 ? void 0 : daily.fecha;
+                console.log(fecha_toma);
+                const fecha_actual = yield this.reportService.getCurdate();
+                console.log(fecha_actual);
+                if (fecha_toma != undefined && unidades_administradas != undefined) {
+                    const gasto = unidades_administradas / (dur * 60);
+                    const diffTime = Math.abs(fecha_actual.getTime() - fecha_toma.getTime());
+                    const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+                    console.log(diffMinutes);
+                    const gastado = gasto * diffMinutes;
+                    const unidades = new Units_1.unit(unidades_administradas, (unidades_administradas - gastado));
+                    res.status(200).json(unidades);
+                }
             }
             catch (err) {
                 res.status(400).send(err.message);
