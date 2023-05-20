@@ -9,6 +9,7 @@ const express_1 = __importDefault(require("express"));
 const socketcon_1 = __importDefault(require("./interfaces/utils/socketcon"));
 const app = (0, express_1.default)();
 const server = new socketcon_1.default();
+exports.default = { server };
 if (!module.parent) {
     server.start(() => {
         console.log(`Server listening in port ${server.port} Test Git new image`);
