@@ -141,9 +141,9 @@ class UserService {
             return foundUser;
         });
     }
-    updateUser(usuario, token) {
+    updateUser(usuario, token, insulinas) {
         return __awaiter(this, void 0, void 0, function* () {
-            const tkuser = this.userRepository.updateUser(usuario, token);
+            const tkuser = this.userRepository.updateUser(usuario, token, insulinas);
             const foundUser = yield tkuser;
         });
     }

@@ -103,7 +103,6 @@ class MySQLUserRepository {
             try {
                 const [rows] = yield cnx.execute("SELECT id FROM usuarios WHERE token = ? LIMIT 1", [token]);
                 const id = rows.length > 0 ? rows[0].id.toString() : "";
-                console.log(id);
                 return Number(id);
             }
             finally {
@@ -212,9 +211,10 @@ class MySQLUserRepository {
             }
         });
     }
-    updateUser(usuario, tokenUser) {
+    updateUser(usuario, tokenUser, insulinas) {
         return __awaiter(this, void 0, void 0, function* () {
             let cnx;
+            const id = yield this.getId(tokenUser);
             try {
                 cnx = yield dbconfig_1.default.getConnection();
                 const [rows] = yield cnx.execute("SELECT * FROM usuarios WHERE token = ?", [tokenUser]);
@@ -222,7 +222,9 @@ class MySQLUserRepository {
                 if (!existingUser) {
                     throw new Error(`No se encontró un usuario con el ID ${tokenUser}`);
                 }
-                yield cnx.execute("UPDATE usuarios SET nombre = ?, email = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ? , basal= ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ? WHERE token = ?", [usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, tokenUser]);
+                yield cnx.execute("UPDATE usuarios SET nombre = ?, email = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ? , basal= ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ?, tipo_usuario = ? WHERE token = ?", [usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, usuario.tipo_usuario, tokenUser]);
+                yield cnx.execute("UPDATE gluko.user_x_insulin SET insulin_id = ? WHERE user_id = ? LIMIT 1;", [insulinas[0].id, id]);
+                yield cnx.execute("UPDATE gluko.user_x_insulin SET insulin_id = ? WHERE user_id = ? AND insulin_id !=  ?;", [insulinas[1].id, id, insulinas[0].id]);
                 return usuario;
             }
             catch (error) {

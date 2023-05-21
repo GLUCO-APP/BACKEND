@@ -11,26 +11,26 @@ import { Plate_x_Food } from "../../domain/entities/pl_x_food";
 export class MySqlFoodRepository implements FoodRepository {
     async getbyplate(ids: Number[]): Promise<Food[]> {
         const cnx = await dbGluko.getConnection();
-        try{
+        try {
             const placeholders = ids.map(() => '?').join(',');
             const query = `SELECT * FROM Food WHERE id IN (${placeholders})`;
             const result = await cnx.query(query, ids);
 
             return result[0] as Food[]
-        }finally {
+        } finally {
             cnx.release();
         }
-        
+
     }
-    async getbyid(id:number): Promise<Plate_x_Food[]> {
+    async getbyid(id: number): Promise<Plate_x_Food[]> {
         const cnx = await dbGluko.getConnection();
         try {
             const [rows, fields] = await cnx.execute(
                 'SELECT * FROM gluko.Plate_x_Food where plate_id = ?;',
                 [id]
-              );
-              return rows as Plate_x_Food[]
-              
+            );
+            return rows as Plate_x_Food[]
+
         } finally {
             cnx.release();
         }
@@ -53,13 +53,13 @@ export class MySqlFoodRepository implements FoodRepository {
             await cnx.beginTransaction();
             const value = (food.cant_servicio / 100);
 
-            food.carbs = value * food.carbs ;
+            food.carbs = value * food.carbs;
             food.protein = (value * food.protein);
             food.fats = (value * food.fats);
 
             const [result] = await cnx.query(
                 'UPDATE Food SET carbs=?, protein=?, fats=?, image=?,tag=? , cant_servicio=? WHERE name=?;',
-                [food.carbs, food.protein, food.fats, food.image, food.tag , food.cant_servicio, food.name]
+                [food.carbs, food.protein, food.fats, food.image, food.tag, food.cant_servicio, food.name]
             );
             const affectedRows = (result as mysql.OkPacket).affectedRows;
 
@@ -85,7 +85,7 @@ export class MySqlFoodRepository implements FoodRepository {
                         fats: this.fats,
                         image: this.image,
                         id: this.id,
-                        tag : this.tag,
+                        tag: this.tag,
                         cant_servicio: this.cant_servicio,
                     };
                 },
@@ -124,7 +124,7 @@ export class MySqlFoodRepository implements FoodRepository {
                     image: rows[0].image,
                     id: rows[0].id,
                     cant_servicio: rows[0].cant_servicio,
-                    tag :rows[0].tag,
+                    tag: rows[0].tag,
                     getData() {
                         return {
                             name: this.name,
@@ -165,7 +165,7 @@ export class MySqlFoodRepository implements FoodRepository {
                 image: food.image,
                 id: id,
                 cant_servicio: food.cant_servicio,
-                tag : food.tag,
+                tag: food.tag,
                 getData() {
                     return {
                         name: this.name,
@@ -175,7 +175,7 @@ export class MySqlFoodRepository implements FoodRepository {
                         image: this.image,
                         id: this.id,
                         cant_servicio: this.cant_servicio,
-                        tag : this.tag,
+                        tag: this.tag,
                     };
                 },
             };

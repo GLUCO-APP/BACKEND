@@ -1,4 +1,5 @@
 import { Usuario } from "../../domain/entities/User";
+import { UsuarioUpd } from "../../domain/entities/UserUpd";
 import { UserRepository } from "../../domain/repositories/UserRepository";
 import dbGluko from "../database/dbconfig";
 import mysql, { RowDataPacket } from 'mysql2/promise';
@@ -10,10 +11,10 @@ import { glycemia } from "../../domain/entities/glycemia";
 
 export class MySQLUserRepository implements UserRepository {
 
-  
+
   async getglycemia(token: String): Promise<glycemia> {
     const cnx = await dbGluko.getConnection();
-    try {  
+    try {
       const [rows] = await cnx.execute(
         "SELECT glucosa,fecha FROM gluko.Report where token = ?",
         [token]
@@ -21,8 +22,8 @@ export class MySQLUserRepository implements UserRepository {
       const glucosaArr: number[] = (rows as RowDataPacket[]).map(row => row.glucosa);
       const fechaArr: string[] = (rows as RowDataPacket[]).map(row => row.fecha);
 
-      
-      const dataset = new glycemia(glucosaArr,fechaArr);
+
+      const dataset = new glycemia(glucosaArr, fechaArr);
       return dataset;
     } finally {
       cnx.release();
@@ -35,7 +36,7 @@ export class MySQLUserRepository implements UserRepository {
         "SELECT tipo_usuario FROM usuarios WHERE token  = ?",
         [token]
       );
-      const tipo  = (rows as RowDataPacket[]).length > 0 ?(rows as RowDataPacket[])[0].tipo_usuario.toString() : "";
+      const tipo = (rows as RowDataPacket[]).length > 0 ? (rows as RowDataPacket[])[0].tipo_usuario.toString() : "";
       console.log(tipo)
       return tipo;
     } finally {
@@ -54,7 +55,7 @@ export class MySQLUserRepository implements UserRepository {
       cnx.release();
     }
   }
-   async getInsulinids(id: number): Promise<Number[]> {
+  async getInsulinids(id: number): Promise<Number[]> {
     const cnx = await dbGluko.getConnection();
     try {
       const [rows] = await cnx.execute(
@@ -66,7 +67,7 @@ export class MySQLUserRepository implements UserRepository {
     } finally {
       cnx.release();
     }
-      
+
   }
   async getId(token: string): Promise<number> {
     const cnx = await dbGluko.getConnection();
@@ -75,14 +76,13 @@ export class MySQLUserRepository implements UserRepository {
         "SELECT id FROM usuarios WHERE token = ? LIMIT 1",
         [token]
       );
-      const id  = (rows as RowDataPacket[]).length > 0 ?(rows as RowDataPacket[])[0].id.toString() : "";
-      console.log(id);
+      const id = (rows as RowDataPacket[]).length > 0 ? (rows as RowDataPacket[])[0].id.toString() : "";
       return Number(id);
     } finally {
       cnx.release();
     }
   }
-  
+
 
   async getInsulins(): Promise<Insulin[]> {
     const cnx = await dbGluko.getConnection();
@@ -95,7 +95,7 @@ export class MySQLUserRepository implements UserRepository {
       cnx.release();
     }
   }
-  
+
   async findEmail(email: string): Promise<Usuario | null> {
     const cnx = await dbGluko.getConnection()
     try {
@@ -112,28 +112,28 @@ export class MySQLUserRepository implements UserRepository {
       cnx.release();
     }
   }
-  async findToken(email: string):Promise<string>{
+  async findToken(email: string): Promise<string> {
     const cnx = await dbGluko.getConnection()
-    try{
+    try {
       const [rows] = await cnx.execute(
         "SELECT token FROM usuarios where email = ? LIMIT 1",
         [email]
       );
       const token = (rows as RowDataPacket[]).length > 0 ? (rows as RowDataPacket[])[0].token.toString() : "";
       return token;
-    }finally {
+    } finally {
       cnx.release();
     }
   }
-  async updateToken(email: string, token:string):Promise<void>{
+  async updateToken(email: string, token: string): Promise<void> {
     const cnx = await dbGluko.getConnection()
-    try{
-        const [result] = await cnx.query(
-          'UPDATE usuarios SET token = ? WHERE email = ?;',
-          [token,email]
-        );
+    try {
+      const [result] = await cnx.query(
+        'UPDATE usuarios SET token = ? WHERE email = ?;',
+        [token, email]
+      );
 
-    }finally {
+    } finally {
       cnx.release();
     }
 
@@ -141,13 +141,13 @@ export class MySQLUserRepository implements UserRepository {
   async add(usuario: Usuario): Promise<string> {
     const cnx = await dbGluko.getConnection()
     try {
-      const token = jwt.sign({email:usuario.email},process.env.TOKEN_SECRET || 'tokentest')
+      const token = jwt.sign({ email: usuario.email }, process.env.TOKEN_SECRET || 'tokentest')
       const salt = await bcrypt.genSalt(10);
       const hashedpass = await bcrypt.hash(usuario.password, salt);
       await cnx.beginTransaction();
       const [result] = await cnx.query(
         'INSERT INTO usuarios (nombre, email, password, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional, token,tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
-        [usuario.nombre, usuario.email, hashedpass, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, token,usuario.tipo_usuario]
+        [usuario.nombre, usuario.email, hashedpass, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, token, usuario.tipo_usuario]
       );
 
       const id = (result as mysql.OkPacket).insertId;
@@ -190,8 +190,11 @@ export class MySQLUserRepository implements UserRepository {
       }
     }
   }
-  async  updateUser(usuario: Usuario, tokenUser: string): Promise<Usuario> {
+  async updateUser(usuario: UsuarioUpd, tokenUser: string, insulinas: Insulin[]): Promise<UsuarioUpd> {
     let cnx;
+
+    const id = await this.getId(tokenUser);
+    
     try {
       cnx = await dbGluko.getConnection();
       const [rows] = await cnx.execute(
@@ -203,9 +206,16 @@ export class MySQLUserRepository implements UserRepository {
         throw new Error(`No se encontró un usuario con el ID ${tokenUser}`);
       }
       await cnx.execute(
-        "UPDATE usuarios SET nombre = ?, email = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ? , basal= ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ? WHERE token = ?",
-        [usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, tokenUser]
+        "UPDATE usuarios SET nombre = ?, email = ?, fecha_nacimiento = ?, fecha_diagnostico = ?, edad = ?, genero = ?, peso = ?, estatura = ?, tipo_diabetes = ? , tipo_terapia = ? , hyper = ? , estable = ? , hipo = ? , sensitivity = ? , rate = ? , basal= ? , breakfast_start = ? , breakfast_end = ? , lunch_start = ? , lunch_end = ? , dinner_start = ? , dinner_end = ? , objective_carbs= ?, physical_activity = ? , info_adicional = ?, tipo_usuario = ? WHERE token = ?",
+        [usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional,usuario.tipo_usuario ,  tokenUser]
       );
+      await cnx.execute(
+        "UPDATE gluko.user_x_insulin SET insulin_id = ? WHERE user_id = ? LIMIT 1;",
+        [insulinas[0].id , id ]);
+      await cnx.execute(
+        "UPDATE gluko.user_x_insulin SET insulin_id = ? WHERE user_id = ? AND insulin_id !=  ?;",
+        [insulinas[1].id , id , insulinas[0].id]);
+
       return usuario;
     } catch (error) {
       console.error(error);
@@ -229,7 +239,7 @@ export class MySQLUserRepository implements UserRepository {
       if (user.length === 0) {
         return null;
       }
-      return user[0].password; 
+      return user[0].password;
     } catch (error) {
       console.error(error);
       return null;
@@ -241,23 +251,23 @@ export class MySQLUserRepository implements UserRepository {
   }
 
 
-  async UpdatePass(email: string , newPass : string ): Promise<string | null> {
+  async UpdatePass(email: string, newPass: string): Promise<string | null> {
 
     const saltRounds = await bcrypt.genSalt(10);
     const newHash = await bcrypt.hash(newPass, saltRounds);
-    
+
     let cnx;
     try {
       cnx = await dbGluko.getConnection();
       const [rows] = await cnx.execute(
         "UPDATE usuarios SET password = ? WHERE email = ?",
-        [newHash,email]
+        [newHash, email]
       );
       const user = rows as Usuario[];
       if (user.length === 0) {
         return null;
       }
-      return "se actualizo la contrasea"; 
+      return "se actualizo la contrasea";
     } catch (error) {
       console.error(error);
       return null;
