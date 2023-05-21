@@ -97,8 +97,7 @@ export class UserController {
                 this.userService.login(email, password),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
             ]);
-            const io: Server = req.app.get('socketIo');
-            io.emit((token as string),"prueba de notificacion parcular 😎")
+            
             res.status(200).json({ "status": token })
 
         } catch (err: any) {

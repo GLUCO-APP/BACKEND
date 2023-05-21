@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.08% </span>
+                <span class="strong">19.19% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/99</span>
+                <span class='fraction'>19/99</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.11% </span>
+                <span class="strong">29.62% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/27</span>
+                <span class='fraction'>8/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">3.12% </span>
+                <span class="strong">37.5% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/32</span>
+                <span class='fraction'>12/32</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.51% </span>
+                <span class="strong">20.21% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/94</span>
+                <span class='fraction'>19/94</span>
             </div>
         
             
@@ -251,11 +251,11 @@
 <a name='L186'></a><a href='#L186'>186</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -268,23 +268,23 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -434,13 +434,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">"use strict";
-var __awaiter = (this &amp;&amp; this.__awaiter) || <span class="fstat-no" title="function not covered" >fu</span>nction (thisArg, _arguments, P, generator) {
+var __awaiter = (this &amp;&amp; this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function <span class="fstat-no" title="function not covered" >adopt(</span>value) { <span class="cstat-no" title="statement not covered" >return value instanceof P ? value : new P(<span class="fstat-no" title="function not covered" >fu</span>nction (resolve) { <span class="cstat-no" title="statement not covered" >resolve(value); </span>}); </span>}
-<span class="cstat-no" title="statement not covered" >    return new (P || (P = Promise))(<span class="fstat-no" title="function not covered" >fu</span>nction (resolve, reject) {</span>
+    return new (P || (P = Promise))(function (resolve, reject) {
         function <span class="fstat-no" title="function not covered" >fulfilled(</span>value) { <span class="cstat-no" title="statement not covered" >try { <span class="cstat-no" title="statement not covered" >step(generator.next(value)); </span>} catch (e) { <span class="cstat-no" title="statement not covered" >reject(e); </span>} </span>}
         function <span class="fstat-no" title="function not covered" >rejected(</span>value) { <span class="cstat-no" title="statement not covered" >try { <span class="cstat-no" title="statement not covered" >step(generator["throw"](value)); </span>} catch (e) { <span class="cstat-no" title="statement not covered" >reject(e); </span>} </span>}
-        function <span class="fstat-no" title="function not covered" >step(</span>result) { <span class="cstat-no" title="statement not covered" >result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); </span>}
-<span class="cstat-no" title="statement not covered" >        step((generator = generator.apply(thisArg, _arguments || [])).next());</span>
+        function step(result) { result.done ? resolve(result.value) : <span class="branch-1 cbranch-no" title="branch not covered" >adopt(result.value).then(fulfilled, rejected);</span> }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -452,24 +452,24 @@ class ReportService {
     constructor(reportRepository) {
         this.reportRepository = reportRepository;
     }
-<span class="fstat-no" title="function not covered" >    ad</span>dReport(report) {
-<span class="cstat-no" title="statement not covered" >        return __awaiter(this, void 0, void 0, <span class="fstat-no" title="function not covered" >fu</span>nction* () {</span>
-<span class="cstat-no" title="statement not covered" >            return this.reportRepository.add(report);</span>
+    addReport(report) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.reportRepository.add(report);
         });
     }
-<span class="fstat-no" title="function not covered" >    ge</span>tCurdate() {
-<span class="cstat-no" title="statement not covered" >        return __awaiter(this, void 0, void 0, <span class="fstat-no" title="function not covered" >fu</span>nction* () {</span>
-<span class="cstat-no" title="statement not covered" >            return this.reportRepository.curDate();</span>
+    getCurdate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.reportRepository.curDate();
         });
     }
-<span class="fstat-no" title="function not covered" >    ge</span>tDuration(ids) {
-<span class="cstat-no" title="statement not covered" >        return __awaiter(this, void 0, void 0, <span class="fstat-no" title="function not covered" >fu</span>nction* () {</span>
-<span class="cstat-no" title="statement not covered" >            return this.reportRepository.getDuration(ids);</span>
+    getDuration(ids) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.reportRepository.getDuration(ids);
         });
     }
-<span class="fstat-no" title="function not covered" >    da</span>ilyReports(token) {
-<span class="cstat-no" title="statement not covered" >        return __awaiter(this, void 0, void 0, <span class="fstat-no" title="function not covered" >fu</span>nction* () {</span>
-<span class="cstat-no" title="statement not covered" >            return this.reportRepository.dailyReports(token);</span>
+    dailyReports(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.reportRepository.dailyReports(token);
         });
     }
 <span class="fstat-no" title="function not covered" >    la</span>streport(token) {
@@ -625,7 +625,7 @@ exports.ReportService = ReportService;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-05-20T15:27:42.790Z
+                at 2023-05-20T23:04:22.476Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

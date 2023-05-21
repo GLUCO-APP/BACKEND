@@ -132,4 +132,38 @@ describe('Gluko', () => {
             expect(response.status).toBe(200);
         }));
     });
+    describe('POST /report', () => {
+        it('Crea un reporte en la base de datos', () => __awaiter(void 0, void 0, void 0, function* () {
+            const server = new socketcon_1.default();
+            const app = server.app;
+            const request = (0, supertest_1.default)(app);
+            const data = {
+                id_plato: 5,
+                token_usuario: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1YW5oaXQ0NzE1MjNAZ21haWwuY29tIiwiaWF0IjoxNjg0MjEyMzcwfQ.KrqErZeDIVAU9N0WBahYfMJQS4P5s6zhn2tZJFf3gsg",
+                glucosa: 150,
+                unidades_insulina: 3.5
+            };
+            const response = yield request.post('/report').send(data);
+            expect(response.status).toBe(201);
+            expect(response.body).toHaveProperty('id');
+        }));
+    });
+    describe('GET /report/:token', () => {
+        it('trae la informacion del ultimo reporte del ', () => __awaiter(void 0, void 0, void 0, function* () {
+            const server = new socketcon_1.default();
+            const app = server.app;
+            const request = (0, supertest_1.default)(app);
+            const response = yield request.get('/report/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1YW5oaXQ0NzE1MjNAZ21haWwuY29tIiwiaWF0IjoxNjg0MjEyMzcwfQ.KrqErZeDIVAU9N0WBahYfMJQS4P5s6zhn2tZJFf3gsg');
+            expect(response.status).toBe(200);
+        }));
+    });
+    describe('GET /allInsulin', () => {
+        it('trae los datos de todas la insulinas', () => __awaiter(void 0, void 0, void 0, function* () {
+            const server = new socketcon_1.default();
+            const app = server.app;
+            const request = (0, supertest_1.default)(app);
+            const response = yield request.get('/allInsulin');
+            expect(response.status).toBe(200);
+        }));
+    });
 });
