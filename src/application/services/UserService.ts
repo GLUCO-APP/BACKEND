@@ -1,5 +1,6 @@
 import { MySQLUserRepository } from "../../infrastructure/repositories/MySQLUserRepository";
 import { Usuario } from "../../domain/entities/User"
+import { UsuarioUpd } from "../../domain/entities/UserUpd";
 import * as bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import * as tf from '@tensorflow/tfjs';
@@ -70,7 +71,7 @@ export class UserService {
         // asumiendo que las predicciones están almacenadas en una variable llamada "predictions"
         const predictionsArray = predictions.arraySync();
          // muestra los valores de las predicciones en la consola
-         console.log(predictionsArray)
+        console.log(predictionsArray)
         return predictionsArray as number[]
 
     }
@@ -120,8 +121,8 @@ export class UserService {
         return foundUser
     }
 
-    public async updateUser(usuario: Usuario, token: string): Promise<void> {
-        const tkuser = this.userRepository.updateUser(usuario, token);
+    public async updateUser(usuario: UsuarioUpd, token: string , insulinas : Insulin[]): Promise<void> {
+        const tkuser = this.userRepository.updateUser(usuario, token , insulinas);
         const foundUser = await tkuser;
     }
 

@@ -26,6 +26,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const UserService_1 = require("../../application/services/UserService");
 const User_1 = require("../../domain/entities/User");
+const UserUpd_1 = require("../../domain/entities/UserUpd");
+const Insulin_1 = require("../../domain/entities/Insulin");
 const MySQLUserRepository_1 = require("../../infrastructure/repositories/MySQLUserRepository");
 const morgan_1 = __importDefault(require("morgan"));
 class UserController {
@@ -125,9 +127,12 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const token = req.params.token;
             try {
-                const { nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional, tipo_usuario } = req.body;
-                const UserData = new User_1.Usuario(nombre, email, " ", fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional, tipo_usuario);
-                const resp = yield this.userService.updateUser(UserData, token);
+                const { usuario, ins } = req.body;
+                const insulinas = ins.map((insulina) => {
+                    return new Insulin_1.Insulin(insulina.name, insulina.type, insulina.iprecision, insulina.duration, insulina.id);
+                });
+                const UserData = new UserUpd_1.UsuarioUpd(usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, usuario.tipo_usuario);
+                const resp = yield this.userService.updateUser(UserData, token, insulinas);
                 res.status(201).json({ "status": resp, "message": "Usuario actualizado" });
             }
             catch (err) {
