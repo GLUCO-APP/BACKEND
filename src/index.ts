@@ -13,9 +13,11 @@ const app = express();
 
 const server = new Server();
 
-if (!module.parent) {
+export default { server };
 
+if (!module.parent) {
   server.start(() => {
       console.log(`Server listening in port ${server.port} Test Git new image`);
     });
 }
+

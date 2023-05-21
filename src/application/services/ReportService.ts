@@ -26,8 +26,8 @@ export class ReportService {
     public async getCurdate(){
         return this.reportRepository.curDate();
     }
-    public async getDuration(id:number){
-        return this.reportRepository.getDuration(id);
+    public async getDuration(ids:number[]){
+        return this.reportRepository.getDuration(ids);
     }
 
     public async dailyReports(token: string) {
