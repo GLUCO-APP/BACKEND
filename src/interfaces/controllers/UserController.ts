@@ -99,9 +99,8 @@ export class UserController {
                 this.userService.login(email, password),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
             ]);
+            console.log("cambio");
             res.status(200).json({ "status": token })
-            
-            
         } catch (err: any) {
             res.status(400).send(err.message);
 
