@@ -139,7 +139,7 @@ describe('Gluko', () => {
             const request = (0, supertest_1.default)(app);
             const data = {
                 id_plato: 5,
-                token_usuario: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1YW5oaXQ0NzE1MjNAZ21haWwuY29tIiwiaWF0IjoxNjg0MjEyMzcwfQ.KrqErZeDIVAU9N0WBahYfMJQS4P5s6zhn2tZJFf3gsg",
+                token_usuario: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRvd2lAbGFhYmUucGwiLCJpYXQiOjE2ODQ2MjM4NTd9.2Jsh4lUdmLRtBsCkkTERMoMOIBZGan7qcZ-jZ0bBNf8",
                 glucosa: 150,
                 unidades_insulina: 3.5
             };
@@ -164,6 +164,62 @@ describe('Gluko', () => {
             const request = (0, supertest_1.default)(app);
             const response = yield request.get('/allInsulin');
             expect(response.status).toBe(200);
+        }));
+    });
+    describe('GET /update', () => {
+        it('actualiza los datos del usuario', () => __awaiter(void 0, void 0, void 0, function* () {
+            const server = new socketcon_1.default();
+            const app = server.app;
+            const request = (0, supertest_1.default)(app);
+            const data = {
+                usuario: {
+                    nombre: "Mateo Andrés Arenas Angel",
+                    email: "mathe.andres99@gmail.com",
+                    fecha_nacimiento: "1999-02-16T05:00:00.000Z",
+                    fecha_diagnostico: "2019-04-25T05:00:00.000Z",
+                    edad: 24,
+                    genero: "Masculino",
+                    peso: 63,
+                    estatura: 176,
+                    tipo_diabetes: "Tipo 1",
+                    tipo_terapia: "Insulina",
+                    hyper: 180,
+                    estable: 120,
+                    hipo: 60,
+                    sensitivity: 40,
+                    rate: 14,
+                    basal: "22:00:00",
+                    breakfast_start: "06:00:00",
+                    breakfast_end: "10:00:00",
+                    lunch_start: "12:30:00",
+                    lunch_end: "14:00:00",
+                    dinner_start: "19:00:00",
+                    dinner_end: "21:30:00",
+                    objective_carbs: 300,
+                    physical_activity: 1,
+                    info_adicional: "no aplica",
+                    tipo_usuario: "paciente",
+                },
+                ins: [
+                    {
+                        id: 4,
+                        name: "Novorapid Aspart",
+                        type: "Bolo",
+                        iprecision: 0.5,
+                        duration: 4,
+                    },
+                    {
+                        id: 8,
+                        name: "Lantus Glargina",
+                        type: "Basal",
+                        iprecision: 1,
+                        duration: 24,
+                    },
+                ],
+            };
+            const response = yield request.put('/update/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hdGhlLmFuZHJlczk5QGdtYWlsLmNvbSIsImlhdCI6MTY4Mzc2OTM2MH0.8N5VhuXAWvwXDpmGZr06im1OBrUA4TpeF2d46XI-t84').send(data);
+            expect(response.status).toBe(201);
+            expect(response.body).toHaveProperty('status');
         }));
     });
 });
