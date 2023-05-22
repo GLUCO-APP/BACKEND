@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">53.17% </span>
+                <span class="strong">53.03% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>67/126</span>
+                <span class='fraction'>70/132</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.45% </span>
+                <span class="strong">57.89% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>22/37</span>
+                <span class='fraction'>22/38</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">51.72% </span>
+                <span class="strong">52.45% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>60/116</span>
+                <span class='fraction'>64/122</span>
             </div>
         
             
@@ -263,12 +263,19 @@
 <a name='L198'></a><a href='#L198'>198</a>
 <a name='L199'></a><a href='#L199'>199</a>
 <a name='L200'></a><a href='#L200'>200</a>
-<a name='L201'></a><a href='#L201'>201</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -293,6 +300,8 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -360,6 +369,8 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -390,12 +401,15 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -468,7 +482,7 @@ var __awaiter = (this &amp;&amp; this.__awaiter) || function (thisArg, _argument
     function adopt(value) { return value instanceof P ? value : <span class="branch-1 cbranch-no" title="branch not covered" >new P(<span class="fstat-no" title="function not covered" >fu</span>nction (resolve) { <span class="cstat-no" title="statement not covered" >resolve(value); </span>});</span> }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { <span class="cstat-no" title="statement not covered" >reject(e); </span>} }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { <span class="cstat-no" title="statement not covered" >reject(e); </span>} }
+        function <span class="fstat-no" title="function not covered" >rejected(</span>value) { <span class="cstat-no" title="statement not covered" >try { <span class="cstat-no" title="statement not covered" >step(generator["throw"](value)); </span>} catch (e) { <span class="cstat-no" title="statement not covered" >reject(e); </span>} </span>}
         function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
@@ -491,6 +505,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const UserService_1 = require("../../application/services/UserService");
 const User_1 = require("../../domain/entities/User");
+const UserUpd_1 = require("../../domain/entities/UserUpd");
+const Insulin_1 = require("../../domain/entities/Insulin");
 const MySQLUserRepository_1 = require("../../infrastructure/repositories/MySQLUserRepository");
 const morgan_1 = __importDefault(require("morgan"));
 class UserController {
@@ -559,6 +575,8 @@ class UserController {
                     this.userService.login(email, password),
                     new Promise((_, reject) =&gt; setTimeout(() =&gt; reject(new Error('Timeout')), 5000))
                 ]);
+                const io = req.app.get('socketIo');
+                io.emit(token, "prueba de notificacion parcular 😎");
                 res.status(200).json({ "status": token });
             }
             catch (err) {
@@ -588,14 +606,17 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const token = req.params.token;
             try {
-                const { nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional, tipo_usuario } = req.body;
-                const UserData = new User_1.Usuario(nombre, email, " ", fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, insulin, objective_carbs, physical_activity, info_adicional, tipo_usuario);
-                const resp = yield this.userService.updateUser(UserData, token);
-<span class="cstat-no" title="statement not covered" >                res.status(201).json({ "status": resp, "message": "Usuario actualizado" });</span>
+                const { usuario, ins } = req.body;
+                const insulinas = ins.map((insulina) =&gt; {
+                    return new Insulin_1.Insulin(insulina.name, insulina.type, insulina.iprecision, insulina.duration, insulina.id);
+                });
+                const UserData = new UserUpd_1.UsuarioUpd(usuario.nombre, usuario.email, usuario.fecha_nacimiento, usuario.fecha_diagnostico, usuario.edad, usuario.genero, usuario.peso, usuario.estatura, usuario.tipo_diabetes, usuario.tipo_terapia, usuario.hyper, usuario.estable, usuario.hipo, usuario.sensitivity, usuario.rate, usuario.basal, usuario.breakfast_start, usuario.breakfast_end, usuario.lunch_start, usuario.lunch_end, usuario.dinner_start, usuario.dinner_end, usuario.objective_carbs, usuario.physical_activity, usuario.info_adicional, usuario.tipo_usuario);
+                const resp = yield this.userService.updateUser(UserData, token, insulinas);
+                res.status(201).json({ "status": resp, "message": "Usuario actualizado" });
             }
             catch (err) {
-                console.error(err);
-                res.status(400).send(err.message);
+<span class="cstat-no" title="statement not covered" >                console.error(err);</span>
+<span class="cstat-no" title="statement not covered" >                res.status(400).send(err.message);</span>
             }
         });
     }
@@ -670,7 +691,7 @@ exports.UserController = UserController;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-05-22T22:00:01.173Z
+                at 2023-05-22T22:52:01.009Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

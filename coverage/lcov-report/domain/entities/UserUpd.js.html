@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for domain/entities/Plate.js</title>
+    <title>Code coverage report for domain/entities/UserUpd.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">domain/entities</a> Plate.js</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">domain/entities</a> UserUpd.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/17</span>
+                <span class='fraction'>29/29</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>17/17</span>
+                <span class='fraction'>29/29</span>
             </div>
         
             
@@ -85,11 +85,35 @@
 <a name='L20'></a><a href='#L20'>20</a>
 <a name='L21'></a><a href='#L21'>21</a>
 <a name='L22'></a><a href='#L22'>22</a>
-<a name='L23'></a><a href='#L23'>23</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -109,26 +133,38 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Plate = void 0;
-class Plate {
-    constructor(foods, sugarEstimate, latitude, longitude, address, Carbohydrates, Proteins, Fats, Description, Title, date, type, public_plate, id) {
-        this.foods = foods;
-        this.sugarEstimate = sugarEstimate;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.address = address;
-        this.Carbohydrates = Carbohydrates;
-        this.Proteins = Proteins;
-        this.Fats = Fats;
-        this.Description = Description;
-        this.Title = Title;
-        this.date = date;
-        this.type = type;
-        this.public_plate = public_plate;
-        this.id = id;
+exports.UsuarioUpd = void 0;
+class UsuarioUpd {
+    constructor(nombre, email, fecha_nacimiento, fecha_diagnostico, edad, genero, peso, estatura, tipo_diabetes, tipo_terapia, hyper, estable, hipo, sensitivity, rate, basal, breakfast_start, breakfast_end, lunch_start, lunch_end, dinner_start, dinner_end, objective_carbs, physical_activity, info_adicional, tipo_usuario) {
+        this.nombre = nombre;
+        this.email = email;
+        this.fecha_nacimiento = fecha_nacimiento;
+        this.fecha_diagnostico = fecha_diagnostico;
+        this.edad = edad;
+        this.genero = genero;
+        this.peso = peso;
+        this.estatura = estatura;
+        this.tipo_diabetes = tipo_diabetes;
+        this.tipo_terapia = tipo_terapia;
+        this.hyper = hyper;
+        this.estable = estable;
+        this.hipo = hipo;
+        this.sensitivity = sensitivity;
+        this.rate = rate;
+        this.basal = basal;
+        this.breakfast_start = breakfast_start;
+        this.breakfast_end = breakfast_end;
+        this.lunch_start = lunch_start;
+        this.lunch_end = lunch_end;
+        this.dinner_start = dinner_start;
+        this.dinner_end = dinner_end;
+        this.objective_carbs = objective_carbs;
+        this.physical_activity = physical_activity;
+        this.info_adicional = info_adicional;
+        this.tipo_usuario = tipo_usuario;
     }
 }
-exports.Plate = Plate;
+exports.UsuarioUpd = UsuarioUpd;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
