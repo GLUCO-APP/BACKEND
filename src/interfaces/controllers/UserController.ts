@@ -100,7 +100,8 @@ export class UserController {
                 new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
             ]);
             res.status(200).json({ "status": token })
-
+            
+            
         } catch (err: any) {
             res.status(400).send(err.message);
 
