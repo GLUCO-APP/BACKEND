@@ -32,7 +32,7 @@ export class FoodService {
                 cant_servicio = 100; 
             }
             const nutriments = data.product.nutriments;
-            const image = "atun.png"
+            const image = "paquete_snack_verde.png"
             const protein = (cant_servicio/100)*(nutriments.proteins_value);
             const carbohydrates = (cant_servicio/100)*nutriments.carbohydrates_value;
             const fat = (cant_servicio/100)*nutriments.fat_value;
