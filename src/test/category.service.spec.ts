@@ -169,7 +169,7 @@ describe('Gluko', () => {
         expect(response.status).toBe(200);
       });
     });
-    describe('GET /update', () => {
+    describe('PUT /update', () => {
       it('actualiza los datos del usuario', async () => {
         const server = new Server();
         const app = server.app;
@@ -222,7 +222,26 @@ describe('Gluko', () => {
         };
         const response = await request.put('/update/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hdGhlLmFuZHJlczk5QGdtYWlsLmNvbSIsImlhdCI6MTY4Mzc2OTM2MH0.8N5VhuXAWvwXDpmGZr06im1OBrUA4TpeF2d46XI-t84').send(data);
         expect(response.status).toBe(201);
-        expect(response.body).toHaveProperty('status');
+        expect(response.body).toHaveProperty('message');
+      });
+    });
+    describe('POST /emergency/:token/:ind', () => {
+      it('trae los estados de emergencia', async () => {
+        const server = new Server();
+        const app = server.app;
+        const request = supertest(app);
+        const response = await request.post('/emergency/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hdGhlLmFuZHJlczk5QGdtYWlsLmNvbSIsImlhdCI6MTY4Mzc2OTM2MH0.8N5VhuXAWvwXDpmGZr06im1OBrUA4TpeF2d46XI-t84/75');
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('message');
+      });
+    });
+    describe('GET /report/pdf/:token', () => {
+      it('genera un reporte', async () => {
+        const server = new Server();
+        const app = server.app;
+        const request = supertest(app);
+        const response = await request.get('/report/pdf/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hdGhlLmFuZHJlczk5QGdtYWlsLmNvbSIsImlhdCI6MTY4Mzc2OTM2MH0.8N5VhuXAWvwXDpmGZr06im1OBrUA4TpeF2d46XI-t84/35');
+        expect(response.status).toBe(200);
       });
     });
 
